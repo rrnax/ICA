@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QFrame, QHBoxLayout, QLabel, QPushButton, QMenu, QDialog
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
+from settings_dialog import SettingsDialog
 
 
 color_theme = ["#191A19", "#1E5128", "#4E9F3D", "#D8E9A8", "#FFFFFF"]
@@ -18,13 +19,16 @@ class EngineFrame(QFrame):
         sort_menu.addAction("Najlepsze")
         sort_menu.addAction("Najgorsze")
         sort_menu.setCursor(QCursor(Qt.PointingHandCursor))
+
         engine_label = QLabel("Engine: Stockfish")
         depth_label = QLabel("Depth: 20")
+
         moves_sort_button = QPushButton()
         moves_sort_button.setFixedSize(120, 50)
         moves_sort_button.setText("Sortowanie")
         moves_sort_button.setCursor(QCursor(Qt.PointingHandCursor))
         moves_sort_button.setMenu(sort_menu)
+
         engine_settings_button = QPushButton("Settings", self)
         engine_settings_button.setFixedSize(100, 50)
         engine_settings_button.setCursor(QCursor(Qt.PointingHandCursor))
@@ -35,12 +39,15 @@ class EngineFrame(QFrame):
         left_layout.setContentsMargins(20, 0, 0, 0)
         left_layout.addWidget(engine_label)
         left_layout.addWidget(depth_label)
+
         right_layout = QHBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
         right_layout.addWidget(moves_sort_button)
         right_layout.addWidget(engine_settings_button)
+
         left_widget = QWidget()
         left_widget.setLayout(left_layout)
+
         right_widget = QWidget()
         right_widget.setFixedSize(250, 60)
         right_widget.setLayout(right_layout)
@@ -106,16 +113,6 @@ class EngineFrame(QFrame):
         self.setGeometry(0, (new_size.height() - 820) + 550, (new_size.width() - 1200) + 1200, 70)
 
     def settings_up(self):
-        print("Clicked")
-
-        setting_window = QDialog()
-        # setting_window.setWindowTitle("Settings")
-        setting_window.setWindowFlag(Qt.FramelessWindowHint)
-        btn = QPushButton("Close", setting_window)
-        btn.clicked.connect(setting_window.close)
-
-        la = QHBoxLayout()
-        la.addWidget(btn)
-        setting_window.setLayout(la)
+        setting_window = SettingsDialog()
         setting_window.exec()
 
