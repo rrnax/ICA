@@ -1,5 +1,4 @@
-import sys
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QColor
 from engine_frame import EngineFrame
@@ -37,7 +36,6 @@ class MainWindow(QMainWindow):
         self.moves_frame.setGeometry(0, 620, 1200, 200)
         self.moves_frame.setStyleSheet(f"border: none;")
 
-
     def resizeEvent(self, event):
         self.upadte_sizes()
 
@@ -49,8 +47,3 @@ class MainWindow(QMainWindow):
         self.engine_frame.change_for_window_resize(self.size())
 
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-
-sys.exit(app.exec_())
