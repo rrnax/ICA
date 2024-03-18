@@ -115,7 +115,7 @@ class EngineFrame(QFrame):
             }}
             """)
 
-    def change_for_window_resize(self, new_size):
+    def update_size(self, new_size):
         self.engine_frame_layout.setSpacing(400 + new_size.width()-1200)
         self.setGeometry(0, (new_size.height() - 820) + 550, (new_size.width() - 1200) + 1200, 50)
 
