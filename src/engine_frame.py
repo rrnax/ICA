@@ -1,12 +1,13 @@
-from PyQt5.QtWidgets import QWidget, QFrame, QHBoxLayout, QLabel, QPushButton, QMenu, QDialog
-from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QFrame, QHBoxLayout, QLabel, QPushButton, QMenu
+from PyQt5.QtGui import QCursor, QIcon, QFontDatabase, QFont
+from PyQt5.QtCore import Qt, QSize
 from settings_dialog import SettingsDialog
 
 
-color_theme = ["#191A19", "#1E5128", "#4E9F3D", "#D8E9A8", "#FFFFFF"]
-
-
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+#<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/sort-ascending" title="sort ascending icons">Sort ascending icons created by Infinite Dendrogram - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
 class EngineFrame(QFrame):
 
     def __init__(self, parent=None):
@@ -20,17 +21,22 @@ class EngineFrame(QFrame):
         sort_menu.addAction("Najgorsze")
         sort_menu.setCursor(QCursor(Qt.PointingHandCursor))
 
-        engine_label = QLabel("Engine: Stockfish")
-        depth_label = QLabel("Depth: 20")
+        engine_label = QLabel("Silnik: Stockfish")
+        depth_label = QLabel("Ilość ruchów do przodu: 20")
+        elo_label = QLabel("Elo (FIDE): 1800")
 
         moves_sort_button = QPushButton()
-        moves_sort_button.setFixedSize(120, 50)
-        moves_sort_button.setText("Sortowanie")
+        moves_sort_button.setFixedSize(40, 40)
         moves_sort_button.setCursor(QCursor(Qt.PointingHandCursor))
+        moves_sort_button.setIcon(QIcon('../resources/up-and-down-arrow.png'))
+        moves_sort_button.setIconSize(QSize(30, 30))
         moves_sort_button.setMenu(sort_menu)
 
-        engine_settings_button = QPushButton("Settings", self)
-        engine_settings_button.setFixedSize(100, 50)
+        engine_settings_button = QPushButton(self)
+        engine_settings_button.setFixedSize(40, 40)
+        engine_settings_button.setObjectName("engine-settings")
+        engine_settings_button.setIcon(QIcon('../resources/gear.png'))
+        engine_settings_button.setIconSize(QSize(30, 30))
         engine_settings_button.setCursor(QCursor(Qt.PointingHandCursor))
         engine_settings_button.clicked.connect(self.settings_up)
 
@@ -39,6 +45,8 @@ class EngineFrame(QFrame):
         left_layout.setContentsMargins(20, 0, 0, 0)
         left_layout.addWidget(engine_label)
         left_layout.addWidget(depth_label)
+        left_layout.addWidget(elo_label)
+        left_layout.setSpacing(85)
 
         right_layout = QHBoxLayout()
         right_layout.setContentsMargins(0, 0, 0, 0)
@@ -49,7 +57,7 @@ class EngineFrame(QFrame):
         left_widget.setLayout(left_layout)
 
         right_widget = QWidget()
-        right_widget.setFixedSize(250, 60)
+        right_widget.setFixedSize(100, 48)
         right_widget.setLayout(right_layout)
 
         # Layout
@@ -57,60 +65,59 @@ class EngineFrame(QFrame):
         self.engine_frame_layout.addWidget(left_widget)
         self.engine_frame_layout.addWidget(right_widget)
         self.engine_frame_layout.setContentsMargins(0, 0, 0, 0)
-        # self.engine_frame_layout.setSpacing(1000)
+        self.engine_frame_layout.setSpacing(400)
 
         # Frame
         self.setLayout(self.engine_frame_layout)
-        self.setGeometry(0, 550, 1200, 70)
+        self.setGeometry(0, 550, 1200, 50)
         self.setObjectName("engine-frame")
         self.setStyleSheet(f"""
             #engine-frame {{
+                background-color: {color_theme[1]};
                 border-top: 1px solid {color_theme[3]};
                 border-bottom: 1px solid {color_theme[3]};
             }}
                 
             QWidget {{
+                background-color: {color_theme[1]};
                 color: {color_theme[3]};
-                font-size: 20px;
+                font-size: 18px;
             }}
             
             QPushButton {{
-                border: 1px solid {color_theme[3]};
-                border-radius: 10px;
+                border: none;
             }}
             
             QPushButton::menu-indicator {{
-                image: none;
                 width: 0px;
             }}
             
             QPushButton:hover {{
-                color: black;
+                color: {color_theme[0]};
                 background-color: {color_theme[3]};
-            }}
-            
-            QMenu {{
-                width: 200px;
-                padding-top: 5px; 
-                color: {color_theme[3]};
-                background-color: {color_theme[0]};
-                border: 1px solid {color_theme[3]};
+                border: 1px solid {color_theme[0]};
                 border-radius: 10px;
             }}
             
+            QMenu {{
+                color: {color_theme[3]};
+                background-color: {color_theme[1]};
+                border: 1px solid {color_theme[3]};
+            }}
+            
             QMenu::item {{
-                padding: 10px 30px;
+                padding: 5px 10px;
             }}
             
             QMenu::item:selected {{
                 color: {color_theme[0]};
-                background-color: {color_theme[3]};
+                background-color: {color_theme[1]};
             }}
             """)
 
     def change_for_window_resize(self, new_size):
         self.engine_frame_layout.setSpacing(400 + new_size.width()-1200)
-        self.setGeometry(0, (new_size.height() - 820) + 550, (new_size.width() - 1200) + 1200, 70)
+        self.setGeometry(0, (new_size.height() - 820) + 550, (new_size.width() - 1200) + 1200, 50)
 
     def settings_up(self):
         setting_window = SettingsDialog()

@@ -1,9 +1,10 @@
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon, QCursor
 from engine_frame import EngineFrame
 
-color_theme = ["#191A19", "#1E5128", "#4E9F3D", "#D8E9A8", "#FFFFFF"]
+
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
 
 class MainWindow(QMainWindow):
@@ -11,6 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         # Window settings
         super().__init__()
+
         self.setWindowTitle("Interactive Chess assistant")
         self.setMinimumSize(QSize(1200, 820))
         self.setStyleSheet(f"background-color: {color_theme[0]};")
@@ -31,6 +33,23 @@ class MainWindow(QMainWindow):
         self.game_view = QGraphicsView(game_scene, self.game_frame)
         self.game_view.setStyleSheet(f"border: none")
         self.game_view.setBackgroundBrush(QColor(0, 0, 0))
+
+        self.menu_btn = QPushButton(self)
+        self.menu_btn.setIcon(QIcon('../resources/menu.png'))
+        self.menu_btn.setIconSize(QSize(30, 30))
+        self.menu_btn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.menu_btn.setGeometry(10, 10, 50, 50)
+        self.menu_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {color_theme[1]};
+                border: 1px solid {color_theme[3]};
+                border-radius: 10px;
+            }}
+            
+            QPushButton:hover {{
+                background-color: {color_theme[3]};
+            }}
+        """)
 
         self.moves_frame = QListWidget(self)
         self.moves_frame.setGeometry(0, 620, 1200, 200)
