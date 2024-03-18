@@ -27,7 +27,7 @@ class MovesOptionsList(QScrollArea):
             }}
         
             QScrollBar:horizontal {{
-                background-color: {color_theme[0]};
+                background-color: {color_theme[1]};
                 color: {color_theme[3]};
                 border: 1px solid {color_theme[3]}
             }}
