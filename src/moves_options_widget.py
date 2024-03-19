@@ -3,7 +3,10 @@ from PyQt5.QtCore import Qt
 import math
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
-col_am = 50
+col_am = 30
+moves = ["+1,922", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2",
+         "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2",  "a1b2", "a1b2",
+         "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2"]
 
 
 class MovesOptionsList(QScrollArea):
@@ -16,6 +19,7 @@ class MovesOptionsList(QScrollArea):
         self.moves_table_layout.setSpacing(0)
         self.moves_table_layout.setAlignment(Qt.AlignTop)
         self.create_header(col_am)
+        self.create_content_rows(col_am, 4)
 
         self.moves_widget = QWidget()
         self.moves_widget.setLayout(self.moves_table_layout)
@@ -72,16 +76,52 @@ class MovesOptionsList(QScrollArea):
                 move_header.setStyleSheet(header_styles)
                 self.moves_table_layout.addWidget(move_header, 0, col)
 
-    def resize_header(self, column_amount):
+    def resize_header(self, column_amount, rows_amount):
         divider = math.ceil((self.size().width() - 150) / column_amount)
         for col in range(1, column_amount + 1):
             if divider < 50:
                 self.moves_widget.setGeometry(0, (self.size().height() - 820) + 600, (column_amount * 50) + 150, 200)
-                self.moves_table_layout.itemAtPosition(0, col).widget().setFixedSize(50, 40)
+                for row in range(0, rows_amount):
+                    self.moves_table_layout.itemAtPosition(row, col).widget().setFixedSize(50, 40)
             else:
-                self.moves_widget.setGeometry(0, (self.size().height() - 820) + 600, (self.size().width() - 1200) + 1200, 200)
-                self.moves_table_layout.itemAtPosition(0, col).widget().setFixedSize(divider, 40)
+                self.moves_widget.setGeometry(0, (self.size().height() - 820) + 600,
+                                              (self.size().width() - 1200) + 1200, 200)
+                for row in range(0, rows_amount):
+                    self.moves_table_layout.itemAtPosition(row, col).widget().setFixedSize(divider, 40)
+
+    def create_content_rows(self, column_amount, rows_amount):
+        divider = math.floor((self.size().width() - 150) / column_amount)
+        for row in range(1, rows_amount + 1):
+            for col in range(0, column_amount + 1):
+                coils_style = f'''
+                    color: {color_theme[3]};
+                    font-size: 18px;
+                    border-bottom: 1px solid {color_theme[3]};
+                '''
+                if col % 2 == 0:
+                    coils_style += f'''
+                        background-color: {color_theme[1]};
+                    '''
+                else:
+                    coils_style += f'''
+                        background-color: {color_theme[0]};
+                    '''
+                if col == 0:
+                    move_coil = QLabel(moves[col], self)
+                    move_coil.setFixedSize(150, 40)
+                    move_coil.setAlignment(Qt.AlignCenter)
+                    move_coil.setStyleSheet(coils_style)
+                    self.moves_table_layout.addWidget(move_coil, row, col)
+                else:
+                    move_coil = QLabel(moves[col], self)
+                    if divider < 50:
+                        move_coil.setFixedSize(50, 40)
+                    else:
+                        move_coil.setFixedSize(divider, 40)
+                    move_coil.setAlignment(Qt.AlignCenter)
+                    move_coil.setStyleSheet(coils_style)
+                    self.moves_table_layout.addWidget(move_coil, row, col)
 
     def update_size(self, new_size):
         self.setGeometry(0, (new_size.height() - 820) + 600, (new_size.width() - 1200) + 1200, 220)
-        self.resize_header(col_am)
+        self.resize_header(col_am, 5)
