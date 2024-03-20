@@ -1,8 +1,9 @@
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QMainWindow, QWidget, QFrame, QPushButton, QGraphicsScene, QGraphicsView, QScrollArea
+from PyQt5.QtCore import QSize, Qt, QPropertyAnimation, QEasingCurve, QRect
+from PyQt5.QtWidgets import QMainWindow, QWidget, QFrame, QPushButton, QGraphicsScene, QGraphicsView, QVBoxLayout
 from PyQt5.QtGui import QColor, QIcon, QCursor
 from engine_frame import EngineFrame
 from moves_options_widget import MovesOptionsList
+from menu_widget import MenuWidget
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
@@ -41,8 +42,8 @@ class MainWindow(QMainWindow):
         self.menu_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {color_theme[1]};
-                border: 1px solid {color_theme[3]};
-                border-radius: 10px;
+                border: 2px solid {color_theme[3]};
+                border-radius: 5px;
             }}
             
             QPushButton:hover {{
@@ -50,6 +51,18 @@ class MainWindow(QMainWindow):
             }}
         """)
 
+        btn1= QPushButton("Zamknij")
+
+        self.menu_layout = QVBoxLayout()
+        self.menu_layout.addWidget(btn1)
+
+        self.menu_widget = QWidget(self)
+        self.menu_widget.setGeometry(-400, 100, 400, 800)
+        self.menu_widget.setStyleSheet(f"background-color: {color_theme[1]};")
+        self.menu_widget.setLayout(self.menu_layout)
+
+        self.menu_btn.clicked.connect(self.open_menu)
+        btn1.clicked.connect(self.close_menu)
     def resizeEvent(self, event):
         self.upadte_sizes()
 
@@ -60,4 +73,16 @@ class MainWindow(QMainWindow):
         self.moves_frame.update_size(self.size())
         self.engine_frame.update_size(self.size())
 
+    def open_menu(self):
+        self.menu_widget.animation = QPropertyAnimation(self.menu_widget, b"geometry", self.menu_widget)
+        self.menu_widget.animation.setDuration(1000)
+        self.menu_widget.animation.setStartValue(QRect(-400, 100, 400, 800))
+        self.menu_widget.animation.setEndValue(QRect(0, 100, 400, 800))
+        self.menu_widget.animation.start()
 
+    def close_menu(self):
+        self.menu_widget.animation = QPropertyAnimation(self.menu_widget, b"geometry", self.menu_widget)
+        self.menu_widget.animation.setDuration(1000)
+        self.menu_widget.animation.setStartValue(QRect(0, 100, 400, 800))
+        self.menu_widget.animation.setEndValue(QRect(-400, 100, 400, 800))
+        self.menu_widget.animation.start()

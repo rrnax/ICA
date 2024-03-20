@@ -29,7 +29,7 @@ class MovesOptionsList(QScrollArea):
           QPixmap("../resources/pieces/w_rook.png").scaled(20, 20)]
 
         self.coil_width = 100
-        self.coil_height = 40
+        self.coil_height = 50
 
         self.head_layout = QGridLayout()
         self.head_layout.setContentsMargins(0, 0, 0, 0)
