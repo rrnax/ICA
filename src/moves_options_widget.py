@@ -48,7 +48,7 @@ class MovesOptionsList(QScrollArea):
         self.content_widget.setLayout(self.moves_table_layout)
 
         self.content_area = QScrollArea()
-        self.content_area.setFixedSize(1200, 200)
+        self.content_area.setFixedSize(1200, 220)
         self.content_area.setWidget(self.content_widget)
 
         self.fill_layout = QVBoxLayout()
@@ -160,7 +160,7 @@ class MovesOptionsList(QScrollArea):
     def resize_elements(self, column_amount, row_amount):
         divider = math.floor((self.size().width() - 150) / column_amount)
         if divider < self.coil_width:
-            self.moves_widget.setFixedSize((column_amount * self.coil_width) + 150, 200)
+            self.moves_widget.setFixedSize((column_amount * self.coil_width) + 150, 203)
             self.head_widget.setFixedSize((column_amount * self.coil_width) + 150, 30)
             self.content_area.setFixedSize((column_amount * self.coil_width) + 150, 190)
             self.content_widget.setFixedSize((column_amount * self.coil_width) + 150, self.coil_height * row_amount)
