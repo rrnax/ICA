@@ -92,7 +92,7 @@ class MenuSlideFrame(QFrame):
             height: 50px;
             padding-left: 20px;
             background-color: transparent;
-            color: {color_theme[4]};
+            color: {color_theme[3]};
             font-size: 30px;
             text-align: left;
         }}
