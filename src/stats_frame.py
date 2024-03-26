@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSpacerItem, QSizePolicy
-from PyQt5.QtCore import Qt, QSize, QPoint
+from PyQt5.QtCore import Qt, QSize, QPointF
 from PyQt5.QtGui import QIcon, QCursor, QPixmap, QColor, QPainter, QPen
-from PyQt5.QtChart import QChart, QChartView, QLineSeries
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#20a16d"]
 
 # <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons">Sports and competition icons created by BZZRINCANTATION - Flaticon</a>
@@ -74,11 +74,11 @@ class StatsFrame(QFrame):
         self.history_widget.setObjectName("history-widget")
         self.history_widget.setLayout(self.layout_history)
 
-        history_area = QScrollArea()
-        history_area.setFixedSize(450, 250)
-        history_area.setContentsMargins(0, 0, 0, 0)
-        history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        history_area.setWidget(self.history_widget)
+        self.history_area = QScrollArea()
+        self.history_area.setFixedSize(450, 250)
+        self.history_area.setContentsMargins(0, 0, 0, 0)
+        self.history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.history_area.setWidget(self.history_widget)
 
         self.advantage_chart = QChart()
         self.advantage_chart.legend().hide()
@@ -101,7 +101,7 @@ class StatsFrame(QFrame):
         stats_layout.setAlignment(Qt.AlignTop)
         stats_layout.addWidget(operation_widget)
         stats_layout.addWidget(history_label)
-        stats_layout.addWidget(history_area)
+        stats_layout.addWidget(self.history_area)
         stats_layout.addWidget(chart_view)
 
         # Set frame general options
@@ -133,6 +133,7 @@ class StatsFrame(QFrame):
                 border-top: 1px solid {color_theme[3]};
             }}
             
+            
             QPushButton {{
                 background-color: {color_theme[1]};
                 border: 1px solid {color_theme[1]};
@@ -144,7 +145,9 @@ class StatsFrame(QFrame):
             }}
             
             QScrollArea {{
+                background-color: {color_theme[0]};
                 border-top: none;
+                border-left: 1px solid {color_theme[3]};
             }}
             
             QScrollBar:vertical {{
@@ -179,6 +182,7 @@ class StatsFrame(QFrame):
     # On window resize
     def update_size(self, new_size):
         self.setGeometry((new_size.width() - 1200) + 750, 0, 450, (new_size.height() - 820) + 550)
+        self.history_area.setFixedSize(450, (new_size.height() - 820) + 250)
 
     # Set type label
     def set_correct_game_type(self, game_type):
@@ -269,16 +273,42 @@ class StatsFrame(QFrame):
         series = QLineSeries()
 
         data = [
-            QPoint(0, 6),
-            QPoint(9, 4),
-            QPoint(15, 20),
-            QPoint(18, 12),
-            QPoint(28, 25)
+            QPointF(0, 0.0),
+            QPointF(1, -0.4),
+            QPointF(2, -2.0),
+            QPointF(3, 1.2),
+            QPointF(4, 2.0)
         ]
 
         pen = QPen(QColor("#20a16d"))
         pen.setWidth(3)
 
+        axis_X = QValueAxis()
+        axis_X.setTickCount(5)
+        axis_X.setRange(0, 4)
+        axis_X.setLabelFormat("%d")
+        axis_X.setLabelsColor(QColor(color_theme[4]))
+        axis_X.setTitleText("Ruch")
+        axis_X.setTitleBrush(QColor(color_theme[3]))
+        axis_X.setGridLineColor(QColor(color_theme[1]))
+
+        axis_Y = QValueAxis()
+        axis_Y.setTickCount(5)
+        axis_Y.setRange(-2.0, 2.00)
+        axis_Y.setLabelsColor(QColor(color_theme[4]))
+        axis_Y.setTitleText("Przewaga")
+        axis_Y.setTitleBrush(QColor(color_theme[3]))
+        axis_Y.setGridLineColor(QColor(color_theme[1]))
+
+        self.advantage_chart.addAxis(axis_X, Qt.AlignmentFlag.AlignBottom)
+        self.advantage_chart.addAxis(axis_Y, Qt.AlignmentFlag.AlignLeft)
+
         series.append(data)
         self.advantage_chart.addSeries(series)
         series.setPen(pen)
+
+        # self.advantage_chart.createDefaultAxes()
+        # advantage_axis = QValueAxis()
+        # advantage_axis.setRange(-2.0, 2.0)
+        #
+
