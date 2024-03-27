@@ -91,10 +91,11 @@ class MenuSlideFrame(QFrame):
             width: 300px;
             height: 50px;
             padding-left: 20px;
-            background-color: transparent;
+            background-color: {color_theme[0]};
             color: {color_theme[3]};
             font-size: 30px;
             text-align: left;
+            border: none;
         }}
         
         QPushButton:hover {{
