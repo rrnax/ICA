@@ -39,6 +39,12 @@ class StatsFrame(QFrame):
         draw_btn.setCursor(QCursor(Qt.PointingHandCursor))
         draw_btn.setIconSize(QSize(30, 30))
 
+        board_rotation = QPushButton()
+        board_rotation.setFixedSize(40, 40)
+        board_rotation.setIcon(QIcon("../resources/loader.png"))
+        board_rotation.setCursor(QCursor(Qt.PointingHandCursor))
+        board_rotation.setIconSize(QSize(30, 30))
+
         space_item = QWidget()
         space_item.setFixedSize(100, 40)
 
@@ -51,6 +57,7 @@ class StatsFrame(QFrame):
         operation_layout.addWidget(move_froward_btn)
         operation_layout.addWidget(surrender_btn)
         operation_layout.addWidget(draw_btn)
+        operation_layout.addWidget(board_rotation)
         operation_layout.addWidget(space_item)
         operation_layout.addWidget(game_type_label)
 
@@ -89,7 +96,7 @@ class StatsFrame(QFrame):
         self.update_chart()
 
         chart_view = QChartView(self.advantage_chart, self)
-        chart_view.setFixedSize(450, 210)
+        # chart_view.setFixedSize(450, 210)
         chart_view.setContentsMargins(0, 0, 0, 0)
         chart_view.setBackgroundBrush(QColor(color_theme[0]))
         chart_view.setRenderHint(QPainter.Antialiasing)
@@ -178,6 +185,8 @@ class StatsFrame(QFrame):
                 background-color: {color_theme[1]};
             }}
         """)
+
+        board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
 
     # On window resize
     def update_size(self, new_size):
