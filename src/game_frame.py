@@ -30,8 +30,6 @@ class GameFrame(QFrame):
         self.game_scene.draw_board((new_size.height() - 820) + 490)
 
 
-
-
 class ChessBoard(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -112,11 +110,19 @@ class ChessBoard(QGraphicsScene):
                     field.unmounted = False
 
     def rotate_board(self):
+        for field in self.fields:
+            field.unmounted = True
+
+        for item in self.items():
+            self.removeItem(item)
+
         if self.front_side == "white":
             self.front_side = "black"
         else:
             self.front_side = "white"
         self.draw_board(self.height() - 60)
+        self.update()
+
 
 class Field:
     def __init__(self, chess_pos):
