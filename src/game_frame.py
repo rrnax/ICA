@@ -62,8 +62,29 @@ class ChessBoard(QGraphicsScene):
         start_x = math.floor(self.width()/2 + side_length/2) - field_size
 
         if self.front_side == 'black':
+            last_row = self.fields[0].chess_pos[1]
             for field in self.fields:
-                print("XD")
+                if last_row != field.chess_pos[1]:
+                    last_row = field.chess_pos[1]
+                    start_x = math.floor(self.width() / 2 + side_length / 2) - field_size
+                    start_y += field_size
+
+                if field.chess_pos[1] == "1":
+                    field.field_labels[1].setPos(start_x + field_size/2 - 9, start_y - 30)
+                    if field.unmounted:
+                        self.addItem(field.field_labels[1])
+
+                if field.chess_pos[0] == "H":
+                    field.field_labels[0].setPos(start_x - field_size/2, start_y + field_size/2 - 18)
+                    if field.unmounted:
+                        self.addItem(field.field_labels[0])
+
+                field.graphic_pos.setRect(start_x, start_y, field_size, field_size)
+                start_x -= field_size
+
+                if field.unmounted:
+                    self.addItem(field.graphic_pos)
+                    field.unmounted = False
         else:
             last_row = self.fields[-1].chess_pos[1]
             for field in reversed(self.fields):
@@ -91,12 +112,11 @@ class ChessBoard(QGraphicsScene):
                     field.unmounted = False
 
     def rotate_board(self):
-        print("DXSA")
-        # if self.front_side == "white":
-        #     self.front_side = "black"
-        # else:
-        #     self.front_side = "white"
-        # self.draw_board(self.width() - 60)
+        if self.front_side == "white":
+            self.front_side = "black"
+        else:
+            self.front_side = "white"
+        self.draw_board(self.height() - 60)
 
 class Field:
     def __init__(self, chess_pos):
