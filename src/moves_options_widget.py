@@ -16,17 +16,17 @@ class MovesOptionsList(QScrollArea):
         super().__init__(parent)
 
         self.pieces = [QPixmap("../resources/pieces/b_bishop.png"),
-          QPixmap("../resources/pieces/b_king.png").scaled(20, 20),
-          QPixmap("../resources/pieces/b_knight.png").scaled(20, 20),
-          QPixmap("../resources/pieces/b_pawn.png").scaled(20, 20),
-          QPixmap("../resources/pieces/b_queen.png").scaled(20, 20),
-          QPixmap("../resources/pieces/b_rook.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_bishop.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_king.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_knight.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_pawn.png.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_queen.png").scaled(20, 20),
-          QPixmap("../resources/pieces/w_rook.png").scaled(20, 20)]
+          QPixmap("../resources/pieces/b_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/b_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/b_pawn.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/b_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/b_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_pawn.png.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+          QPixmap("../resources/pieces/w_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)]
 
         self.coil_width = 100
         self.coil_height = 50
