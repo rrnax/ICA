@@ -70,7 +70,7 @@ class ChessBoard(QGraphicsScene):
                     start_y += field_size
 
                 if field.chess_pos[1] == "1":
-                    field.field_labels[1].setPos(start_x + field_size / 2 - 9, start_y - 30)
+                    field.field_labels[1].setPos(start_x + field_size / 2 - 9, start_y - 39)
                     if field.unmounted:
                         self.addItem(field.field_labels[1])
 
@@ -95,7 +95,7 @@ class ChessBoard(QGraphicsScene):
                     start_y += field_size
 
                 if field.chess_pos[1] == "8":
-                    field.field_labels[1].setPos(start_x + field_size / 2 - 9, start_y - 30)
+                    field.field_labels[1].setPos(start_x + field_size / 2 - 9, start_y - 39)
                     if field.unmounted:
                         self.addItem(field.field_labels[1])
 
@@ -123,6 +123,7 @@ class ChessBoard(QGraphicsScene):
         else:
             self.front_side = "white"
         self.draw_board(self.height() - 60)
+        self.draw_pieces()
         self.update()
 
     def init_pieces(self):
@@ -135,27 +136,52 @@ class ChessBoard(QGraphicsScene):
         for field in self.fields:
             square_pos = chess.parse_square(field.chess_pos)
             piece_fen_id = self.board.piece_at(square_pos)
+
             if piece_fen_id is not None:
                 for piece in self.pieces:
                     if piece.fen_id == piece_fen_id.symbol():
+
                         piece.place = field.chess_pos
-                        piece.image = piece.image.scaled(math.floor(field.graphic_pos.rect().width()-10),
-                                                         math.floor(field.graphic_pos.rect().width()-10),
-                                                         Qt.KeepAspectRatio,
-                                                         Qt.SmoothTransformation)
+                        if piece_fen_id.symbol() == 'p' or piece_fen_id.symbol() == 'P':
+
+                            piece.image = piece.image.scaled(int(field.graphic_pos.rect().width() * 0.6),
+                                                             int(field.graphic_pos.rect().height() * 0.6),
+                                                             Qt.KeepAspectRatio,
+                                                             Qt.SmoothTransformation)
+                        else:
+                            piece.image = piece.image.scaled(int(field.graphic_pos.rect().width() * 0.8),
+                                                             int(field.graphic_pos.rect().height() * 0.8),
+                                                             Qt.KeepAspectRatio,
+                                                             Qt.SmoothTransformation)
+
+                        gap_w = int((field.graphic_pos.rect().width() - piece.image.width()) / 2.0)
+                        gap_h = int((field.graphic_pos.rect().height() - piece.image.height()) / 2.0)
                         piece.scene_item = self.addPixmap(piece.image)
-                        piece.scene_item.setPos(field.graphic_pos.rect().x() + 5, field.graphic_pos.rect().y()+5)
+                        piece.scene_item.setOffset(field.graphic_pos.rect().x() + gap_w,
+                                                   field.graphic_pos.rect().y() + gap_h)
+
+                        # print(str(field.chess_pos) + " w: " +
+                        #       str(piece.image.width()) + " h: " +
+                        #       str(piece.image.height()) + " gaP_w:" +
+                        #       str(piece.scene_item.offset().x()) + " gap_h:" +
+                        #       str(piece.scene_item.y()))
+
+    def resize_pieces(self):
+        for element in self.pieces:
+            if element.scene_item is not None:
+                print(element.place)
+                self.removeItem(element.scene_item)
 
 
 class Field:
     def __init__(self, chess_pos):
         self.chess_pos = chess_pos
         self.graphic_pos = QGraphicsRectItem()
-        self.field_labels = [QGraphicsTextItem(chess_pos[1]), QGraphicsTextItem(chess_pos[0])]
+        self.field_labels = [QGraphicsTextItem(chess_pos[1]), QGraphicsTextItem(chess_pos[0].upper())]
         self.unmounted = True
 
-        # pen = QPen(Qt.NoPen)
-        # self.graphic_pos.setPen(pen)
+        pen = QPen(Qt.NoPen)
+        self.graphic_pos.setPen(pen)
 
         font = QFont()
         font.setPointSize(18)

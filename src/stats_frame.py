@@ -46,7 +46,7 @@ class StatsFrame(QFrame):
         board_rotation.setIconSize(QSize(30, 30))
 
         space_item = QWidget()
-        space_item.setFixedSize(100, 40)
+        space_item.setFixedSize(70, 40)
 
         game_type_label = self.set_correct_game_type("analyze")
 

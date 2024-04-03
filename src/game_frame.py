@@ -29,6 +29,7 @@ class GameFrame(QFrame):
         self.game_view.setFixedSize((new_size.width() - 1200) + 750, (new_size.height() - 820) + 550)
         self.game_scene.setSceneRect(0, 0, (new_size.width() - 1200) + 750, (new_size.height() - 820) + 550)
         self.game_scene.draw_board((new_size.height() - 820) + 490)
+        self.game_scene.resize_pieces()
 
 
 # class ChessBoard(QGraphicsScene):
