@@ -2,6 +2,7 @@ from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import QGraphicsPixmapItem
 from logic_board import LogicBoard
+from chess import Move
 
 # Here are contribution license links fo images
 # <a href="https://www.flaticon.com/free-icons/chess-piece" title="chess piece icons">Chess piece icons created by rizal2109 - Flaticon</a>
@@ -12,12 +13,13 @@ from logic_board import LogicBoard
 # <a href="https://www.flaticon.com/free-icons/bishop" title="bishop icons">Bishop icons created by Victoruler - Flaticon</a>
 
 # Position highlighting colors
-highlight = ["#a9aba7"]
+highlight = ["#96b3e0"]
 
 
 class VirtualPiece(QGraphicsPixmapItem):
     def __init__(self, name, value, field):
         super().__init__()
+        self.setZValue(3)
         self.logic_board = LogicBoard()
 
         self.name = name
@@ -26,7 +28,6 @@ class VirtualPiece(QGraphicsPixmapItem):
         self.image = None
         self.legal_moves = None
         self.set_image()
-
 
         if self.image is not None:
             self.setPixmap(self.image)
@@ -52,15 +53,15 @@ class VirtualPiece(QGraphicsPixmapItem):
 
     def mousePressEvent(self, event):
         self.legal_moves = self.logic_board.piece_moves(self.field.chess_pos)
-        self.logic_board.graphic_board.find_legal_fields(self.legal_moves)
         if self.logic_board.check_turn() == self.name[0]:
+            self.logic_board.graphic_board.highlight_field(self.field)
+            self.logic_board.graphic_board.find_legal_fields(self.legal_moves)
             self.setCursor(Qt.ClosedHandCursor)
-            # self.field.setBrush(QColor(highlight[0]))
 
     def mouseDoubleClickEvent(self, event):
-        pass
-        # if self.logic_board.check_turn() == self.name[0]:
-            # self.field.setBrush(self.field.orginal_brush)
+        if self.logic_board.check_turn() == self.name[0]:
+            self.logic_board.graphic_board.clear_circles()
+            self.logic_board.graphic_board.clear_captures()
 
     def mouseMoveEvent(self, event):
         if self.logic_board.check_turn() == self.name[0]:
@@ -91,8 +92,11 @@ class VirtualPiece(QGraphicsPixmapItem):
                                 and (start_pos.y() <= new_pos.y() + self.image.height()/2 <= end_pos.y())):
 
                             # Start move validation
+                            if self.logic_board.is_capture(Move.from_uci(self.field.chess_pos + field.chess_pos)):
+                                chess_board.find_capture_piece(field.chess_pos)
 
-                            print(self.legal_moves)
+                            self.logic_board.graphic_board.clear_circles()
+                            self.logic_board.graphic_board.clear_captures()
                             # End move validation
 
                             # Place piece on correct field
@@ -105,13 +109,12 @@ class VirtualPiece(QGraphicsPixmapItem):
                                   self.image.height()) /
                                  2.0)
 
-                            # if self.lastPos.x() != x and self.lastPos.y() != y:
-                            #     self.field.setBrush(self.field.orginal_brush)
-
                             self.logic_board.push_uci(self.field.chess_pos + field.chess_pos)
                             self.setPos(x, y)
                             self.field = field
                             self.lastPos = QPointF(x, y)
+                            chess_board.legal_moves = None
+                            print(self.logic_board)
                     else:
                         self.setPos(self.lastPos)
 

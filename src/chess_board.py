@@ -2,12 +2,12 @@ from PyQt5.QtWidgets import QGraphicsScene
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from math import floor
-from chess import parse_square
+from chess import parse_square, Move
 from logic_board import LogicBoard
 from piece import VirtualPiece
 from field import VirtualField
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#0022ff"]
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
 
 
 class ChessBoard(QGraphicsScene):
@@ -43,6 +43,10 @@ class ChessBoard(QGraphicsScene):
         self.front_side = "white"
         self.fields = []
         self.pieces = []
+        self.circles = []
+        self.capture_fields = []
+        self.highlited_field = None
+        self.legal_moves = None
         self.init_board()
         self.init_pieces()
         self.draw_pieces()
@@ -126,6 +130,10 @@ class ChessBoard(QGraphicsScene):
                     self.addItem(field)
                     field.unmounted = False
 
+        if self.legal_moves is not None:
+            self.find_legal_fields(self.legal_moves)
+
+
     # Rotating board with all pieces
     def rotate_board(self):
         for field in self.fields:
@@ -155,31 +163,34 @@ class ChessBoard(QGraphicsScene):
     # Scale and place pieces on scene
     def draw_pieces(self):
         for piece in self.pieces:
-            if piece.fen_id == 'P' or piece.fen_id == 'p':
-                piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.6),
-                                                 floor(piece.field.rect().height() * 0.6),
-                                                 Qt.KeepAspectRatio,
-                                                 Qt.SmoothTransformation)
+            if piece.field is not None:
+                if piece.fen_id == 'P' or piece.fen_id == 'p':
+                    piece.set_image()
+                    piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.6),
+                                                     floor(piece.field.rect().height() * 0.6),
+                                                     Qt.KeepAspectRatio,
+                                                     Qt.SmoothTransformation)
 
-            else:
-                piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.8),
-                                                 floor(piece.field.rect().height() * 0.8),
-                                                 Qt.KeepAspectRatio,
-                                                 Qt.SmoothTransformation)
+                else:
+                    piece.set_image()
+                    piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.8),
+                                                     floor(piece.field.rect().height() * 0.8),
+                                                     Qt.KeepAspectRatio,
+                                                     Qt.SmoothTransformation)
 
-            piece.update_pixmap(piece.image)
+                piece.update_pixmap(piece.image)
 
-            x = (piece.field.rect().x() +
-                 (piece.field.rect().width() -
-                  piece.image.width()) /
-                 2.0)
-            y = (piece.field.rect().y() +
-                 (piece.field.rect().height() -
-                  piece.image.height()) /
-                 2.0)
+                x = (piece.field.rect().x() +
+                     (piece.field.rect().width() -
+                      piece.image.width()) /
+                     2.0)
+                y = (piece.field.rect().y() +
+                     (piece.field.rect().height() -
+                      piece.image.height()) /
+                     2.0)
 
-            piece.set_position(x, y)
-            self.addItem(piece)
+                piece.set_position(x, y)
+                self.addItem(piece)
 
     # During window size change or rotate
     def resize_pieces(self):
@@ -189,14 +200,43 @@ class ChessBoard(QGraphicsScene):
         self.draw_pieces()
 
     def find_legal_fields(self, legal_moves):
+        from_move = self.highlited_field.chess_pos
         circle_size = floor(self.board_length/32)
+        self.legal_moves = legal_moves
+        self.clear_circles()
         for field in self.fields:
             if field.chess_pos in legal_moves:
-                self.addEllipse(field.rect().x() + (field.rect().width() - circle_size)/2,
-                                field.rect().y() + (field.rect().height() - circle_size)/2,
-                                circle_size,
-                                circle_size,
-                                pen=QColor(color_theme[5]),
-                                brush=QColor(color_theme[5]))
+                if self.logic_board.is_capture(Move.from_uci(from_move + field.chess_pos)):
+                    self.capture_fields.append(field)
+                    field.setBrush(QColor(color_theme[6]))
+                else:
+                    circle = self.addEllipse(field.rect().x() + (field.rect().width() - circle_size)/2,
+                                    field.rect().y() + (field.rect().height() - circle_size)/2,
+                                    circle_size,
+                                    circle_size,
+                                    pen=QColor(color_theme[5]),
+                                    brush=QColor(color_theme[5]))
+                    self.circles.append(circle)
 
+    def clear_circles(self):
+        for circle in self.circles:
+            self.removeItem(circle)
+        self.circles.clear()
+
+    def clear_captures(self):
+        for capture in self.capture_fields:
+            capture.setBrush(QColor(capture.orginal_brush))
+
+    def highlight_field(self, field):
+        if self.highlited_field is not None:
+            self.highlited_field.setBrush(QColor(self.highlited_field.orginal_brush))
+        self.highlited_field = field
+        field.setBrush(QColor(color_theme[5]))
+
+    def find_capture_piece(self, pos):
+        for piece in self.pieces:
+            if piece.field is not None:
+                if piece.field.chess_pos == pos:
+                    self.removeItem(piece)
+                    piece.field = None
 
