@@ -3,7 +3,7 @@ import math
 from PyQt5.QtWidgets import QFrame, QGraphicsScene, QGraphicsView, QGraphicsRectItem, QGraphicsTextItem
 from PyQt5.QtGui import QColor, QPen, QFont
 from PyQt5.QtCore import Qt
-from graphic_board import ChessBoard
+from chess_board import ChessBoard
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
