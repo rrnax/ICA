@@ -1,19 +1,21 @@
 from PyQt5.QtWidgets import QGraphicsScene
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
-import math
-import chess
+from math import floor
+from chess import parse_square
+from logic_board import LogicBoard
 from piece import VirtualPiece
 from field import VirtualField
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#0022ff"]
 
 
 class ChessBoard(QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSceneRect(0, 0, 750, 550)
-        self.board = chess.Board()
+        self.logic_board = LogicBoard()
+        self.logic_board.graphic_board = self
 
         # Position left up corner on scene and board side length
         self.board_x = None
@@ -64,12 +66,12 @@ class ChessBoard(QGraphicsScene):
     # Drawing board
     def draw_board(self, side_length):
         # Center of scene, start from right up corner minus one field
-        field_size = math.floor(side_length / 8)
-        start_y = math.floor(self.height() / 2 - side_length / 2) + 10
-        start_x = math.floor(self.width() / 2 + side_length / 2) - field_size
+        field_size = floor(side_length / 8)
+        start_y = floor(self.height() / 2 - side_length / 2) + 10
+        start_x = floor(self.width() / 2 + side_length / 2) - field_size
 
         # Set board coordinates and size
-        self.board_x = math.floor(self.width() / 2 - side_length / 2)
+        self.board_x = floor(self.width() / 2 - side_length / 2)
         self.board_y = start_y
         self.board_length = side_length
 
@@ -79,7 +81,7 @@ class ChessBoard(QGraphicsScene):
             for field in self.fields:
                 if last_row != field.chess_pos[1]:
                     last_row = field.chess_pos[1]
-                    start_x = math.floor(self.width() / 2 + side_length / 2) - field_size
+                    start_x = floor(self.width() / 2 + side_length / 2) - field_size
                     start_y += field_size
 
                 if field.chess_pos[1] == "1":
@@ -104,7 +106,7 @@ class ChessBoard(QGraphicsScene):
 
                 if last_row != field.chess_pos[1]:
                     last_row = field.chess_pos[1]
-                    start_x = math.floor(self.width() / 2 + side_length / 2) - field_size
+                    start_x = floor(self.width() / 2 + side_length / 2) - field_size
                     start_y += field_size
 
                 if field.chess_pos[1] == "8":
@@ -142,8 +144,8 @@ class ChessBoard(QGraphicsScene):
     # Create pieces from logic board for all fields
     def init_pieces(self):
         for field in self.fields:
-            square_pos = chess.parse_square(field.chess_pos)
-            piece_fen = self.board.piece_at(square_pos)
+            square_pos = parse_square(field.chess_pos)
+            piece_fen = self.logic_board.piece_at(square_pos)
             if piece_fen is not None:
                 for key, value in self.pieces_dict.items():
                     if value == piece_fen.symbol():
@@ -154,14 +156,14 @@ class ChessBoard(QGraphicsScene):
     def draw_pieces(self):
         for piece in self.pieces:
             if piece.fen_id == 'P' or piece.fen_id == 'p':
-                piece.image = piece.image.scaled(math.floor(piece.field.rect().width() * 0.6),
-                                                 math.floor(piece.field.rect().height() * 0.6),
+                piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.6),
+                                                 floor(piece.field.rect().height() * 0.6),
                                                  Qt.KeepAspectRatio,
                                                  Qt.SmoothTransformation)
 
             else:
-                piece.image = piece.image.scaled(math.floor(piece.field.rect().width() * 0.8),
-                                                 math.floor(piece.field.rect().height() * 0.8),
+                piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.8),
+                                                 floor(piece.field.rect().height() * 0.8),
                                                  Qt.KeepAspectRatio,
                                                  Qt.SmoothTransformation)
 
@@ -185,5 +187,16 @@ class ChessBoard(QGraphicsScene):
             if piece is not None:
                 self.removeItem(piece)
         self.draw_pieces()
+
+    def find_legal_fields(self, legal_moves):
+        circle_size = floor(self.board_length/32)
+        for field in self.fields:
+            if field.chess_pos in legal_moves:
+                self.addEllipse(field.rect().x() + (field.rect().width() - circle_size)/2,
+                                field.rect().y() + (field.rect().height() - circle_size)/2,
+                                circle_size,
+                                circle_size,
+                                pen=QColor(color_theme[5]),
+                                brush=QColor(color_theme[5]))
 
 
