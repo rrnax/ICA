@@ -133,7 +133,6 @@ class ChessBoard(QGraphicsScene):
         if self.legal_moves is not None:
             self.find_legal_fields(self.legal_moves)
 
-
     # Rotating board with all pieces
     def rotate_board(self):
         for field in self.fields:
@@ -240,3 +239,42 @@ class ChessBoard(QGraphicsScene):
                     self.removeItem(piece)
                     piece.field = None
 
+    def check_castling(self, move):
+        rook_field = None
+        rook_target = None
+        if self.logic_board.is_kingside_castling(Move.from_uci(move)):
+            if self.logic_board.check_turn() == 'w':
+                rook_field = "h1"
+                rook_target = "f1"
+            else:
+                rook_field = "h8"
+                rook_target = "f8"
+        elif self.logic_board.is_queenside_castling(Move.from_uci(move)):
+            if self.logic_board.check_turn() == 'w':
+                rook_field = "a1"
+                rook_target = "d1"
+            else:
+                rook_field = "a8"
+                rook_target = "d8"
+        for piece in self.pieces:
+            if piece.field is not None:
+                if piece.field.chess_pos == rook_field:
+                    piece.graphic_move(rook_target)
+
+    def find_check(self):
+        king = None
+        if self.logic_board.is_check():
+            print("Check!")
+            if self.logic_board.turn:
+                king = "w_king"
+            else:
+                king = "b_king"
+
+            for piece in self.pieces:
+                if piece.name == king:
+                    piece.field.setBrush(QColor(color_theme[6]))
+
+    def clear_check(self):
+        for piece in self.pieces:
+            if piece.fen_id == 'K' or piece.fen_id == 'k':
+                piece.field.setBrush(QColor(piece.field.orginal_brush))

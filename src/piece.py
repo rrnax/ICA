@@ -53,23 +53,23 @@ class VirtualPiece(QGraphicsPixmapItem):
 
     def mousePressEvent(self, event):
         self.legal_moves = self.logic_board.piece_moves(self.field.chess_pos)
-        if self.logic_board.check_turn() == self.name[0]:
+        if self.logic_board.check_turn() == self.name[0] and self.logic_board.ended_game is None:
             self.logic_board.graphic_board.highlight_field(self.field)
             self.logic_board.graphic_board.find_legal_fields(self.legal_moves)
             self.setCursor(Qt.ClosedHandCursor)
 
     def mouseDoubleClickEvent(self, event):
-        if self.logic_board.check_turn() == self.name[0]:
+        if self.logic_board.check_turn() == self.name[0] and self.logic_board.ended_game is None:
             self.logic_board.graphic_board.clear_circles()
             self.logic_board.graphic_board.clear_captures()
 
     def mouseMoveEvent(self, event):
-        if self.logic_board.check_turn() == self.name[0]:
+        if self.logic_board.check_turn() == self.name[0] and self.logic_board.ended_game is None:
             self.setPos(self.calc_position(event))
 
     def mouseReleaseEvent(self, event):
         # Check position on board or outside
-        if self.logic_board.check_turn() == self.name[0]:
+        if self.logic_board.check_turn() == self.name[0] and self.logic_board.ended_game is None:
             chess_board = self.logic_board.graphic_board
             new_pos = self.calc_position(event)
             if ((new_pos.x() + self.image.width()/2 >= chess_board.board_x + chess_board.board_length
@@ -91,13 +91,13 @@ class VirtualPiece(QGraphicsPixmapItem):
                         if ((start_pos.x() <= new_pos.x() + self.image.width()/2 <= end_pos.x())
                                 and (start_pos.y() <= new_pos.y() + self.image.height()/2 <= end_pos.y())):
 
-                            # Start move validation
                             if self.logic_board.is_capture(Move.from_uci(self.field.chess_pos + field.chess_pos)):
                                 chess_board.find_capture_piece(field.chess_pos)
-
+                            if self.fen_id != 'K' and self.fen_id != 'k':
+                                self.logic_board.graphic_board.clear_check()
+                            self.logic_board.graphic_board.check_castling(self.field.chess_pos + field.chess_pos)
                             self.logic_board.graphic_board.clear_circles()
                             self.logic_board.graphic_board.clear_captures()
-                            # End move validation
 
                             # Place piece on correct field
                             x = (field.rect().x() +
@@ -114,7 +114,9 @@ class VirtualPiece(QGraphicsPixmapItem):
                             self.field = field
                             self.lastPos = QPointF(x, y)
                             chess_board.legal_moves = None
+                            self.logic_board.graphic_board.find_check()
                             print(self.logic_board)
+                            self.logic_board.check_end()
                     else:
                         self.setPos(self.lastPos)
 
@@ -129,5 +131,18 @@ class VirtualPiece(QGraphicsPixmapItem):
         new_y = new_cursor_pos.y() - last_cursor_pos.y() + piece_pos.y()
         return QPointF(new_x, new_y)
 
-
-
+    def graphic_move(self, target_field):
+        for field in self.logic_board.graphic_board.fields:
+            if field.chess_pos == target_field:
+                x = (field.rect().x() +
+                     (field.rect().width() -
+                      self.image.width()) /
+                     2.0)
+                y = (field.rect().y() +
+                     (field.rect().height() -
+                      self.image.height()) /
+                     2.0)
+                self.setPos(x, y)
+                self.field = field
+                self.lastPos = QPointF(x, y)
+                self.logic_board.graphic_board.legal_moves = None
