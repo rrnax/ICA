@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QCursor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
+from logic_board import LogicBoard
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 # <a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Freepik - Flaticon</a>
@@ -15,6 +16,7 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 class MenuSlideFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.logic_board = LogicBoard()
 
         # Layout elements
         app_logo = QPixmap("../resources/appmark.png")
@@ -84,7 +86,7 @@ class MenuSlideFrame(QFrame):
         self.setStyleSheet(f"""
         #menu-slide-frame {{
             background-color: {color_theme[0]};
-            border-right: 1px solid {color_theme[3]}; 
+            border-right: none; 
         }}
         
         QPushButton {{
@@ -105,6 +107,8 @@ class MenuSlideFrame(QFrame):
         """)
 
         # Actions
+        new_game_btn.clicked.connect(lambda: self.logic_board.stats_frame.set_game_label("game"))
+        analyze_btn.clicked.connect(lambda: self.logic_board.stats_frame.set_game_label("analyze"))
         hide_btn.clicked.connect(self.close_menu)
 
     # Show or hide menu

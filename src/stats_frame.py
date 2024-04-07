@@ -1,19 +1,31 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy
 from PyQt5.QtCore import Qt, QSize, QPointF
 from PyQt5.QtGui import QIcon, QCursor, QPixmap, QColor, QPainter, QPen
 from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
+from logic_board import LogicBoard
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#20a16d"]
 
 # <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons">Sports and competition icons created by BZZRINCANTATION - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/reset" title="reset icons">Reset icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/white-flag" title="white flag icons">White flag icons created by Freepik - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/back" title="back icons">Back icons created by Google - Flaticon</a>
 moves = ["e2e4", "e7e6", "f1c4", "g8f6", "g1f3", "f6e4", "e1g1"]
 
 
 class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.logic_board = LogicBoard()
+        self.logic_board.stats_frame = self
+        self.history_items = []
+        self.mode_label = None
+
+        again_btn = QPushButton()
+        again_btn.setFixedSize(40, 40)
+        again_btn.setIcon((QIcon("../resources/again.png")))
+        again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        again_btn.setIconSize(QSize(40, 40))
 
         move_back_btn = QPushButton()
         move_back_btn.setFixedSize(40, 40)
@@ -46,27 +58,26 @@ class StatsFrame(QFrame):
         board_rotation.setIconSize(QSize(30, 30))
 
         space_item = QWidget()
-        space_item.setFixedSize(70, 40)
+        space_item.setFixedSize(20, 40)
 
-        game_type_label = self.set_correct_game_type("analyze")
-
-        operation_layout = QHBoxLayout()
-        operation_layout.setAlignment(Qt.AlignCenter)
-        operation_layout.setContentsMargins(0, 0, 0, 0)
-        operation_layout.addWidget(move_back_btn)
-        operation_layout.addWidget(move_froward_btn)
-        operation_layout.addWidget(surrender_btn)
-        operation_layout.addWidget(draw_btn)
-        operation_layout.addWidget(board_rotation)
-        operation_layout.addWidget(space_item)
-        operation_layout.addWidget(game_type_label)
+        self.operation_layout = QHBoxLayout()
+        self.operation_layout.setAlignment(Qt.AlignCenter)
+        self.operation_layout.setContentsMargins(0, 0, 0, 0)
+        self.operation_layout.addWidget(again_btn)
+        self.operation_layout.addWidget(move_back_btn)
+        self.operation_layout.addWidget(move_froward_btn)
+        self.operation_layout.addWidget(surrender_btn)
+        self.operation_layout.addWidget(draw_btn)
+        self.operation_layout.addWidget(board_rotation)
+        self.operation_layout.addWidget(space_item)
+        # self.operation_layout.addWidget(self.game_type_label)
 
         operation_widget = QWidget(self)
         operation_widget.setObjectName("operation-layout")
         operation_widget.setFixedSize(450, 50)
-        operation_widget.setLayout(operation_layout)
+        operation_widget.setLayout(self.operation_layout)
 
-        history_label = QLabel("Historia", self)
+        history_label = QLabel("Historia ruchów", self)
         history_label.setAlignment(Qt.AlignCenter)
         history_label.setFixedSize(450, 40)
         history_label.setObjectName("history-label")
@@ -75,9 +86,9 @@ class StatsFrame(QFrame):
         self.layout_history.setContentsMargins(0, 0, 0, 0)
         self.layout_history.setSpacing(0)
         self.layout_history.setAlignment(Qt.AlignCenter)
-        self.update_history()
+        # self.update_history()
 
-        self.history_widget = QWidget(self)
+        self.history_widget = QWidget()
         self.history_widget.setObjectName("history-widget")
         self.history_widget.setLayout(self.layout_history)
 
@@ -132,8 +143,6 @@ class StatsFrame(QFrame):
             
             #history-widget {{
                 background-color: {color_theme[1]};
-                border-bottom: 1px solid {color_theme[3]};
-                border-left: 1px solid {color_theme[3]};
             }}
             
             #chart-view {{
@@ -187,6 +196,11 @@ class StatsFrame(QFrame):
         """)
 
         board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
+        again_btn.clicked.connect(self.logic_board.restart)
+        move_back_btn.clicked.connect(self.remove_last_move)
+
+        self.set_game_label("analyze")
+        self.empty_history()
 
     # On window resize
     def update_size(self, new_size):
@@ -194,21 +208,15 @@ class StatsFrame(QFrame):
         self.history_area.setFixedSize(450, (new_size.height() - 820) + 250)
 
     # Set type label
-    def set_correct_game_type(self, game_type):
+    def set_game_label(self, mode):
+        if self.mode_label is not None:
+            self.operation_layout.removeWidget(self.mode_label)
+            self.mode_label.deleteLater()
+
         label = QLabel()
         styles = None
-        if game_type == "analyze":
+        if mode == "analyze":
             label.setText("Tryb: Analiza")
-            styles = f"""#game-type {{
-                        padding: 5px;
-                        color: white;
-                        background-color: #20a16d;
-                        font-size: 18px;
-                        border: 1px solid #20a16d;
-                        border-radius: 10px;
-                    }}"""
-        elif game_type == "game":
-            label.setText("Tryb: Gra")
             styles = f"""#game-type {{
                         padding: 5px;
                         color: white;
@@ -217,66 +225,117 @@ class StatsFrame(QFrame):
                         border: 1px solid #144d91;
                         border-radius: 10px;
                     }}"""
+        elif mode == "game":
+            label.setText("Tryb: Gra")
+            styles = f"""#game-type {{
+                        padding: 5px;
+                        color: white;
+                        background-color: #20a16d;
+                        font-size: 18px;
+                        border: 1px solid #20a16d;
+                        border-radius: 10px;
+                    }}"""
         label.setObjectName("game-type")
         label.setStyleSheet(styles)
-        return label
+        self.operation_layout.addWidget(label)
+        self.mode_label = label
 
     # History creation
     def update_history(self):
-        for index, move in enumerate(reversed(moves)):
-            no_label = QLabel(str(len(moves) - index) + ".")
-            no_label.setFixedSize(50, 40)
-            piece_img = None
-            style = None
-            if index % 2 == 0:
-                piece_img = QPixmap("../resources/pieces/w_knight.png")
-                style = f"""
-                    QWidget {{
-                        background-color: {color_theme[0]};
-                    }}
-                    
-                    #move-label {{
-                        color: white;
-                    }}
-                """
+        if self.logic_board.advanced_history:
+            self.clear_history()
+            row_amount = len(self.logic_board.advanced_history)
+            self.history_widget.resize(QSize(450, row_amount * 40))
+            for index, element in enumerate(reversed(self.logic_board.advanced_history)):
+                no_label = QLabel(str(row_amount - index) + ".")
+                no_label.setFixedSize(50, 40)
+                move = element.get("move")
+                move_str = move.uci()
+                piece_img = element.get("image")
+                add_info = element.get("about")
+                style = None
+                if (row_amount - index - 1) % 2 == 0:
+                    style = f"""
+                        #move-label {{
+                            color: white;
+                        }}
+                    """
+                else:
+                    style = f"""
+                        #move-label {{
+                            color: {color_theme[3]};
+                        }}
+                    """
+                if index % 2 == 0:
+                    style += f"""
+                        QWidget {{
+                            background-color: {color_theme[0]};
+                        }}
+                    """
+                else:
+                    style += f"""
+                        QWidget {{
+                            background-color: {color_theme[1]};
+                        }}
+                    """
+
+                piece_label = QLabel()
+                piece_label.setFixedSize(60, 40)
+                piece_label.setPixmap(piece_img.scaled(QSize(20, 20)))
+
+                move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
+                move_label.setObjectName("move-label")
+                move_label.setFixedSize(60, 40)
+
+                info_label = QLabel(add_info)
+                info_label.setFixedSize(100, 40)
+                info_label.setAlignment(Qt.AlignCenter)
+
+                layout_row = QHBoxLayout()
+                layout_row.setSpacing(50)
+                layout_row.setContentsMargins(15, 0, 0, 0)
+                layout_row.setAlignment(Qt.AlignLeft)
+                layout_row.addWidget(no_label)
+                layout_row.addWidget(piece_label)
+                layout_row.addWidget(move_label)
+                layout_row.addWidget(info_label)
+
+                widget_row = QWidget()
+                widget_row.setFixedSize(450, 40)
+                widget_row.setStyleSheet(style)
+                widget_row.setLayout(layout_row)
+
+                self.layout_history.addWidget(widget_row)
+                self.history_items.append(widget_row)
+
+        else:
+            self.empty_history()
+
+    def clear_history(self):
+        for widget in self.history_items:
+            self.layout_history.removeWidget(widget)
+            widget.deleteLater()
+        self.history_items.clear()
+        self.history_widget.resize(QSize(0, 0))
+
+    def empty_history(self):
+        empty_label = QLabel("Pusto")
+        empty_label.setFixedSize(450, 40)
+        empty_label.setStyleSheet(f"background-color: {color_theme[0]};")
+        empty_label.setAlignment(Qt.AlignCenter)
+        self.layout_history.addWidget(empty_label)
+        self.history_items.append(empty_label)
+        self.history_widget.resize(QSize(450, 40))
+
+    def remove_last_move(self):
+        if self.logic_board.advanced_history:
+            self.logic_board.pop()
+            self.logic_board.advanced_history.pop()
+            if len(self.logic_board.advanced_history) == 0:
+                self.clear_history()
+                self.empty_history()
             else:
-                piece_img = QPixmap("../resources/pieces/b_knight.png")
-                style = f"""
-                    QWidget {{
-                        background-color: {color_theme[1]};
-                    }}
-
-                    #move-label {{
-                        color: black;
-                    }}
-                """
-
-            piece_label = QLabel()
-            piece_label.setFixedSize(60, 40)
-            piece_label.setPixmap(piece_img.scaled(QSize(20, 20)))
-
-            move_label = QLabel(move[:2] + " -> " + move[2:])
-            move_label.setObjectName("move-label")
-            move_label.setFixedSize(180, 40)
-
-            info_label = QLabel("Roszada")
-            info_label.setFixedSize(115, 40)
-            info_label.setAlignment(Qt.AlignCenter)
-
-            layout_row = QHBoxLayout()
-            layout_row.setSpacing(0)
-            layout_row.setContentsMargins(15, 0, 0, 0)
-            layout_row.setAlignment(Qt.AlignLeft)
-            layout_row.addWidget(no_label)
-            layout_row.addWidget(piece_label)
-            layout_row.addWidget(move_label)
-            layout_row.addWidget(info_label)
-
-            widget_row = QWidget()
-            widget_row.setFixedSize(450, 40)
-            widget_row.setStyleSheet(style)
-            widget_row.setLayout(layout_row)
-            self.layout_history.addWidget(widget_row)
+                self.update_history()
 
     def update_chart(self):
         series = QLineSeries()

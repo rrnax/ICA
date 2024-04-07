@@ -91,11 +91,13 @@ class VirtualPiece(QGraphicsPixmapItem):
                         if ((start_pos.x() <= new_pos.x() + self.image.width()/2 <= end_pos.x())
                                 and (start_pos.y() <= new_pos.y() + self.image.height()/2 <= end_pos.y())):
 
-                            if self.logic_board.is_capture(Move.from_uci(self.field.chess_pos + field.chess_pos)):
+                            move = Move.from_uci(self.field.chess_pos + field.chess_pos)
+
+                            if self.logic_board.is_capture(move):
                                 chess_board.find_capture_piece(field.chess_pos)
                             if self.fen_id != 'K' and self.fen_id != 'k':
                                 self.logic_board.graphic_board.clear_check()
-                            self.logic_board.graphic_board.check_castling(self.field.chess_pos + field.chess_pos)
+                            self.logic_board.graphic_board.check_castling(move)
                             self.logic_board.graphic_board.clear_circles()
                             self.logic_board.graphic_board.clear_captures()
 
@@ -109,14 +111,19 @@ class VirtualPiece(QGraphicsPixmapItem):
                                   self.image.height()) /
                                  2.0)
 
-                            self.logic_board.push_uci(self.field.chess_pos + field.chess_pos)
+                            add_info = self.logic_board.find_info(move)
+
+                            self.logic_board.push(move)
                             self.setPos(x, y)
                             self.field = field
                             self.lastPos = QPointF(x, y)
                             chess_board.legal_moves = None
                             self.logic_board.graphic_board.find_check()
-                            print(self.logic_board)
                             self.logic_board.check_end()
+                            self.logic_board.advanced_move(self, move, add_info)
+
+                            self.logic_board.stats_frame.update_history()
+
                     else:
                         self.setPos(self.lastPos)
 

@@ -1,10 +1,14 @@
-from chess import Board, parse_square, Termination
+from chess import Board, parse_square, Termination, Move, STARTING_FEN
 
 
 class LogicBoard(Board):
     _instance = None
     graphic_board = None
     ended_game = None
+    initial_fen = STARTING_FEN
+    advanced_history = []
+    mode = "analyze"
+    stats_frame = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -48,3 +52,35 @@ class LogicBoard(Board):
                 print("powtórzenie 3 ruchow")
 
             print(self.ended_game.winner)
+
+    def restart(self):
+        self.reset()
+        self.graphic_board.clear_pieces()
+        self.graphic_board.init_pieces()
+        self.graphic_board.draw_pieces()
+        self.advanced_history.clear()
+        self.stats_frame.clear_history()
+        self.stats_frame.empty_history()
+
+    def find_info(self, move):
+        if self.is_into_check(move):
+            return "Szach"
+        elif self.is_capture(move):
+            return "Bicie"
+        elif self.is_castling(move):
+            return "Roszada"
+        elif self.is_en_passant(move):
+            return "W przelocie"
+        elif move.promotion:
+            return "Promocja"
+        else:
+            return ""
+
+    def advanced_move(self, piece, move, add_info):
+        advanced = {"move": move,
+                    "image": piece.image,
+                    "about": add_info}
+        self.advanced_history.append(advanced)
+
+
+

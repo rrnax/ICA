@@ -218,13 +218,15 @@ class ChessBoard(QGraphicsScene):
                     self.circles.append(circle)
 
     def clear_circles(self):
-        for circle in self.circles:
-            self.removeItem(circle)
-        self.circles.clear()
+        if self.circles:
+            for circle in self.circles:
+                self.removeItem(circle)
+            self.circles.clear()
 
     def clear_captures(self):
-        for capture in self.capture_fields:
-            capture.setBrush(QColor(capture.orginal_brush))
+        if self.capture_fields:
+            for capture in self.capture_fields:
+                capture.setBrush(QColor(capture.orginal_brush))
 
     def highlight_field(self, field):
         if self.highlited_field is not None:
@@ -242,14 +244,14 @@ class ChessBoard(QGraphicsScene):
     def check_castling(self, move):
         rook_field = None
         rook_target = None
-        if self.logic_board.is_kingside_castling(Move.from_uci(move)):
+        if self.logic_board.is_kingside_castling(move):
             if self.logic_board.check_turn() == 'w':
                 rook_field = "h1"
                 rook_target = "f1"
             else:
                 rook_field = "h8"
                 rook_target = "f8"
-        elif self.logic_board.is_queenside_castling(Move.from_uci(move)):
+        elif self.logic_board.is_queenside_castling(move):
             if self.logic_board.check_turn() == 'w':
                 rook_field = "a1"
                 rook_target = "d1"
@@ -278,3 +280,17 @@ class ChessBoard(QGraphicsScene):
         for piece in self.pieces:
             if piece.fen_id == 'K' or piece.fen_id == 'k':
                 piece.field.setBrush(QColor(piece.field.orginal_brush))
+
+    def clear_highlighted(self):
+        if self.highlited_field is not None:
+            self.highlited_field.setBrush(QColor(self.highlited_field.orginal_brush))
+
+    def clear_pieces(self):
+        for piece in self.pieces:
+            self.removeItem(piece)
+        self.pieces.clear()
+        self.clear_circles()
+        self.clear_captures()
+        self.clear_check()
+        self.clear_highlighted()
+
