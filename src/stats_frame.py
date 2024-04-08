@@ -17,8 +17,7 @@ class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.logic_board = LogicBoard()
-        self.graphic_board = self.parent().game_frame.game_scene
-        self.logic_board.stats_frame = self
+        # self.graphic_board = self.parent().game_frame.game_scene
         self.history_items = []
         self.mode_label = None
 
@@ -332,7 +331,7 @@ class StatsFrame(QFrame):
         if self.logic_board.advanced_history:
             deleted_move = self.logic_board.pop()
             print("XD0")
-            piece = self.graphic_board.find_piece(deleted_move.uci()[2:])
+            piece = self.logic_board.graphic_board.find_piece(deleted_move.uci()[2:])
             print("Xd2")
             piece.graphic_move(deleted_move.uci()[:2])
             # advantage_piece = self.logic_board.advanced_history.pop()

@@ -1,35 +1,40 @@
-from chess import Board, parse_square, Termination, Move, STARTING_FEN
+from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name
 
 
 class LogicBoard(Board):
     _instance = None
     graphic_board = None
+    stats_frame = None
     ended_game = None
     initial_fen = STARTING_FEN
     advanced_history = []
     mode = "analyze"
-    stats_frame = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def piece_moves(self, field_name):
-        moves_list = []
-        field = parse_square(field_name)
-        piece = self.piece_at(field)
-        if piece is not None:
-            for move in self.legal_moves:
-                if move.from_square == field:
-                    moves_list.append(move.uci()[2] + move.uci()[3])
-        return moves_list
+    def find_possible_fields(self, field_id):
+        possible_fields = []
+        field = parse_square(field_id)
+        for move in self.legal_moves:
+            if move.from_square == field:
+                field_position = square_name(move.to_square)
+                for graphic_field in self.graphic_board.fields:
+                    if graphic_field.chess_pos == field_position:
+                        possible_fields.append(graphic_field)
+        return possible_fields
 
-    def check_turn(self):
-        if self.turn:
-            return "w"
-        else:
-            return "b"
+    def check_turn(self, piece_color):
+        if self.ended_game is None:
+            if self.turn:
+                if piece_color == 'w':
+                    return True
+            else:
+                if piece_color == 'b':
+                    return True
+        return False
 
     def check_end(self):
         self.ended_game = self.outcome()
@@ -81,6 +86,9 @@ class LogicBoard(Board):
                     "image": piece.image,
                     "about": add_info}
         self.advanced_history.append(advanced)
+
+    def update_history(self):
+        self.stats_frame.update_history()
 
 
 

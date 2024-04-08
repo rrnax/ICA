@@ -15,7 +15,6 @@ class ChessBoard(QGraphicsScene):
         super().__init__(parent)
         self.setSceneRect(0, 0, 750, 550)
         self.logic_board = LogicBoard()
-        self.logic_board.graphic_board = self
 
         # Position left up corner on scene and board side length
         self.board_x = None
@@ -156,35 +155,35 @@ class ChessBoard(QGraphicsScene):
             if piece_fen is not None:
                 for key, value in self.pieces_dict.items():
                     if value == piece_fen.symbol():
-                        piece = VirtualPiece(key, value, field)
+                        piece = VirtualPiece(key, value, field, self)
                         self.pieces.append(piece)
 
     # Scale and place pieces on scene
     def draw_pieces(self):
         for piece in self.pieces:
-            if piece.field is not None:
+            if piece.current_field is not None:
                 if piece.fen_id == 'P' or piece.fen_id == 'p':
                     piece.set_image()
-                    piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.6),
-                                                     floor(piece.field.rect().height() * 0.6),
+                    piece.image = piece.image.scaled(floor(piece.current_field.rect().width() * 0.6),
+                                                     floor(piece.current_field.rect().height() * 0.6),
                                                      Qt.KeepAspectRatio,
                                                      Qt.SmoothTransformation)
 
                 else:
                     piece.set_image()
-                    piece.image = piece.image.scaled(floor(piece.field.rect().width() * 0.8),
-                                                     floor(piece.field.rect().height() * 0.8),
+                    piece.image = piece.image.scaled(floor(piece.current_field.rect().width() * 0.8),
+                                                     floor(piece.current_field.rect().height() * 0.8),
                                                      Qt.KeepAspectRatio,
                                                      Qt.SmoothTransformation)
 
                 piece.update_pixmap(piece.image)
 
-                x = (piece.field.rect().x() +
-                     (piece.field.rect().width() -
+                x = (piece.current_field.rect().x() +
+                     (piece.current_field.rect().width() -
                       piece.image.width()) /
                      2.0)
-                y = (piece.field.rect().y() +
-                     (piece.field.rect().height() -
+                y = (piece.current_field.rect().y() +
+                     (piece.current_field.rect().height() -
                       piece.image.height()) /
                      2.0)
 
@@ -198,24 +197,26 @@ class ChessBoard(QGraphicsScene):
                 self.removeItem(piece)
         self.draw_pieces()
 
-    def find_legal_fields(self, legal_moves):
-        from_move = self.highlited_field.chess_pos
-        circle_size = floor(self.board_length/32)
-        self.legal_moves = legal_moves
+    def mark_legal_fields(self, legal_fields, field_from):
+        self.clear_captures()
         self.clear_circles()
-        for field in self.fields:
-            if field.chess_pos in legal_moves:
-                if self.logic_board.is_capture(Move.from_uci(from_move + field.chess_pos)):
-                    self.capture_fields.append(field)
-                    field.setBrush(QColor(color_theme[6]))
-                else:
-                    circle = self.addEllipse(field.rect().x() + (field.rect().width() - circle_size)/2,
-                                    field.rect().y() + (field.rect().height() - circle_size)/2,
-                                    circle_size,
-                                    circle_size,
-                                    pen=QColor(color_theme[5]),
-                                    brush=QColor(color_theme[5]))
-                    self.circles.append(circle)
+        for field in legal_fields:
+            move_uci = field_from.chess_pos + field.chess_pos
+            if self.logic_board.is_capture(Move.from_uci(move_uci)):
+                field.setBrush(QColor(color_theme[6]))
+                self.capture_fields.append(field)
+            else:
+                self.draw_circle(field)
+
+    def draw_circle(self, field):
+        circle_size = floor(self.board_length/32)
+        circle = self.addEllipse(field.rect().x() + (field.rect().width() - circle_size) / 2,
+                                 field.rect().y() + (field.rect().height() - circle_size) / 2,
+                                 circle_size,
+                                 circle_size,
+                                 pen=QColor(color_theme[5]),
+                                 brush=QColor(color_theme[5]))
+        self.circles.append(circle)
 
     def clear_circles(self):
         if self.circles:
@@ -227,6 +228,7 @@ class ChessBoard(QGraphicsScene):
         if self.capture_fields:
             for capture in self.capture_fields:
                 capture.setBrush(QColor(capture.orginal_brush))
+            self.capture_fields.clear()
 
     def highlight_field(self, field):
         if self.highlited_field is not None:
@@ -241,6 +243,7 @@ class ChessBoard(QGraphicsScene):
                     piece.captured_pos = piece.field.chess_pos
                     self.removeItem(piece)
                     piece.field = None
+                    print(piece)
 
     def check_castling(self, move):
         rook_field = None
@@ -298,8 +301,9 @@ class ChessBoard(QGraphicsScene):
     def find_piece(self, pos):
         print(pos)
         for piece in self.pieces:
-            print(piece.field.chess_pos)
+            print(piece.name, ": ", piece.field.chess_pos)
             if piece.field.chess_pos == pos:
+                print(piece.field.chess_pos)
                 print("XD1.5")
                 return piece
 

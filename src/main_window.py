@@ -6,6 +6,7 @@ from engine_frame import EngineFrame
 from menu_widget import MenuSlideFrame
 from stats_frame import StatsFrame
 from game_frame import GameFrame
+from logic_board import LogicBoard
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
@@ -13,9 +14,10 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.logic_board = LogicBoard()
 
         # View with board
-        self.game_frame = GameFrame(self)
+        self.game_frame = GameFrame(self, logic_board=self.logic_board)
 
         # Panel with menu of app and button to open menu
         menu_btn = QPushButton(self)
@@ -28,6 +30,7 @@ class MainWindow(QMainWindow):
 
         # Frame with progress and stats of current game
         self.stats_frame = StatsFrame(self)
+        self.logic_board.stats_frame = self.stats_frame
 
         # Frame with result of move options
         self.moves_frame = MovesOptionsList(self)

@@ -6,8 +6,9 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
 
 class GameFrame(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, logic_board=None):
         super().__init__(parent)
+        self.logic_board = logic_board
         self.setGeometry(0, 0, 750, 550)
         self.setStyleSheet(f"""
                     #game-frame {{
@@ -16,6 +17,7 @@ class GameFrame(QFrame):
                 """)
 
         self.game_scene = ChessBoard(self)
+        self.logic_board.graphic_board = self.game_scene
         self.game_view = QGraphicsView(self.game_scene, self)
         self.game_view.setRenderHint(QPainter.Antialiasing)
         self.game_view.setFixedSize(750, 550)
