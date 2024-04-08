@@ -34,6 +34,7 @@ class VirtualPiece(QGraphicsPixmapItem):
 
         self.setAcceptHoverEvents(True)
         self.lastPos = None
+        self.captured_pos = None
 
     def set_image(self):
         path = "../resources/pieces/" + self.name + ".png"

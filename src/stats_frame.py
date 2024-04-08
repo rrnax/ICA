@@ -17,6 +17,7 @@ class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.logic_board = LogicBoard()
+        self.graphic_board = self.parent().game_frame.game_scene
         self.logic_board.stats_frame = self
         self.history_items = []
         self.mode_label = None
@@ -329,12 +330,27 @@ class StatsFrame(QFrame):
 
     def remove_last_move(self):
         if self.logic_board.advanced_history:
-            self.logic_board.pop()
-            self.logic_board.advanced_history.pop()
+            deleted_move = self.logic_board.pop()
+            print("XD0")
+            piece = self.graphic_board.find_piece(deleted_move.uci()[2:])
+            print("Xd2")
+            piece.graphic_move(deleted_move.uci()[:2])
+            # advantage_piece = self.logic_board.advanced_history.pop()
+            # if advantage_piece.get("about") == "Bicie":
+            #     print(advantage_piece)
+            #     self.graphic_board.return_piece(deleted_move.uci()[2:])
+
             if len(self.logic_board.advanced_history) == 0:
+                last_field = self.graphic_board.find_field(deleted_move.uci()[:2])
+                last_field.setBrush(QColor(last_field.orginal_brush))
                 self.clear_history()
                 self.empty_history()
             else:
+                last_move = self.logic_board.advanced_history[-1].get("move")
+                last_field = self.graphic_board.find_field(last_move.uci()[:2])
+                self.graphic_board.clear_circles()
+                self.graphic_board.clear_captures()
+                self.graphic_board.highlight_field(last_field)
                 self.update_history()
 
     def update_chart(self):

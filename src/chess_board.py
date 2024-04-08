@@ -238,6 +238,7 @@ class ChessBoard(QGraphicsScene):
         for piece in self.pieces:
             if piece.field is not None:
                 if piece.field.chess_pos == pos:
+                    piece.captured_pos = piece.field.chess_pos
                     self.removeItem(piece)
                     piece.field = None
 
@@ -294,3 +295,23 @@ class ChessBoard(QGraphicsScene):
         self.clear_check()
         self.clear_highlighted()
 
+    def find_piece(self, pos):
+        print(pos)
+        for piece in self.pieces:
+            print(piece.field.chess_pos)
+            if piece.field.chess_pos == pos:
+                print("XD1.5")
+                return piece
+
+    def find_field(self, pos):
+        for field in self.fields:
+            if field.chess_pos == pos:
+                return field
+
+    def return_piece(self, pos):
+        for piece in self.pieces:
+            if piece.captured_pos == pos:
+                print(piece.name, ": ", piece.captured_pos)
+                self.addItem(piece)
+                piece.field = self.find_field(pos)
+                piece.captured_pos = None
