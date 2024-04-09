@@ -44,8 +44,8 @@ class ChessBoard(QGraphicsScene):
         self.pieces = []
         self.circles = []
         self.capture_fields = []
+        self.captured_pieces = []
         self.highlited_field = None
-        self.legal_moves = None
         self.init_board()
         self.init_pieces()
         self.draw_pieces()
@@ -129,8 +129,12 @@ class ChessBoard(QGraphicsScene):
                     self.addItem(field)
                     field.unmounted = False
 
-        if self.legal_moves is not None:
-            self.find_legal_fields(self.legal_moves)
+        # if self.legal_moves is not None:
+        #     self.find_legal_fields(self.legal_moves)
+        if self.highlited_field is not None:
+            last_piece = self.find_piece_by_id(self.highlited_field.chess_pos)
+            if last_piece is not None:
+                self.mark_legal_fields(last_piece.legal_fields, last_piece.current_field)
 
     # Rotating board with all pieces
     def rotate_board(self):
@@ -187,7 +191,7 @@ class ChessBoard(QGraphicsScene):
                       piece.image.height()) /
                      2.0)
 
-                piece.set_position(x, y)
+                piece.setPos(x, y)
                 self.addItem(piece)
 
     # During window size change or rotate
@@ -197,6 +201,7 @@ class ChessBoard(QGraphicsScene):
                 self.removeItem(piece)
         self.draw_pieces()
 
+    ####################################
     def mark_legal_fields(self, legal_fields, field_from):
         self.clear_captures()
         self.clear_circles()
@@ -209,7 +214,7 @@ class ChessBoard(QGraphicsScene):
                 self.draw_circle(field)
 
     def draw_circle(self, field):
-        circle_size = floor(self.board_length/32)
+        circle_size = floor(self.board_length / 32)
         circle = self.addEllipse(field.rect().x() + (field.rect().width() - circle_size) / 2,
                                  field.rect().y() + (field.rect().height() - circle_size) / 2,
                                  circle_size,
@@ -236,86 +241,55 @@ class ChessBoard(QGraphicsScene):
         self.highlited_field = field
         field.setBrush(QColor(color_theme[5]))
 
-    def find_capture_piece(self, pos):
-        for piece in self.pieces:
-            if piece.field is not None:
-                if piece.field.chess_pos == pos:
-                    piece.captured_pos = piece.field.chess_pos
-                    self.removeItem(piece)
-                    piece.field = None
-                    print(piece)
-
-    def check_castling(self, move):
-        rook_field = None
-        rook_target = None
-        if self.logic_board.is_kingside_castling(move):
-            if self.logic_board.check_turn() == 'w':
-                rook_field = "h1"
-                rook_target = "f1"
-            else:
-                rook_field = "h8"
-                rook_target = "f8"
-        elif self.logic_board.is_queenside_castling(move):
-            if self.logic_board.check_turn() == 'w':
-                rook_field = "a1"
-                rook_target = "d1"
-            else:
-                rook_field = "a8"
-                rook_target = "d8"
-        for piece in self.pieces:
-            if piece.field is not None:
-                if piece.field.chess_pos == rook_field:
-                    piece.graphic_move(rook_target)
-
-    def find_check(self):
-        king = None
-        if self.logic_board.is_check():
-            print("Check!")
-            if self.logic_board.turn:
-                king = "w_king"
-            else:
-                king = "b_king"
-
-            for piece in self.pieces:
-                if piece.name == king:
-                    piece.field.setBrush(QColor(color_theme[6]))
-
-    def clear_check(self):
-        for piece in self.pieces:
-            if piece.fen_id == 'K' or piece.fen_id == 'k':
-                piece.field.setBrush(QColor(piece.field.orginal_brush))
-
     def clear_highlighted(self):
         if self.highlited_field is not None:
             self.highlited_field.setBrush(QColor(self.highlited_field.orginal_brush))
+            self.highlited_field = None
 
+    def find_field(self, field_id):
+        for field in self.fields:
+            if field.chess_pos == field_id:
+                return field
+        return None
+
+    def find_piece_by_name(self, name):
+        for piece in self.pieces:
+            if piece.name == name:
+                return piece
+        return None
+
+    def find_piece_by_id(self, field_id):
+        field = self.find_field(field_id)
+        for piece in self.pieces:
+            if piece.current_field == field:
+                return piece
+        return None
+
+    def make_check(self):
+        if self.logic_board.turn:
+            king = self.find_piece_by_name("b_king")
+        else:
+            king = self.find_piece_by_name("w_king")
+        king.current_field.setBrush(QColor(color_theme[6]))
+
+    def remove_check(self):
+        if self.logic_board.turn:
+            king = self.find_piece_by_name("w_king")
+        else:
+            king = self.find_piece_by_name("b_king")
+        king.current_field.setBrush(QColor(king.current_field.orginal_brush))
+
+    def remove_captured(self, field_id):
+        captured_piece = self.find_piece_by_id(field_id)
+        self.removeItem(captured_piece)
+        self.pieces.remove(captured_piece)
+        self.captured_pieces.append(captured_piece)
+
+    ##################################
     def clear_pieces(self):
         for piece in self.pieces:
             self.removeItem(piece)
         self.pieces.clear()
         self.clear_circles()
         self.clear_captures()
-        self.clear_check()
         self.clear_highlighted()
-
-    def find_piece(self, pos):
-        print(pos)
-        for piece in self.pieces:
-            print(piece.name, ": ", piece.field.chess_pos)
-            if piece.field.chess_pos == pos:
-                print(piece.field.chess_pos)
-                print("XD1.5")
-                return piece
-
-    def find_field(self, pos):
-        for field in self.fields:
-            if field.chess_pos == pos:
-                return field
-
-    def return_piece(self, pos):
-        for piece in self.pieces:
-            if piece.captured_pos == pos:
-                print(piece.name, ": ", piece.captured_pos)
-                self.addItem(piece)
-                piece.field = self.find_field(pos)
-                piece.captured_pos = None

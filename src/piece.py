@@ -2,7 +2,7 @@ from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtWidgets import QGraphicsPixmapItem
 from logic_board import LogicBoard
-from chess import Move
+from chess import Move, square_name
 
 # Here are contribution license links fo images
 # <a href="https://www.flaticon.com/free-icons/chess-piece" title="chess piece icons">Chess piece icons created by rizal2109 - Flaticon</a>
@@ -30,8 +30,7 @@ class VirtualPiece(QGraphicsPixmapItem):
         self.current_field = field
         self.image = None
         self.legal_fields = None
-        self.lastPos = None
-        self.captured_pos = None
+        self.last_move = None
         self.set_image()
 
     def set_image(self):
@@ -39,10 +38,6 @@ class VirtualPiece(QGraphicsPixmapItem):
         self.image = QPixmap(path)
         if self.image is not None:
             self.setPixmap(self.image)
-
-    def set_position(self, x, y):
-        self.setPos(x, y)
-        self.lastPos = QPointF(x, y)
 
     def update_pixmap(self, pixmap):
         if pixmap is not None:
@@ -81,6 +76,7 @@ class VirtualPiece(QGraphicsPixmapItem):
                 self.set_in_field(self.current_field)
 
             self.setCursor(Qt.OpenHandCursor)
+
             # chess_board = self.logic_board.graphic_board
             # if ((new_pos.x() + self.image.width()/2 >= chess_board.board_x + chess_board.board_length
             #      or new_pos.y() + self.image.height()/2 >= chess_board.board_y + chess_board.board_length)
@@ -137,6 +133,7 @@ class VirtualPiece(QGraphicsPixmapItem):
             # else:
             # self.setPos(self.lastPos)
     def upalumpa(self):
+
         move = Move.from_uci(self.last_field.chess_pos + self.current_field.chess_pos)
         # if self.logic_board.is_capture(move):
         #     self.graphic_board.find_capture_piece(self.current_field.chess_pos)
@@ -155,12 +152,10 @@ class VirtualPiece(QGraphicsPixmapItem):
         self.logic_board.stats_frame.update_history()
 
     def make_move(self):
-        move_uci = self.last_field.chess_pos + self.current_field.chess_pos
-        move = Move.from_uci(move_uci)
-        additional_info = self.logic_board.find_info(move)
-        self.logic_board.push(move)
+        additional_info = self.logic_board.find_info(self.last_move)
+        self.logic_board.push(self.last_move)
         self.logic_board.check_end()
-        self.logic_board.advanced_move(self, move, additional_info)
+        self.logic_board.advanced_move(self, self.last_move, additional_info)
         self.logic_board.update_history()
 
     def new_piece_position(self, event):
@@ -173,6 +168,9 @@ class VirtualPiece(QGraphicsPixmapItem):
         return QPointF(new_x, new_y)
 
     def graphic_move(self, field):
+        move_uci = self.current_field.chess_pos + field.chess_pos
+        self.last_move = Move.from_uci(move_uci)
+        self.move_validation(self.last_move)
         self.last_field = self.current_field
         self.current_field = field
         self.set_in_field(field)
@@ -221,3 +219,37 @@ class VirtualPiece(QGraphicsPixmapItem):
               self.image.height()) /
              2.0)
         self.setPos(x, y)
+
+    def move_validation(self, move):
+        self.graphic_board.remove_check()
+        if self.logic_board.is_castling(move):
+            self.make_castling(move)
+
+        if self.logic_board.gives_check(move):
+            self.graphic_board.make_check()
+
+        if self.logic_board.is_capture(move):
+            field_id = square_name(move.to_square)
+            self.graphic_board.remove_captured(field_id)
+
+    def make_castling(self, move):
+        if self.logic_board.is_kingside_castling(move):
+            if self.logic_board.turn:
+                rook = self.graphic_board.find_piece_by_id("h1")
+                print(rook.name)
+                target_field = self.graphic_board.find_field("f1")
+                rook.graphic_move(target_field)
+            else:
+                rook = self.graphic_board.find_piece_by_id("h8")
+                target_field = self.graphic_board.find_field("f8")
+                rook.graphic_move(target_field)
+        elif self.logic_board.is_queenside_castling(move):
+            if self.logic_board.turn:
+                rook = self.graphic_board.find_piece_by_id("a1")
+                target_field = self.graphic_board.find_field("d1")
+                rook.graphic_move(target_field)
+            else:
+                rook = self.graphic_board.find_piece_by_id("a8")
+                target_field = self.graphic_board.find_field("d8")
+                rook.graphic_move(target_field)
+
