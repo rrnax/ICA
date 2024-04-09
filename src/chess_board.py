@@ -129,8 +129,6 @@ class ChessBoard(QGraphicsScene):
                     self.addItem(field)
                     field.unmounted = False
 
-        # if self.legal_moves is not None:
-        #     self.find_legal_fields(self.legal_moves)
         if self.highlited_field is not None:
             last_piece = self.find_piece_by_id(self.highlited_field.chess_pos)
             if last_piece is not None:
@@ -202,6 +200,8 @@ class ChessBoard(QGraphicsScene):
         self.draw_pieces()
 
     ####################################
+
+    # Color possible field for optional moves by chose piece
     def mark_legal_fields(self, legal_fields, field_from):
         self.clear_captures()
         self.clear_circles()
@@ -213,6 +213,7 @@ class ChessBoard(QGraphicsScene):
             else:
                 self.draw_circle(field)
 
+    # Operations with circles
     def draw_circle(self, field):
         circle_size = floor(self.board_length / 32)
         circle = self.addEllipse(field.rect().x() + (field.rect().width() - circle_size) / 2,
@@ -229,11 +230,18 @@ class ChessBoard(QGraphicsScene):
                 self.removeItem(circle)
             self.circles.clear()
 
+    # Operation with capture and last move trace
     def clear_captures(self):
         if self.capture_fields:
             for capture in self.capture_fields:
                 capture.setBrush(QColor(capture.orginal_brush))
             self.capture_fields.clear()
+
+    def remove_captured(self, field_id):
+        captured_piece = self.find_piece_by_id(field_id)
+        self.removeItem(captured_piece)
+        self.pieces.remove(captured_piece)
+        self.captured_pieces.append(captured_piece)
 
     def highlight_field(self, field):
         if self.highlited_field is not None:
@@ -246,6 +254,7 @@ class ChessBoard(QGraphicsScene):
             self.highlited_field.setBrush(QColor(self.highlited_field.orginal_brush))
             self.highlited_field = None
 
+    # Finding fields and pieces
     def find_field(self, field_id):
         for field in self.fields:
             if field.chess_pos == field_id:
@@ -265,6 +274,7 @@ class ChessBoard(QGraphicsScene):
                 return piece
         return None
 
+    # Dealing graphic check
     def make_check(self):
         if self.logic_board.turn:
             king = self.find_piece_by_name("b_king")
@@ -279,17 +289,40 @@ class ChessBoard(QGraphicsScene):
             king = self.find_piece_by_name("b_king")
         king.current_field.setBrush(QColor(king.current_field.orginal_brush))
 
-    def remove_captured(self, field_id):
-        captured_piece = self.find_piece_by_id(field_id)
-        self.removeItem(captured_piece)
-        self.pieces.remove(captured_piece)
-        self.captured_pieces.append(captured_piece)
+    def remove_undo_chess(self):
+        if self.logic_board.turn:
+            king = self.find_piece_by_name("b_king")
+        else:
+            king = self.find_piece_by_name("w_king")
+        king.current_field.setBrush(QColor(king.current_field.orginal_brush))
 
-    ##################################
+    # Clear graphic board to start position
     def clear_pieces(self):
         for piece in self.pieces:
             self.removeItem(piece)
         self.pieces.clear()
+        self.captured_pieces.clear()
         self.clear_circles()
         self.clear_captures()
         self.clear_highlighted()
+
+    def undo_castling(self, move):
+        if self.logic_board.is_kingside_castling(move):
+            if self.logic_board.turn:
+                rook = self.find_piece_by_id("f1")
+                rook.undo_last_move()
+            else:
+                rook = self.find_piece_by_id("f8")
+                rook.undo_last_move()
+        elif self.logic_board.is_queenside_castling(move):
+            if self.logic_board.turn:
+                rook = self.find_piece_by_id("d1")
+                rook.undo_last_move()
+            else:
+                rook = self.find_piece_by_id("d8")
+                rook.undo_last_move()
+
+    def undo_capture(self):
+        last_captured = self.captured_pieces.pop()
+        self.addItem(last_captured)
+        self.pieces.append(last_captured)

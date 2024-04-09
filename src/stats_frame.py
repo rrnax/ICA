@@ -197,7 +197,7 @@ class StatsFrame(QFrame):
 
         board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
         again_btn.clicked.connect(self.logic_board.restart)
-        move_back_btn.clicked.connect(self.remove_last_move)
+        move_back_btn.clicked.connect(self.logic_board.remove_last_move)
 
         self.set_game_label("analyze")
         self.empty_history()
@@ -251,7 +251,7 @@ class StatsFrame(QFrame):
                 no_label.setFixedSize(50, 40)
                 move = element.get("move")
                 move_str = move.uci()
-                piece_img = element.get("image")
+                piece = element.get("piece")
                 add_info = element.get("about")
                 style = None
                 if (row_amount - index - 1) % 2 == 0:
@@ -280,8 +280,10 @@ class StatsFrame(QFrame):
                     """
 
                 piece_label = QLabel()
-                piece_label.setFixedSize(60, 40)
-                piece_label.setPixmap(piece_img.scaled(QSize(20, 20)))
+                piece_label.setFixedSize(40, 40)
+                pixmap = piece.image
+                pixmap = pixmap.scaled(QSize(25, 25), transformMode=Qt.SmoothTransformation)
+                piece_label.setPixmap(pixmap)
 
                 move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
                 move_label.setObjectName("move-label")
@@ -319,6 +321,7 @@ class StatsFrame(QFrame):
         self.history_widget.resize(QSize(0, 0))
 
     def empty_history(self):
+        self.clear_history()
         empty_label = QLabel("Pusto")
         empty_label.setFixedSize(450, 40)
         empty_label.setStyleSheet(f"background-color: {color_theme[0]};")
@@ -327,30 +330,33 @@ class StatsFrame(QFrame):
         self.history_items.append(empty_label)
         self.history_widget.resize(QSize(450, 40))
 
-    def remove_last_move(self):
-        if self.logic_board.advanced_history:
-            deleted_move = self.logic_board.pop()
-            print("XD0")
-            piece = self.logic_board.graphic_board.find_piece(deleted_move.uci()[2:])
-            print("Xd2")
-            piece.graphic_move(deleted_move.uci()[:2])
-            # advantage_piece = self.logic_board.advanced_history.pop()
-            # if advantage_piece.get("about") == "Bicie":
-            #     print(advantage_piece)
-            #     self.graphic_board.return_piece(deleted_move.uci()[2:])
-
-            if len(self.logic_board.advanced_history) == 0:
-                last_field = self.graphic_board.find_field(deleted_move.uci()[:2])
-                last_field.setBrush(QColor(last_field.orginal_brush))
-                self.clear_history()
-                self.empty_history()
-            else:
-                last_move = self.logic_board.advanced_history[-1].get("move")
-                last_field = self.graphic_board.find_field(last_move.uci()[:2])
-                self.graphic_board.clear_circles()
-                self.graphic_board.clear_captures()
-                self.graphic_board.highlight_field(last_field)
-                self.update_history()
+    # def remove_last_move(self):
+    #     if self.logic_board.advanced_history:
+    #         self.logic_board.pop()
+    #
+    #     if self.logic_board.advanced_history:
+    #         deleted_move = self.logic_board.pop()
+    #         print("XD0")
+    #         piece = self.logic_board.graphic_board.find_piece(deleted_move.uci()[2:])
+    #         print("Xd2")
+    #         piece.graphic_move(deleted_move.uci()[:2])
+    #         # advantage_piece = self.logic_board.advanced_history.pop()
+    #         # if advantage_piece.get("about") == "Bicie":
+    #         #     print(advantage_piece)
+    #         #     self.graphic_board.return_piece(deleted_move.uci()[2:])
+    #
+    #         if len(self.logic_board.advanced_history) == 0:
+    #             last_field = self.graphic_board.find_field(deleted_move.uci()[:2])
+    #             last_field.setBrush(QColor(last_field.orginal_brush))
+    #             self.clear_history()
+    #             self.empty_history()
+    #         else:
+    #             last_move = self.logic_board.advanced_history[-1].get("move")
+    #             last_field = self.graphic_board.find_field(last_move.uci()[:2])
+    #             self.graphic_board.clear_circles()
+    #             self.graphic_board.clear_captures()
+    #             self.graphic_board.highlight_field(last_field)
+    #             self.update_history()
 
     def update_chart(self):
         series = QLineSeries()
