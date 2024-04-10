@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt, QSize, QPointF
 from PyQt5.QtGui import QIcon, QCursor, QPixmap, QColor, QPainter, QPen
 from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
 from logic_board import LogicBoard
+from chess import square_name
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#20a16d"]
 
 # <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
@@ -10,7 +11,6 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#20a16d"]
 # <a href="https://www.flaticon.com/free-icons/reset" title="reset icons">Reset icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/white-flag" title="white flag icons">White flag icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/back" title="back icons">Back icons created by Google - Flaticon</a>
-moves = ["e2e4", "e7e6", "f1c4", "g8f6", "g1f3", "f6e4", "e1g1"]
 
 
 class StatsFrame(QFrame):
@@ -18,34 +18,41 @@ class StatsFrame(QFrame):
         super().__init__(parent)
         self.logic_board = LogicBoard()
         self.history_items = []
+        self.graphic_board = None
         self.mode_label = None
 
         self.again_btn = QPushButton()
         self.again_btn.setFixedSize(40, 40)
         self.again_btn.setIconSize(QSize(40, 40))
+        self.again_btn.setToolTip("Od nowa")
 
         self.move_back_btn = QPushButton()
         self.move_back_btn.setFixedSize(40, 40)
         self.move_back_btn.setIconSize(QSize(30, 30))
+        self.move_back_btn.setToolTip("Ruch wstecz")
 
         self.move_froward_btn = QPushButton()
         self.move_froward_btn.setFixedSize(40, 40)
         self.move_froward_btn.setIconSize(QSize(30, 30))
+        self.move_froward_btn.setToolTip("Ruch naprzód")
 
         self.surrender_btn = QPushButton()
         self.surrender_btn.setFixedSize(40, 40)
         self.surrender_btn.setIconSize(QSize(30, 30))
+        self.surrender_btn.setToolTip("Poddaj")
 
         self.draw_btn = QPushButton()
         self.draw_btn.setFixedSize(40, 40)
         self.draw_btn.setIconSize(QSize(30, 30))
+        self.draw_btn.setToolTip("Zaproponuj remis")
 
         board_rotation = QPushButton()
         board_rotation.setFixedSize(40, 40)
-        board_rotation.setIcon(QIcon("../resources/loader.png"))
+        board_rotation.setIcon(QIcon("../resources/rotation.png"))
         board_rotation.setCursor(QCursor(Qt.PointingHandCursor))
         board_rotation.setIconSize(QSize(30, 30))
         board_rotation.setStyleSheet(self.chose_style(True))
+        board_rotation.setToolTip("Obróć plansze")
 
         space_item = QWidget()
         space_item.setFixedSize(20, 40)
@@ -179,6 +186,8 @@ class StatsFrame(QFrame):
         board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
         self.again_btn.clicked.connect(self.logic_board.restart)
         self.move_back_btn.clicked.connect(self.logic_board.remove_last_move)
+        self.move_froward_btn.clicked.connect(self.make_forward)
+        self.surrender_btn.clicked.connect(self.surrender)
 
         self.set_game_label("analyze")
         self.empty_history()
@@ -267,7 +276,10 @@ class StatsFrame(QFrame):
                 pixmap = pixmap.scaled(QSize(25, 25), transformMode=Qt.SmoothTransformation)
                 piece_label.setPixmap(pixmap)
 
-                move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
+                if move_str == "0000":
+                    move_label = QLabel("")
+                else:
+                    move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
                 move_label.setObjectName("move-label")
                 move_label.setFixedSize(60, 40)
 
@@ -295,6 +307,8 @@ class StatsFrame(QFrame):
         else:
             self.empty_history()
 
+########################################################
+
     def clear_history(self):
         for widget in self.history_items:
             self.layout_history.removeWidget(widget)
@@ -317,17 +331,10 @@ class StatsFrame(QFrame):
             self.again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
             self.again_btn.setIcon((QIcon("../resources/again.png")))
             self.again_btn.setStyleSheet(self.chose_style(True))
+
             self.move_back_btn.setCursor((QCursor(Qt.PointingHandCursor)))
             self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller.png"))
             self.move_back_btn.setStyleSheet(self.chose_style(True))
-
-            self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow_off.png"))
-            self.move_froward_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-            self.move_froward_btn.setStyleSheet(self.chose_style(False))
-
-            self.surrender_btn.setIcon(QIcon("../resources/surrender_off.png"))
-            self.surrender_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-            self.surrender_btn.setStyleSheet(self.chose_style(False))
 
             self.draw_btn.setIcon(QIcon("../resources/draw_off.png"))
             self.draw_btn.setCursor((QCursor(Qt.PointingHandCursor)))
@@ -342,17 +349,27 @@ class StatsFrame(QFrame):
             self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller_off.png"))
             self.move_back_btn.setStyleSheet(self.chose_style(False))
 
+            self.draw_btn.setIcon(QIcon("../resources/draw_off.png"))
+            self.draw_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.draw_btn.setStyleSheet(self.chose_style(False))
+
+        if self.logic_board.forward_moves:
+            self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow.png"))
+            self.move_froward_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.move_froward_btn.setStyleSheet(self.chose_style(True))
+        else:
             self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow_off.png"))
             self.move_froward_btn.setCursor((QCursor(Qt.ArrowCursor)))
             self.move_froward_btn.setStyleSheet(self.chose_style(False))
 
+        if self.logic_board.ended_game is None and self.logic_board.advanced_history:
+            self.surrender_btn.setIcon(QIcon("../resources/surrender.png"))
+            self.surrender_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.surrender_btn.setStyleSheet(self.chose_style(True))
+        else:
             self.surrender_btn.setIcon(QIcon("../resources/surrender_off.png"))
             self.surrender_btn.setCursor((QCursor(Qt.ArrowCursor)))
             self.surrender_btn.setStyleSheet(self.chose_style(False))
-
-            self.draw_btn.setIcon(QIcon("../resources/draw_off.png"))
-            self.draw_btn.setCursor((QCursor(Qt.ArrowCursor)))
-            self.draw_btn.setStyleSheet(self.chose_style(False))
 
     def chose_style(self, option):
         if option:
@@ -378,6 +395,23 @@ class StatsFrame(QFrame):
                 background-color: transparent;
             }}
             """
+
+    def make_forward(self):
+        forward_description = self.logic_board.forward_move()
+        if forward_description is not None:
+            forward_piece = forward_description.get("piece")
+            forward_move = forward_description.get("move")
+            forward_field = self.graphic_board.find_field(square_name(forward_move.to_square))
+            forward_piece.graphic_move(forward_field)
+            forward_piece.make_move()
+            self.graphic_board.clear_highlighted()
+            from_field_uci = self.graphic_board.find_field(square_name(forward_move.from_square))
+            self.graphic_board.highlight_field(from_field_uci)
+
+    def surrender(self):
+        self.logic_board.make_surrender()
+
+############################################################
 
     def update_chart(self):
         series = QLineSeries()

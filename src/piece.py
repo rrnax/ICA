@@ -71,6 +71,7 @@ class VirtualPiece(QGraphicsPixmapItem):
             if target_field is not None:
                 self.graphic_move(target_field)
                 self.make_move()
+                self.logic_board.cleaar_forwards()
             else:
                 self.set_in_field(self.current_field)
 

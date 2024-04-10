@@ -9,6 +9,7 @@ class LogicBoard(Board):
     initial_fen = STARTING_FEN
     advanced_history = []
     mode = "analyze"
+    forward_moves = []
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -66,9 +67,11 @@ class LogicBoard(Board):
         self.graphic_board.init_pieces()
         self.graphic_board.draw_pieces()
         self.advanced_history.clear()
+        self.forward_moves.clear()
         self.stats_frame.clear_history()
         self.stats_frame.empty_history()
         self.stats_frame.update_buttons()
+        self.ended_game = None
 
     def find_info(self, move):
 
@@ -94,15 +97,21 @@ class LogicBoard(Board):
 
     def remove_last_move(self):
         if self.advanced_history:
-            self.pop()
             last_move = self.advanced_history.pop()
             move = last_move.get('move')
             piece = last_move.get('piece')
             action = last_move.get('about')
 
-            self.valid_remove(action, move)
-            piece.undo_last_move()
-            self.graphic_board.clear_highlighted()
+            if "Poddanie" in action:
+                self.ended_game = None
+                self.graphic_board.undo_capture()
+            else:
+                self.pop()
+                self.valid_remove(action, move)
+                piece.undo_last_move()
+                self.forward_moves.append(last_move)
+                self.graphic_board.clear_highlighted()
+
             if len(self.advanced_history) == 0:
                 self.stats_frame.empty_history()
             else:
@@ -125,7 +134,32 @@ class LogicBoard(Board):
             self.ended_game = None
 
         if "Szach" in action:
-            self.graphic_board.remove_undo_chess()
+            self.graphic_board.remove_undo_check()
+
+    def forward_move(self):
+        if self.forward_moves:
+            next_move = self.forward_moves.pop()
+            return next_move
+        return None
+
+    def cleaar_forwards(self):
+        if self.forward_moves:
+            self.forward_moves.clear()
+            self.stats_frame.update_buttons()
+
+    def make_surrender(self):
+        king = None
+        if self.turn:
+            king = self.graphic_board.find_piece_by_name("w_king")
+        else:
+            king = self.graphic_board.find_piece_by_name("b_king")
+
+        move_out = Move.from_uci("0000")
+        self.advanced_move(king, move_out, "Poddanie gry")
+        print(king.current_field.chess_pos)
+        self.graphic_board.remove_captured(king.current_field.chess_pos)
+        self.ended_game = "Surrender"
+        self.update_history()
 
 
 
