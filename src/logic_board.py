@@ -1,15 +1,17 @@
-from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name
+from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name, WHITE, BLACK
 
 
 class LogicBoard(Board):
     _instance = None
     graphic_board = None
+    game_widget = None
     stats_frame = None
     ended_game = None
     initial_fen = STARTING_FEN
     advanced_history = []
     mode = "analyze"
     forward_moves = []
+    player_side = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -41,6 +43,7 @@ class LogicBoard(Board):
         self.ended_game = self.outcome()
         if self.ended_game is not None:
             result = self.ended_game.termination
+            self.make_winner_message()
             if result == Termination.CHECKMATE:
                 return "Mat"
             elif result == Termination.STALEMATE:
@@ -156,12 +159,37 @@ class LogicBoard(Board):
 
         move_out = Move.from_uci("0000")
         self.advanced_move(king, move_out, "Poddanie gry")
-        print(king.current_field.chess_pos)
         self.graphic_board.remove_captured(king.current_field.chess_pos)
         self.ended_game = "Surrender"
         self.update_history()
 
+    def sets_game(self, type):
+        if type != self.mode:
+            if type == "game":
+                self.game_widget.side_up()
+                if self.player_side is not None:
+                    self.stats_frame.set_game_label(type)
+            elif type == "analyze":
+                self.player_side = None
+                self.stats_frame.set_game_label(type)
+            self.prepare_board()
+            self.mode = type
 
+    def prepare_board(self):
+        self.restart()
+        if self.player_side == "black":
+            while self.graphic_board.front_side != "black":
+                self.graphic_board.rotate_board()
+        else:
+            while self.graphic_board.front_side != "white":
+                self.graphic_board.rotate_board()
 
-
+    def make_winner_message(self):
+        if self.ended_game.winner == WHITE:
+            winner_widget = self.game_widget.make_winner_msg("w_king")
+        elif self.ended_game.winner == BLACK:
+            winner_widget = self.game_widget.make_winner_msg("b_king")
+        else:
+            winner_widget = self.game_widget.make_winner_msg("draw")
+        self.game_widget.winner_up(winner_widget)
 

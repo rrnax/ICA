@@ -107,8 +107,8 @@ class MenuSlideFrame(QFrame):
         """)
 
         # Actions
-        new_game_btn.clicked.connect(lambda: self.logic_board.stats_frame.set_game_label("game"))
-        analyze_btn.clicked.connect(lambda: self.logic_board.stats_frame.set_game_label("analyze"))
+        new_game_btn.clicked.connect(self.open_game)
+        analyze_btn.clicked.connect(self.open_analyze)
         hide_btn.clicked.connect(self.close_menu)
 
     # Show or hide menu
@@ -127,3 +127,12 @@ class MenuSlideFrame(QFrame):
     # For window change
     def update_size(self, new_size):
         self.setFixedSize(300, (new_size.height() - 820) + 820)
+
+    def open_game(self):
+        self.logic_board.sets_game("game")
+
+    def open_analyze(self):
+        self.logic_board.sets_game("analyze")
+
+
+

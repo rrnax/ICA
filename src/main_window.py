@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
 
         # View with board
         self.game_frame = GameFrame(self)
+        self.logic_board.game_widget = self.game_frame
 
         # Panel with menu of app and button to open menu
         menu_btn = QPushButton(self)

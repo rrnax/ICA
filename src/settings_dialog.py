@@ -21,7 +21,7 @@ class SettingsDialog(QDialog):
         title_layout.addWidget(dialog_title)
 
         bar_space = QWidget()
-        bar_space.setFixedSize(360, 40)
+        bar_space.setFixedSize(380, 40)
         bar_space.setLayout(title_layout)
 
         bar_layout = QHBoxLayout()
@@ -31,7 +31,7 @@ class SettingsDialog(QDialog):
         bar_layout.addWidget(close_btn)
 
         close_bar = QWidget()
-        close_bar.setFixedSize(400, 40)
+        close_bar.setFixedSize(420, 40)
         close_bar.setLayout(bar_layout)
         close_bar.setObjectName("engine_title")
 
@@ -96,7 +96,7 @@ class SettingsDialog(QDialog):
         settings_layout.addWidget(grid_widget)
 
         self.setObjectName("engine-setting-dialog")
-        self.setFixedSize(400, 600)
+        self.setFixedSize(420, 600)
         self.setLayout(settings_layout)
         self.setStyleSheet(f"""
             #engine-setting-dialog {{
