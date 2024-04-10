@@ -86,6 +86,7 @@ class VirtualPiece(QGraphicsPixmapItem):
         additional_info += temp
         self.logic_board.advanced_move(self, self.last_move, additional_info)
         self.logic_board.update_history()
+        self.logic_board.stats_frame.update_buttons()
 
     # Create position on mouse base movement
     def new_piece_position(self, event):

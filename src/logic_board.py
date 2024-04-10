@@ -68,6 +68,7 @@ class LogicBoard(Board):
         self.advanced_history.clear()
         self.stats_frame.clear_history()
         self.stats_frame.empty_history()
+        self.stats_frame.update_buttons()
 
     def find_info(self, move):
 
@@ -111,6 +112,7 @@ class LogicBoard(Board):
 
             self.graphic_board.clear_circles()
             self.graphic_board.clear_captures()
+            self.stats_frame.update_buttons()
 
     def valid_remove(self, action, move):
         if action == "Roszada":

@@ -17,45 +17,35 @@ class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.logic_board = LogicBoard()
-        # self.graphic_board = self.parent().game_frame.game_scene
         self.history_items = []
         self.mode_label = None
 
-        again_btn = QPushButton()
-        again_btn.setFixedSize(40, 40)
-        again_btn.setIcon((QIcon("../resources/again.png")))
-        again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-        again_btn.setIconSize(QSize(40, 40))
+        self.again_btn = QPushButton()
+        self.again_btn.setFixedSize(40, 40)
+        self.again_btn.setIconSize(QSize(40, 40))
 
-        move_back_btn = QPushButton()
-        move_back_btn.setFixedSize(40, 40)
-        move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller.png"))
-        move_back_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        move_back_btn.setIconSize(QSize(30, 30))
+        self.move_back_btn = QPushButton()
+        self.move_back_btn.setFixedSize(40, 40)
+        self.move_back_btn.setIconSize(QSize(30, 30))
 
-        move_froward_btn = QPushButton()
-        move_froward_btn.setFixedSize(40, 40)
-        move_froward_btn.setIcon(QIcon("../resources/forward_arrow.png"))
-        move_froward_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        move_froward_btn.setIconSize(QSize(30, 30))
+        self.move_froward_btn = QPushButton()
+        self.move_froward_btn.setFixedSize(40, 40)
+        self.move_froward_btn.setIconSize(QSize(30, 30))
 
-        surrender_btn = QPushButton()
-        surrender_btn.setFixedSize(40, 40)
-        surrender_btn.setIcon(QIcon("../resources/surrender.png"))
-        surrender_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        surrender_btn.setIconSize(QSize(30, 30))
+        self.surrender_btn = QPushButton()
+        self.surrender_btn.setFixedSize(40, 40)
+        self.surrender_btn.setIconSize(QSize(30, 30))
 
-        draw_btn = QPushButton()
-        draw_btn.setFixedSize(40, 40)
-        draw_btn.setIcon(QIcon("../resources/draw.png"))
-        draw_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        draw_btn.setIconSize(QSize(30, 30))
+        self.draw_btn = QPushButton()
+        self.draw_btn.setFixedSize(40, 40)
+        self.draw_btn.setIconSize(QSize(30, 30))
 
         board_rotation = QPushButton()
         board_rotation.setFixedSize(40, 40)
         board_rotation.setIcon(QIcon("../resources/loader.png"))
         board_rotation.setCursor(QCursor(Qt.PointingHandCursor))
         board_rotation.setIconSize(QSize(30, 30))
+        board_rotation.setStyleSheet(self.chose_style(True))
 
         space_item = QWidget()
         space_item.setFixedSize(20, 40)
@@ -63,11 +53,11 @@ class StatsFrame(QFrame):
         self.operation_layout = QHBoxLayout()
         self.operation_layout.setAlignment(Qt.AlignCenter)
         self.operation_layout.setContentsMargins(0, 0, 0, 0)
-        self.operation_layout.addWidget(again_btn)
-        self.operation_layout.addWidget(move_back_btn)
-        self.operation_layout.addWidget(move_froward_btn)
-        self.operation_layout.addWidget(surrender_btn)
-        self.operation_layout.addWidget(draw_btn)
+        self.operation_layout.addWidget(self.again_btn)
+        self.operation_layout.addWidget(self.move_back_btn)
+        self.operation_layout.addWidget(self.move_froward_btn)
+        self.operation_layout.addWidget(self.surrender_btn)
+        self.operation_layout.addWidget(self.draw_btn)
         self.operation_layout.addWidget(board_rotation)
         self.operation_layout.addWidget(space_item)
         # self.operation_layout.addWidget(self.game_type_label)
@@ -150,15 +140,6 @@ class StatsFrame(QFrame):
             }}
             
             
-            QPushButton {{
-                background-color: {color_theme[1]};
-                border: 1px solid {color_theme[1]};
-            }}
-            
-            QPushButton:hover {{
-                background-color: {color_theme[3]};
-                border-radius: 10px;
-            }}
             
             QScrollArea {{
                 background-color: {color_theme[0]};
@@ -196,11 +177,12 @@ class StatsFrame(QFrame):
         """)
 
         board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
-        again_btn.clicked.connect(self.logic_board.restart)
-        move_back_btn.clicked.connect(self.logic_board.remove_last_move)
+        self.again_btn.clicked.connect(self.logic_board.restart)
+        self.move_back_btn.clicked.connect(self.logic_board.remove_last_move)
 
         self.set_game_label("analyze")
         self.empty_history()
+        self.update_buttons()
 
     # On window resize
     def update_size(self, new_size):
@@ -330,33 +312,72 @@ class StatsFrame(QFrame):
         self.history_items.append(empty_label)
         self.history_widget.resize(QSize(450, 40))
 
-    # def remove_last_move(self):
-    #     if self.logic_board.advanced_history:
-    #         self.logic_board.pop()
-    #
-    #     if self.logic_board.advanced_history:
-    #         deleted_move = self.logic_board.pop()
-    #         print("XD0")
-    #         piece = self.logic_board.graphic_board.find_piece(deleted_move.uci()[2:])
-    #         print("Xd2")
-    #         piece.graphic_move(deleted_move.uci()[:2])
-    #         # advantage_piece = self.logic_board.advanced_history.pop()
-    #         # if advantage_piece.get("about") == "Bicie":
-    #         #     print(advantage_piece)
-    #         #     self.graphic_board.return_piece(deleted_move.uci()[2:])
-    #
-    #         if len(self.logic_board.advanced_history) == 0:
-    #             last_field = self.graphic_board.find_field(deleted_move.uci()[:2])
-    #             last_field.setBrush(QColor(last_field.orginal_brush))
-    #             self.clear_history()
-    #             self.empty_history()
-    #         else:
-    #             last_move = self.logic_board.advanced_history[-1].get("move")
-    #             last_field = self.graphic_board.find_field(last_move.uci()[:2])
-    #             self.graphic_board.clear_circles()
-    #             self.graphic_board.clear_captures()
-    #             self.graphic_board.highlight_field(last_field)
-    #             self.update_history()
+    def update_buttons(self):
+        if self.logic_board.advanced_history:
+            self.again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.again_btn.setIcon((QIcon("../resources/again.png")))
+            self.again_btn.setStyleSheet(self.chose_style(True))
+            self.move_back_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller.png"))
+            self.move_back_btn.setStyleSheet(self.chose_style(True))
+
+            self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow_off.png"))
+            self.move_froward_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.move_froward_btn.setStyleSheet(self.chose_style(False))
+
+            self.surrender_btn.setIcon(QIcon("../resources/surrender_off.png"))
+            self.surrender_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.surrender_btn.setStyleSheet(self.chose_style(False))
+
+            self.draw_btn.setIcon(QIcon("../resources/draw_off.png"))
+            self.draw_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+            self.draw_btn.setStyleSheet(self.chose_style(False))
+
+        else:
+            self.again_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.again_btn.setIcon((QIcon("../resources/again_off.png")))
+            self.again_btn.setStyleSheet(self.chose_style(False))
+
+            self.move_back_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller_off.png"))
+            self.move_back_btn.setStyleSheet(self.chose_style(False))
+
+            self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow_off.png"))
+            self.move_froward_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.move_froward_btn.setStyleSheet(self.chose_style(False))
+
+            self.surrender_btn.setIcon(QIcon("../resources/surrender_off.png"))
+            self.surrender_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.surrender_btn.setStyleSheet(self.chose_style(False))
+
+            self.draw_btn.setIcon(QIcon("../resources/draw_off.png"))
+            self.draw_btn.setCursor((QCursor(Qt.ArrowCursor)))
+            self.draw_btn.setStyleSheet(self.chose_style(False))
+
+    def chose_style(self, option):
+        if option:
+            return f"""
+            QPushButton {{
+                background-color: {color_theme[1]};
+                border: 1px solid {color_theme[1]};
+            }}
+            
+            QPushButton:hover {{
+                background-color: {color_theme[3]};
+                border-radius: 10px;
+            }}
+            """
+        else:
+            return f"""
+            QPushButton {{
+                background-color: {color_theme[1]};
+                border: 1px solid {color_theme[1]};
+            }}
+            
+            QPushButton:hover {{
+                background-color: transparent;
+            }}
+            """
 
     def update_chart(self):
         series = QLineSeries()
