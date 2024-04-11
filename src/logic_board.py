@@ -66,6 +66,7 @@ class LogicBoard(Board):
 
     def restart(self):
         self.reset()
+        self.graphic_board.clear_check()
         self.graphic_board.clear_pieces()
         self.graphic_board.init_pieces()
         self.graphic_board.draw_pieces()

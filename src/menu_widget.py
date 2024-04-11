@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QCursor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
 from logic_board import LogicBoard
+from loader import Loader
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 # <a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Freepik - Flaticon</a>
@@ -63,6 +64,8 @@ class MenuSlideFrame(QFrame):
         hide_btn.setIcon(QIcon("../resources/back_arrow.png"))
         hide_btn.setIconSize(QSize(80, 40))
 
+        self.loader = Loader("../resources/pika.gif")
+
         # Layout sets
         menu_layout = QVBoxLayout()
         menu_layout.setContentsMargins(0, 0, 0, 0)
@@ -77,6 +80,7 @@ class MenuSlideFrame(QFrame):
         menu_layout.addWidget(load_btn)
         menu_layout.addWidget(save_btn)
         menu_layout.addWidget(hide_btn)
+        menu_layout.addWidget(self.loader)
 
         # General sets for menu
         self.animation = QPropertyAnimation(self, b"geometry", self)
@@ -117,12 +121,14 @@ class MenuSlideFrame(QFrame):
         self.animation.setStartValue(QRect(-300, 0, 300, 820))
         self.animation.setEndValue(QRect(0, 0, 300, 820))
         self.animation.start()
+        self.loader.start_animation()
 
     def close_menu(self):
         self.animation.setDuration(300)
         self.animation.setStartValue(QRect(0, 0, 300, 820))
         self.animation.setEndValue(QRect(-300, 0, 300, 820))
         self.animation.start()
+        self.loader.stop_animation()
 
     # For window change
     def update_size(self, new_size):

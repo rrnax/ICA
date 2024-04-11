@@ -7,6 +7,8 @@ from menu_widget import MenuSlideFrame
 from stats_frame import StatsFrame
 from game_frame import GameFrame
 from logic_board import LogicBoard
+from engine import ChessEngine
+import asyncio
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
@@ -15,6 +17,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.logic_board = LogicBoard()
+        self.engine = ChessEngine()
 
         # View with board
         self.game_frame = GameFrame(self)
@@ -74,3 +77,7 @@ class MainWindow(QMainWindow):
         self.stats_frame.update_size(self.size())
         self.engine_frame.update_size(self.size())
         self.moves_frame.update_size(self.size())
+
+    # def closeEvent(self, event):
+    #     asyncio.ensure_future(self.engine.close_connect())
+    #     event.accept()
