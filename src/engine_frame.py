@@ -8,6 +8,8 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 #<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/sort-ascending" title="sort ascending icons">Sort ascending icons created by Infinite Dendrogram - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
+
+
 class EngineFrame(QFrame):
 
     def __init__(self, parent=None):
@@ -22,7 +24,7 @@ class EngineFrame(QFrame):
         sort_menu.addAction("Najgorsze")
         sort_menu.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.engine_label = QLabel("Silnik: Stockfish")
+        self.engine_label = QLabel("Silnik:")
         self.depth_label = QLabel("Ilość ruchów do przodu:")
         self.elo_label = QLabel("Elo (FIDE):")
 
@@ -66,7 +68,7 @@ class EngineFrame(QFrame):
         self.engine_frame_layout.addWidget(left_widget)
         self.engine_frame_layout.addWidget(right_widget)
         self.engine_frame_layout.setContentsMargins(0, 0, 0, 0)
-        self.engine_frame_layout.setSpacing(400)
+        # self.engine_frame_layout.setSpacing(300)
 
         # Frame
         self.setLayout(self.engine_frame_layout)
@@ -117,7 +119,7 @@ class EngineFrame(QFrame):
             """)
 
     def update_size(self, new_size):
-        self.engine_frame_layout.setSpacing(400 + new_size.width()-1200)
+        # self.engine_frame_layout.setSpacing(400 + new_size.width()-1200)
         self.setGeometry(0, (new_size.height() - 820) + 550, (new_size.width() - 1200) + 1200, 50)
 
     def settings_up(self):
@@ -132,6 +134,11 @@ class EngineFrame(QFrame):
 
     def set_elo_label(self, text):
         self.elo_label.setText("Elo (FIDE): " + text)
+
+    def update_values(self):
+        self.set_engine_label(self.engine.engine_name)
+        self.set_depth_label(str(self.engine.limits.depth))
+        self.set_elo_label(str(self.engine.opponent.rating))
 
 
 

@@ -1,8 +1,11 @@
 from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name, WHITE, BLACK
+from engine import ChessEngine
+import threading
 
 
 class LogicBoard(Board):
     _instance = None
+    engine = ChessEngine()
     graphic_board = None
     game_widget = None
     stats_frame = None
@@ -193,4 +196,18 @@ class LogicBoard(Board):
         else:
             winner_widget = self.game_widget.make_winner_msg("draw")
         self.game_widget.winner_up(winner_widget)
+
+    def engine_validation(self):
+        if self.mode == "analyze":
+            return True
+        else:
+            return False
+
+    def make_analyze(self):
+        if self.engine_validation():
+            fen = self.board_fen()
+            new_boaard = Board(fen)
+            my_thread = threading.Thread(target=self.engine.take_data, args=(new_boaard, self.halfmove_clock))
+            # self.engine.take_data(board=new_boaard)
+            my_thread.start()
 

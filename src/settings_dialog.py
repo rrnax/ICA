@@ -160,6 +160,7 @@ class SettingsDialog(QDialog):
         self.think_cb.currentTextChanged.connect(self.change_time)
         self.chess_title_cb.currentTextChanged.connect(self.change_title)
         self.engine_cb.currentTextChanged.connect(self.change_engine)
+        self.starting_parametrs()
 
     def change_engine(self):
         engine = self.engine_cb.currentText()
@@ -193,7 +194,41 @@ class SettingsDialog(QDialog):
         title = self.chess_title_cb.currentText()
         self.engine.set_title(title)
 
-    # def starting_parametrs(self):
+    def starting_parametrs(self):
+        engine_txt = self.engine.engine_name
+        depth = self.engine.limits.depth
+        ratio = self.engine.opponent.rating
+        answers_amount = self.engine.multi
+        think_time = self.engine.limits.time
+        title = self.engine.opponent.title
+        think_time_str = None
+        for i in range(self.engine_cb.count()):
+            if self.engine_cb.itemText(i) == engine_txt:
+                self.engine_cb.setCurrentIndex(i)
+                break
+        self.depth_spinbox.setValue(depth)
+        self.elo_spinbox.setValue(ratio)
+        self.options_spinbox.setValue(answers_amount)
+        if think_time is None:
+            think_time_str = "Bez limitu"
+        else:
+            if think_time > 60:
+                think_time = think_time/60
+                think_time_str = str(int(think_time)) + " min"
+            else:
+                think_time_str = str(int(think_time)) + " s"
+        print(think_time_str)
+
+        for i in range(self.think_cb.count()):
+            if self.think_cb.itemText(i) == think_time_str:
+                self.think_cb.setCurrentIndex(i)
+                break
+        for i in range(self.chess_title_cb.count()):
+            if self.chess_title_cb.itemText(i) == title:
+                self.chess_title_cb.setCurrentIndex(i)
+                break
+
+
 
 
 

@@ -331,4 +331,6 @@ class ChessBoard(QGraphicsScene):
     def undo_capture(self):
         last_captured = self.captured_pieces.pop()
         self.addItem(last_captured)
+        last_captured.set_in_field(last_captured.current_field)
         self.pieces.append(last_captured)
+

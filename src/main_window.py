@@ -79,6 +79,6 @@ class MainWindow(QMainWindow):
         self.engine_frame.update_size(self.size())
         self.moves_frame.update_size(self.size())
 
-    # def closeEvent(self, event):
-    #     asyncio.ensure_future(self.engine.close_connect())
-    #     event.accept()
+    def closeEvent(self, event):
+        self.engine.close_connect()
+        event.accept()

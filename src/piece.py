@@ -72,6 +72,7 @@ class VirtualPiece(QGraphicsPixmapItem):
                 self.graphic_move(target_field)
                 self.make_move()
                 self.logic_board.cleaar_forwards()
+                self.logic_board.make_analyze()
             else:
                 self.set_in_field(self.current_field)
 
@@ -213,5 +214,4 @@ class VirtualPiece(QGraphicsPixmapItem):
             if self.previous_fields:
                 move_uci = self.previous_fields[-1].chess_pos + last_field.chess_pos
                 self.last_move = Move.from_uci(move_uci)
-
 
