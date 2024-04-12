@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QFrame, QHBoxLayout, QLabel, QPushButton, Q
 from PyQt5.QtGui import QCursor, QIcon, QFontDatabase, QFont
 from PyQt5.QtCore import Qt, QSize
 from settings_dialog import SettingsDialog
-
+from engine import ChessEngine
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 #<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
@@ -12,6 +12,7 @@ class EngineFrame(QFrame):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.engine = ChessEngine()
 
         # Nodes elements
         sort_menu = QMenu(self)
@@ -21,9 +22,9 @@ class EngineFrame(QFrame):
         sort_menu.addAction("Najgorsze")
         sort_menu.setCursor(QCursor(Qt.PointingHandCursor))
 
-        engine_label = QLabel("Silnik: Stockfish")
-        depth_label = QLabel("Ilość ruchów do przodu: 20")
-        elo_label = QLabel("Elo (FIDE): 1800")
+        self.engine_label = QLabel("Silnik: Stockfish")
+        self.depth_label = QLabel("Ilość ruchów do przodu:")
+        self.elo_label = QLabel("Elo (FIDE):")
 
         moves_sort_button = QPushButton()
         moves_sort_button.setFixedSize(40, 40)
@@ -43,9 +44,9 @@ class EngineFrame(QFrame):
         # Layouts parts
         left_layout = QHBoxLayout()
         left_layout.setContentsMargins(20, 0, 0, 0)
-        left_layout.addWidget(engine_label)
-        left_layout.addWidget(depth_label)
-        left_layout.addWidget(elo_label)
+        left_layout.addWidget(self.engine_label)
+        left_layout.addWidget(self.depth_label)
+        left_layout.addWidget(self.elo_label)
         left_layout.setSpacing(85)
 
         right_layout = QHBoxLayout()
@@ -122,4 +123,15 @@ class EngineFrame(QFrame):
     def settings_up(self):
         setting_window = SettingsDialog()
         setting_window.exec()
+
+    def set_engine_label(self, text):
+        self.engine_label.setText("Silnik: " + text)
+
+    def set_depth_label(self, text):
+        self.depth_label.setText("Ilość ruchów do przodu: " + text)
+
+    def set_elo_label(self, text):
+        self.elo_label.setText("Elo (FIDE): " + text)
+
+
 

@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
 
         # Frame with settings of chess engine
         self.engine_frame = EngineFrame(self)
+        self.engine.engine_frame = self.engine_frame
 
         # Sets main window
         self.setMinimumSize(QSize(1200, 820))

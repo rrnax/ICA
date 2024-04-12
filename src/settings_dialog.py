@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QGridLayout, QComboBox, QSpinBox
 from PyQt5.QtCore import Qt
+from engine import ChessEngine
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
@@ -9,6 +10,7 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.engine = ChessEngine()
 
         close_btn = QPushButton("X", self)
         close_btn.setObjectName("engine-settings-close")
@@ -48,29 +50,35 @@ class SettingsDialog(QDialog):
         chess_title_label = QLabel("Tytuł szachowy: ")
         chess_title_label.setAlignment(Qt.AlignRight)
 
-        engine_cb = QComboBox()
-        engine_cb.addItem("Stockfish")
-        engine_cb.addItem("Leela chess zero")
+        self.engine_cb = QComboBox()
+        self.engine_cb.addItem("Stockfish")
+        self.engine_cb.addItem("Leela chess zero")
 
-        elo_spinbox = QSpinBox()
-        elo_spinbox.setMinimum(1000)
-        elo_spinbox.setMaximum(3221)
+        self.elo_spinbox = QSpinBox()
+        self.elo_spinbox.setMinimum(100)
+        self.elo_spinbox.setMaximum(3221)
 
-        options_spinbox = QSpinBox()
-        options_spinbox.setMinimum(1)
-        options_spinbox.setMaximum(12)
+        self.options_spinbox = QSpinBox()
+        self.options_spinbox.setMinimum(1)
+        self.options_spinbox.setMaximum(12)
 
-        depth_spinbox = QSpinBox()
-        depth_spinbox.setMinimum(1)
-        depth_spinbox.setMaximum(100)
+        self.depth_spinbox = QSpinBox()
+        self.depth_spinbox.setMinimum(1)
+        self.depth_spinbox.setMaximum(100)
 
-        think_cb = QComboBox()
-        think_cb.addItem("1 min")
-        think_cb.addItem("Bez limitu")
+        self.think_cb = QComboBox()
+        self.think_cb.addItem("Bez limitu")
+        self.think_cb.addItem("20 s")
+        self.think_cb.addItem("30 s")
+        self.think_cb.addItem("40 s")
+        self.think_cb.addItem("50 s")
+        for i in range(1, 60):
+            self.think_cb.addItem(str(i) + " min")
 
-        chess_title_cb = QComboBox()
-        chess_title_cb.addItem("None")
-        chess_title_cb.addItem("Mistrz")
+        self.chess_title_cb = QComboBox()
+        self.chess_title_cb.addItem("None")
+        self.chess_title_cb.addItem("GM")
+        self.chess_title_cb.addItem("IM")
 
         grid_settings = QGridLayout()
         grid_settings.addWidget(engine_label, 1, 1)
@@ -80,12 +88,12 @@ class SettingsDialog(QDialog):
         grid_settings.addWidget(think_time_label, 5, 1)
         grid_settings.addWidget(chess_title_label, 6, 1)
         grid_settings.setColumnMinimumWidth(1, 300)
-        grid_settings.addWidget(engine_cb, 1, 2)
-        grid_settings.addWidget(elo_spinbox, 2, 2)
-        grid_settings.addWidget(options_spinbox, 3, 2)
-        grid_settings.addWidget(depth_spinbox, 4, 2)
-        grid_settings.addWidget(think_cb, 5, 2)
-        grid_settings.addWidget(chess_title_cb, 6, 2)
+        grid_settings.addWidget(self.engine_cb, 1, 2)
+        grid_settings.addWidget(self.elo_spinbox, 2, 2)
+        grid_settings.addWidget(self.options_spinbox, 3, 2)
+        grid_settings.addWidget(self.depth_spinbox, 4, 2)
+        grid_settings.addWidget(self.think_cb, 5, 2)
+        grid_settings.addWidget(self.chess_title_cb, 6, 2)
 
         grid_widget = QWidget()
         grid_widget.setLayout(grid_settings)
@@ -146,3 +154,50 @@ class SettingsDialog(QDialog):
                 border: 1px solid {color_theme[3]}; 
             }}
             """)
+        self.elo_spinbox.valueChanged.connect(self.change_elo)
+        self.options_spinbox.valueChanged.connect(self.change_amount)
+        self.depth_spinbox.valueChanged.connect(self.change_depth)
+        self.think_cb.currentTextChanged.connect(self.change_time)
+        self.chess_title_cb.currentTextChanged.connect(self.change_title)
+        self.engine_cb.currentTextChanged.connect(self.change_engine)
+
+    def change_engine(self):
+        engine = self.engine_cb.currentText()
+        self.engine.set_engine(engine)
+
+    def change_elo(self):
+        elo = self.elo_spinbox.value()
+        self.engine.set_elo(elo)
+
+    def change_amount(self):
+        amount = self.options_spinbox.value()
+        self.engine.set_amount_moves(amount)
+
+    def change_depth(self):
+        depth = self.depth_spinbox.value()
+        self.engine.set_depth(depth)
+
+    def change_time(self):
+        time_txt = self.think_cb.currentText()
+        if "min" in time_txt:
+            substrings = time_txt.split()
+            self.engine.set_time(60 * int(substrings[0]))
+        elif time_txt == "Bez limitu":
+            result = None
+            self.engine.set_time(result)
+        else:
+            substrings = time_txt.split()
+            self.engine.set_time(int(substrings[0]))
+
+    def change_title(self):
+        title = self.chess_title_cb.currentText()
+        self.engine.set_title(title)
+
+    # def starting_parametrs(self):
+
+
+
+
+
+
+
