@@ -207,7 +207,7 @@ class LogicBoard(Board):
         if self.engine_validation():
             fen = self.board_fen()
             new_boaard = Board(fen)
-            my_thread = threading.Thread(target=self.engine.take_data, args=(new_boaard, self.halfmove_clock))
+            my_thread = threading.Thread(target=self.engine.analyze_procedure, args=(new_boaard, self.halfmove_clock))
             # self.engine.take_data(board=new_boaard)
             my_thread.start()
 

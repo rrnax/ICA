@@ -37,8 +37,10 @@ class MainWindow(QMainWindow):
         self.logic_board.stats_frame = self.stats_frame
         self.logic_board.graphic_board = self.game_frame.game_scene
         self.stats_frame.graphic_board = self.game_frame.game_scene
+
         # Frame with result of move options
         self.moves_frame = MovesOptionsList(self)
+        self.engine.moves_frame = self.moves_frame
 
         # Frame with settings of chess engine
         self.engine_frame = EngineFrame(self)

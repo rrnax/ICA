@@ -1,12 +1,12 @@
-import asyncio
-import chess.engine
+import logging
 from chess import engine
-
+from PyQt5.QtCore import Qt
 
 class ChessEngine:
     _instance = None
     stockfish = r"../engines/stockfish/stockfish-windows-x86-64.exe"
     engine_frame = None
+    moves_frame = None
     engine_name = None
     actual_engine = None
     actual_transport = None
@@ -20,20 +20,16 @@ class ChessEngine:
         return cls._instance
 
     def initialize(self):
-        # asyncio.set_event_loop_policy(engine.EventLoopPolicy())
+        logging.basicConfig(level=logging.INFO,
+                            filename="../log/engine.log",
+                            format='%(asctime)s ----------------------------------------- %(message)s',
+                            datefmt='%d-%b-%y %H:%M:%S')
         self.engine_name = "Stockfish"
         self.multi = 4
         self.limits = engine.Limit(time=None, depth=15)
         self.opponent = engine.Opponent(name="Player", title="None", rating=1500, is_engine=False)
         self.connect_engine(self.stockfish)
         self.engine_frame.update_values()
-
-    # async def connect_engine(self, engine_path):
-    #     self.actual_transport, self.actual_engine = await chess.engine.popen_uci(engine_path)
-    #     print(self.actual_engine)
-    #
-    # async def close_connect(self):
-    #     await self.actual_transport.close()
 
     def connect_engine(self, engine_path):
         self.actual_engine = engine.SimpleEngine.popen_uci(engine_path)
@@ -68,16 +64,40 @@ class ChessEngine:
         self.engine_frame.set_engine_label(engine_txt)
         self.engine_name = engine_txt
 
-    def analyze_procedure(self, board, half):
-        self.take_data(board, half)
-
-    # async def take_data(self, board):
-    #     result = await self.actual_engine.analysis(board=board, limit=self.limits, multipv=self.multi)
-    #     print(result)
-
-    def take_data(self, board, half):
+    def analyze_procedure(self, board, halfs):
+        self.moves_frame.head_widget.hide()
+        self.moves_frame.content_area.hide()
+        self.moves_frame.setAlignment(Qt.AlignCenter)
+        self.moves_frame.loader.show()
         results = self.actual_engine.analyse(board=board, limit=self.limits, multipv=self.multi)
-        for item in results:
-            print(item['score'].black())
-            print(item['score'].white())
-            print(item['score'].wdl(model='sf16', ply=half).relative)
+        message = self.create_log_message(results, halfs)
+        logging.info(message)
+        option_list = self.creat_option_list(results)
+        print(option_list)
+        self.moves_frame.setAlignment(Qt.AlignTop)
+        self.moves_frame.set_move_table(option_list)
+        self.moves_frame.loader.hide()
+        self.moves_frame.head_widget.show()
+        self.moves_frame.content_area.show()
+
+    def create_log_message(self, results, halfs):
+        message = ""
+        for result in results:
+            message += ("\n" + "Nr przeszukiwania:" + str(result['multipv'])
+                        + ",### Czas przeszukiwania: " + str(result['time'])
+                        + ",\n" + "Głebokość przeszukiwania: " + str(result['depth'])
+                        + ",### Faktyczna głębokość: " + str(result['seldepth'])
+                        + ",\n" + "Przeszukane pozycje: " + str(result['nodes'])
+                        + ",### Przeszukane psunięcia[na sekunde]: " + str(result['nps'])
+                        + ",\n" + "PovScore: " + str(result['score'].relative)
+                        + ",### WDL: " + str(result['score'].wdl(model='sf16', ply=halfs).pov(True).expectation()) + "\n")
+        return message
+
+    def creat_option_list(self, results):
+        list_of_options = []
+        for result in results:
+            list_of_moves = [result['score'].relative]
+            for move in result['pv']:
+                list_of_moves.append(move)
+            list_of_options.append(list_of_moves)
+        return list_of_options

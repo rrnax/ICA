@@ -68,7 +68,6 @@ class EngineFrame(QFrame):
         self.engine_frame_layout.addWidget(left_widget)
         self.engine_frame_layout.addWidget(right_widget)
         self.engine_frame_layout.setContentsMargins(0, 0, 0, 0)
-        # self.engine_frame_layout.setSpacing(300)
 
         # Frame
         self.setLayout(self.engine_frame_layout)
