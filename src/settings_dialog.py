@@ -217,7 +217,6 @@ class SettingsDialog(QDialog):
                 think_time_str = str(int(think_time)) + " min"
             else:
                 think_time_str = str(int(think_time)) + " s"
-        print(think_time_str)
 
         for i in range(self.think_cb.count()):
             if self.think_cb.itemText(i) == think_time_str:

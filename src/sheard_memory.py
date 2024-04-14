@@ -22,7 +22,6 @@ class SharedMemoryStorage():
             self.head_labels.append(QLabel())
             self.head_labels[i].setStyleSheet(header_styles)
 
-
     def create_content_rows(self):
         coils_style1 = f'''
            QWidget{{
@@ -77,3 +76,4 @@ class SharedMemoryStorage():
                 move_widget.setStyleSheet(coils_style)
                 row.append(move_widget)
             self.content_rows.append(row)
+

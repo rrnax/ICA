@@ -291,9 +291,11 @@ class ChessBoard(QGraphicsScene):
 
     def clear_check(self):
         king = self.find_piece_by_name("w_king")
-        king.current_field.setBrush(QColor(king.current_field.orginal_brush))
+        if king is not None:
+            king.current_field.setBrush(QColor(king.current_field.orginal_brush))
         king = self.find_piece_by_name("b_king")
-        king.current_field.setBrush(QColor(king.current_field.orginal_brush))
+        if king is not None:
+            king.current_field.setBrush(QColor(king.current_field.orginal_brush))
 
     def remove_undo_check(self):
         if self.logic_board.turn:
@@ -333,4 +335,3 @@ class ChessBoard(QGraphicsScene):
         self.addItem(last_captured)
         last_captured.set_in_field(last_captured.current_field)
         self.pieces.append(last_captured)
-

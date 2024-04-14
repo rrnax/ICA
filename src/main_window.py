@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.logic_board = LogicBoard()
         self.engine = ChessEngine()
+        self.engine.logic_board = self.logic_board
 
         # View with board
         self.game_frame = GameFrame(self)
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow):
         self.logic_board.stats_frame = self.stats_frame
         self.logic_board.graphic_board = self.game_frame.game_scene
         self.stats_frame.graphic_board = self.game_frame.game_scene
+        self.engine.graphic_board =  self.game_frame.game_scene
 
         # Frame with result of move options
         self.moves_frame = MovesOptionsList(self)
@@ -65,6 +67,9 @@ class MainWindow(QMainWindow):
                 background-color: {color_theme[3]};
             }}
         """)
+
+        self.engine.initialize()
+        self.logic_board.make_analyze()
 
         # Actions
         menu_btn.clicked.connect(self.menu_widget.open_menu)

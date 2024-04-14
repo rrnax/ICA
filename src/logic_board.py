@@ -15,6 +15,7 @@ class LogicBoard(Board):
     mode = "analyze"
     forward_moves = []
     player_side = None
+    last_engine_thread = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -79,6 +80,7 @@ class LogicBoard(Board):
         self.stats_frame.empty_history()
         self.stats_frame.update_buttons()
         self.ended_game = None
+        self.make_analyze()
 
     def find_info(self, move):
 
@@ -129,6 +131,7 @@ class LogicBoard(Board):
             self.graphic_board.clear_circles()
             self.graphic_board.clear_captures()
             self.stats_frame.update_buttons()
+            self.make_analyze()
 
     def valid_remove(self, action, move):
         if action == "Roszada":
@@ -184,6 +187,7 @@ class LogicBoard(Board):
         if self.player_side == "black":
             while self.graphic_board.front_side != "black":
                 self.graphic_board.rotate_board()
+            self.make_engine_move()
         else:
             while self.graphic_board.front_side != "white":
                 self.graphic_board.rotate_board()
@@ -196,18 +200,22 @@ class LogicBoard(Board):
         else:
             winner_widget = self.game_widget.make_winner_msg("draw")
         self.game_widget.winner_up(winner_widget)
-
-    def engine_validation(self):
-        if self.mode == "analyze":
-            return True
-        else:
-            return False
+    #
+    # def engine_validation(self):
+    #     if self.mode == "analyze":
+    #         return True
+    #     else:
+    #         return False
 
     def make_analyze(self):
-        if self.engine_validation():
-            fen = self.board_fen()
-            new_boaard = Board(fen)
-            my_thread = threading.Thread(target=self.engine.analyze_procedure, args=(new_boaard, self.halfmove_clock))
-            # self.engine.take_data(board=new_boaard)
-            my_thread.start()
+        # if self.engine_validation():
+        fen = self.fen()
+        new_board = Board(fen)
+        self.last_engine_thread = threading.Thread(target=self.engine.analyze_procedure, args=(new_board, self.halfmove_clock))
+        self.last_engine_thread.start()
 
+    def make_engine_move(self):
+        fen = self.fen()
+        new_board = Board(fen)
+        move_thread = threading.Thread(target=self.engine.find_move, args=(new_board, ))
+        move_thread.start()

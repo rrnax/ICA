@@ -407,6 +407,7 @@ class StatsFrame(QFrame):
             self.graphic_board.clear_highlighted()
             from_field_uci = self.graphic_board.find_field(square_name(forward_move.from_square))
             self.graphic_board.highlight_field(from_field_uci)
+            self.logic_board.make_analyze()
 
     def surrender(self):
         self.logic_board.make_surrender()

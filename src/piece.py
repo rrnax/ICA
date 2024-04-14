@@ -72,7 +72,12 @@ class VirtualPiece(QGraphicsPixmapItem):
                 self.graphic_move(target_field)
                 self.make_move()
                 self.logic_board.cleaar_forwards()
-                self.logic_board.make_analyze()
+
+                if self.logic_board.player_side is None:
+                    self.logic_board.make_analyze()
+                else:
+                    self.logic_board.make_engine_move()
+
             else:
                 self.set_in_field(self.current_field)
 

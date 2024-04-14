@@ -136,9 +136,10 @@ class MenuSlideFrame(QFrame):
 
     def open_game(self):
         self.logic_board.sets_game("game")
+        self.close_menu()
 
     def open_analyze(self):
         self.logic_board.sets_game("analyze")
-
+        self.close_menu()
 
 

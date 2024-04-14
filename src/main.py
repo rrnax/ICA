@@ -12,7 +12,5 @@ font_id = QFontDatabase.addApplicationFont("../resources/PoetsenOne-Regular.ttf"
 if font_id != -1:
     app.setFont(QFont("Poetsen One"))
 main_window = MainWindow()
-engine = ChessEngine()
-engine.initialize()
 main_window.show()
 app.exec()

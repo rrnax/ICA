@@ -4,33 +4,30 @@ from PyQt5.QtGui import QPixmap
 import math
 from loader import Loader
 from sheard_memory import SharedMemoryStorage
+from engine import ChessEngine
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
-col_am = 20
-moves = ["+1,922", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2",
-         "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2",
-         "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2", "a1b2"]
-rA = 4
-
 
 class MovesOptionsList(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.storage = SharedMemoryStorage()
+        self.engine = ChessEngine()
 
-        self.pieces = [
-            QPixmap("../resources/pieces/b_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/b_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/b_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/b_pawn.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/b_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/b_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_pawn.png.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
-            QPixmap("../resources/pieces/w_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)]
+        self.pieces = {
+            "b": QPixmap("../resources/pieces/b_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "k": QPixmap("../resources/pieces/b_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "n": QPixmap("../resources/pieces/b_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "p": QPixmap("../resources/pieces/b_pawn.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "q": QPixmap("../resources/pieces/b_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "r": QPixmap("../resources/pieces/b_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "B": QPixmap("../resources/pieces/w_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "K": QPixmap("../resources/pieces/w_king.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "N": QPixmap("../resources/pieces/w_knight.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "P": QPixmap("../resources/pieces/w_pawn.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "Q": QPixmap("../resources/pieces/w_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
+            "R": QPixmap("../resources/pieces/w_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        }
 
         self.coil_width = 100
         self.coil_height = 50
@@ -47,23 +44,28 @@ class MovesOptionsList(QScrollArea):
         self.head_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.head_widget.setLayout(self.head_layout)
 
+        for index, element in enumerate(self.storage.head_labels):
+            self.head_layout.addWidget(element, 0, index)
+
         self.moves_table_layout = QGridLayout()
         self.moves_table_layout.setContentsMargins(0, 0, 0, 0)
         self.moves_table_layout.setSizeConstraint(QGridLayout.SetMinAndMaxSize)
         self.moves_table_layout.setSpacing(0)
         self.moves_table_layout.setAlignment(Qt.AlignTop)
 
+        for i, item_row in enumerate(self.storage.content_rows):
+            for j, item_column in enumerate(self.storage.content_rows[i]):
+                self.moves_table_layout.addWidget(item_column, i, j)
+
         self.loader = Loader("../resources/pika.gif")
         self.loader.setObjectName("loader")
         self.loader.start_animation()
 
         self.content_widget = QWidget()
-        self.content_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.content_widget.setLayout(self.moves_table_layout)
 
         self.content_area = QScrollArea()
         self.content_area.setFixedHeight(173)
-        # self.content_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.content_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.content_area.setWidget(self.content_widget)
 
@@ -74,6 +76,8 @@ class MovesOptionsList(QScrollArea):
         self.fill_layout.addWidget(self.loader)
         self.fill_layout.addWidget(self.head_widget)
         self.fill_layout.addWidget(self.content_area)
+        self.head_widget.hide()
+        self.content_area.hide()
 
         self.moves_widget = QWidget()
         self.moves_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -115,11 +119,13 @@ class MovesOptionsList(QScrollArea):
         """)
 
     def create_header(self, column_amount):
+        self.hide_headers()
         self.storage.head_labels[0].setText("Przewaga")
         self.storage.head_labels[0].setFixedSize(150, 30)
 
         self.storage.head_labels[0].setAlignment(Qt.AlignCenter)
         self.head_layout.addWidget(self.storage.head_labels[0], 0, 0)
+        self.storage.head_labels[0].show()
 
         divider = math.ceil((self.size().width() - 150) / column_amount)
         for column in range(1, column_amount + 1):
@@ -129,11 +135,12 @@ class MovesOptionsList(QScrollArea):
                 self.storage.head_labels[column].setFixedSize(self.coil_width, 30)
             else:
                 self.storage.head_labels[column].setFixedSize(divider, 30)
-            self.head_layout.addWidget(self.storage.head_labels[column], 0, column)
+            self.storage.head_labels[column].show()
 
     def create_content_rows(self, column_amount, rows_amount, list_of_lists):
         divider = math.ceil((self.size().width() - 150) / column_amount)
-
+        self.hide_content()
+        self.content_widget.setFixedHeight(rows_amount * self.coil_height)
         for row in range(0, rows_amount):
 
             for column in range(0, column_amount + 1):
@@ -158,12 +165,13 @@ class MovesOptionsList(QScrollArea):
                         self.storage.content_rows[row][column].setFixedSize(divider, self.coil_height)
 
                     if column < len(list_of_lists[row]):
-                        self.storage.content_rows[row][column].layout().itemAt(0).widget().setPixmap(self.pieces[6])
+                        (self.storage.content_rows[row][column].layout().itemAt(0).widget()
+                         .setPixmap(self.pieces[self.engine.pieces_ids_list[row][column]]))
                     else:
                         self.storage.content_rows[row][column].layout().itemAt(0).widget().setText(" ")
                     self.storage.content_rows[row][column].layout().itemAt(0).widget().setAlignment(Qt.AlignCenter)
 
-                self.moves_table_layout.addWidget(self.storage.content_rows[row][column], row, column)
+                self.storage.content_rows[row][column].show()
 
     def update_size(self, new_size):
         self.setGeometry(0, (new_size.height() - 820) + 600, (new_size.width() - 1200) + 1200, 220)
@@ -209,4 +217,13 @@ class MovesOptionsList(QScrollArea):
 
         self.create_header(column_amount)
         self.create_content_rows(column_amount, row_amount, option_list)
+
+    def hide_headers(self):
+        for element in self.storage.head_labels:
+            element.hide()
+
+    def hide_content(self):
+        for i, item_row in enumerate(self.storage.content_rows):
+            for j, item_column in enumerate(self.storage.content_rows[i]):
+                item_column.hide()
 

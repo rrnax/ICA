@@ -18,10 +18,8 @@ class EngineFrame(QFrame):
 
         # Nodes elements
         sort_menu = QMenu(self)
-        sort_menu.addAction("Najlepsze czarne")
-        sort_menu.addAction("Najlepsze białe")
-        sort_menu.addAction("Najlepsze")
-        sort_menu.addAction("Najgorsze")
+        sort_menu.addAction("Najlepsze czarne", self.better_black)
+        sort_menu.addAction("Najlepsze białe", self.better_white)
         sort_menu.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.engine_label = QLabel("Silnik:")
@@ -139,5 +137,13 @@ class EngineFrame(QFrame):
         self.set_depth_label(str(self.engine.limits.depth))
         self.set_elo_label(str(self.engine.opponent.rating))
 
+    def better_black(self):
+        black_sorted_list = sorted(self.engine.last_result, key=lambda x: x[0].score())
+        self.engine.last_result = black_sorted_list
+        self.engine.moves_frame.set_move_table(self.engine.last_result)
 
+    def better_white(self):
+        white_sorted_list = sorted(self.engine.last_result, key=lambda x: x[0].score(), reverse=True)
+        self.engine.last_result = white_sorted_list
+        self.engine.moves_frame.set_move_table(self.engine.last_result)
 
