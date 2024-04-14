@@ -18,7 +18,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.logic_board = LogicBoard()
         self.engine = ChessEngine()
-        self.engine.logic_board = self.logic_board
 
         # View with board
         self.game_frame = GameFrame(self)

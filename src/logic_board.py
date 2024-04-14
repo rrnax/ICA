@@ -80,7 +80,10 @@ class LogicBoard(Board):
         self.stats_frame.empty_history()
         self.stats_frame.update_buttons()
         self.ended_game = None
-        self.make_analyze()
+        if self.player_side == "black":
+            self.make_engine_move()
+        else:
+            self.make_analyze()
 
     def find_info(self, move):
 
@@ -103,6 +106,13 @@ class LogicBoard(Board):
 
     def update_history(self):
         self.stats_frame.update_history()
+
+    def valid_undo(self):
+        if self.mode == "game":
+            for i in range(2):
+                self.remove_last_move()
+        else:
+            self.remove_last_move()
 
     def remove_last_move(self):
         if self.advanced_history:
@@ -171,23 +181,24 @@ class LogicBoard(Board):
         self.update_history()
 
     def sets_game(self, type):
-        if type != self.mode:
+        if type != self.mode or self.advanced_history:
             if type == "game":
                 self.game_widget.side_up()
                 if self.player_side is not None:
                     self.stats_frame.set_game_label(type)
+                    self.prepare_board()
+                    self.mode = type
             elif type == "analyze":
                 self.player_side = None
                 self.stats_frame.set_game_label(type)
-            self.prepare_board()
-            self.mode = type
+                self.prepare_board()
+                self.mode = type
 
     def prepare_board(self):
         self.restart()
         if self.player_side == "black":
             while self.graphic_board.front_side != "black":
                 self.graphic_board.rotate_board()
-            self.make_engine_move()
         else:
             while self.graphic_board.front_side != "white":
                 self.graphic_board.rotate_board()
@@ -217,5 +228,15 @@ class LogicBoard(Board):
     def make_engine_move(self):
         fen = self.fen()
         new_board = Board(fen)
-        move_thread = threading.Thread(target=self.engine.find_move, args=(new_board, ))
-        move_thread.start()
+        # if self.last_engine_thread.is_alive():
+        #     self.last_engine_thread.join()
+        engine_move = self.engine.create_move(new_board)
+        piece = self.graphic_board.find_piece_by_id(square_name(engine_move.move.from_square))
+        piece.legal_fields = self.find_possible_fields(piece.current_field.chess_pos)
+        target_field = self.graphic_board.find_field(square_name(engine_move.move.to_square))
+        piece.graphic_move(target_field)
+        piece.make_move()
+        if self.forward_moves:
+            self.cleaar_forwards()
+        print(piece.current_field.chess_pos)
+        self.make_analyze()

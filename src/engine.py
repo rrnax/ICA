@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt
 class ChessEngine:
     _instance = None
     stockfish = r"../engines/stockfish/stockfish-windows-x86-64.exe"
-    logic_board = None
     graphic_board = None
     engine_frame = None
     moves_frame = None
@@ -19,7 +18,6 @@ class ChessEngine:
     last_fen = None
     last_result = None
     pieces_ids_list = None
-    is_thinking = False
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -67,7 +65,6 @@ class ChessEngine:
 
     def analyze_procedure(self, board, halfs):
         try:
-            self.is_thinking = True
             self.last_fen = board.fen()
             self.moves_frame.head_widget.hide()
             self.moves_frame.content_area.hide()
@@ -125,15 +122,17 @@ class ChessEngine:
             lists_list.append(pices_list)
         return lists_list
 
-    def find_move(self, board):
+    def create_move(self, board):
         result = self.actual_engine.play(board=board, limit=self.limits, opponent=self.opponent)
-        print(result.move)
-        field_id = square_name(result.move.from_square)
-        piece = self.graphic_board.find_piece_by_id(field_id)
-        piece.legal_fields = piece.logic_board.find_possible_fields(piece.current_field.chess_pos)
-        target_field = self.graphic_board.find_field(square_name(result.move.to_square))
-        print(target_field.chess_pos)
-        piece.graphic_move(target_field)
-        piece.make_move()
-        self.logic_board.cleaar_forwards()
+        return result
+
+
+        # field_id = square_name(result.move.from_square)
+        # piece = self.graphic_board.find_piece_by_id(field_id)
+        # piece.legal_fields = piece.logic_board.find_possible_fields(piece.current_field.chess_pos)
+        # target_field = self.graphic_board.find_field(square_name(result.move.to_square))
+        # print(target_field.chess_pos)
+        # piece.graphic_move(target_field)
+        # piece.make_move()
+
 

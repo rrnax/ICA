@@ -118,3 +118,7 @@ class SideDialog(QDialog):
         self.logic_board.player_side = "black"
         self.close()
 
+    def set_close(self):
+        self.logic_board.player_side = None
+        self.close()
+
