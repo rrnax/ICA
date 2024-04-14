@@ -1,8 +1,12 @@
-from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt5.QtGui import QCursor, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QPropertyAnimation, QRect, QSize
+from QSwitchControl import SwitchControl
 from logic_board import LogicBoard
-from loader import Loader
+from save_dialog import SaveDialog
+from load_dialog import LoadDialog
+from openings_dialog import OpeningsDialog
+from endings_dialog import EndingDialog
 
 color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 # <a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Freepik - Flaticon</a>
@@ -12,6 +16,8 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 # <a href="https://www.flaticon.com/free-icons/loading" title="loading icons">Loading icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Aldo Cervantes - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/night" title="night icons">Night icons created by kmg design - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/sun" title="sun icons">Sun icons created by Freepik - Flaticon</a>
 
 
 class MenuSlideFrame(QFrame):
@@ -27,7 +33,7 @@ class MenuSlideFrame(QFrame):
         app_label.setScaledContents(True)
 
         space_block = QLabel()
-        space_block.setFixedSize(400, 20)
+        space_block.setFixedSize(300, 20)
 
         new_game_btn = QPushButton("Gra")
         new_game_btn.setCursor(QCursor(Qt.PointingHandCursor))
@@ -64,7 +70,30 @@ class MenuSlideFrame(QFrame):
         hide_btn.setIcon(QIcon("../resources/back_arrow.png"))
         hide_btn.setIconSize(QSize(80, 40))
 
-        self.loader = Loader("../resources/pika.gif")
+        moon = QLabel()
+        moon_pixmap = QPixmap("../resources/moon.png")
+        moon_pixmap = moon_pixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        moon.setPixmap(moon_pixmap)
+
+        switch = SwitchControl(bg_color=color_theme[1], active_color=color_theme[3], change_cursor=True)
+
+        sun = QLabel()
+        sun_pixmap = QPixmap("../resources/sun.png")
+        sun_pixmap = sun_pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        sun.setPixmap(sun_pixmap)
+
+        theme_mode_layout = QHBoxLayout()
+        theme_mode_layout.setAlignment(Qt.AlignCenter)
+        theme_mode_layout.addWidget(moon)
+        theme_mode_layout.addWidget(switch)
+        theme_mode_layout.addWidget(sun)
+
+        theme_mode = QWidget()
+        theme_mode.setFixedSize(300, 80)
+        theme_mode.setLayout(theme_mode_layout)
+        # switch.setStyleSheet(f"background-color: {color_theme[3]}")
+        # switch.setAnimation(True)
+        # switch.setCircleDiameter(30)
 
         # Layout sets
         menu_layout = QVBoxLayout()
@@ -72,7 +101,6 @@ class MenuSlideFrame(QFrame):
         menu_layout.setSpacing(20)
         menu_layout.setAlignment(Qt.AlignTop)
         menu_layout.addWidget(app_label)
-        menu_layout.addWidget(space_block)
         menu_layout.addWidget(new_game_btn)
         menu_layout.addWidget(analyze_btn)
         menu_layout.addWidget(openings_btn)
@@ -80,7 +108,7 @@ class MenuSlideFrame(QFrame):
         menu_layout.addWidget(load_btn)
         menu_layout.addWidget(save_btn)
         menu_layout.addWidget(hide_btn)
-        menu_layout.addWidget(self.loader)
+        menu_layout.addWidget(theme_mode)
 
         # General sets for menu
         self.animation = QPropertyAnimation(self, b"geometry", self)
@@ -114,6 +142,10 @@ class MenuSlideFrame(QFrame):
         new_game_btn.clicked.connect(self.open_game)
         analyze_btn.clicked.connect(self.open_analyze)
         hide_btn.clicked.connect(self.close_menu)
+        save_btn.clicked.connect(self.open_saving)
+        load_btn.clicked.connect(self.open_loading)
+        openings_btn.clicked.connect(self.open_openings)
+        endings_btn.clicked.connect(self.open_endings)
 
     # Show or hide menu
     def open_menu(self):
@@ -121,14 +153,12 @@ class MenuSlideFrame(QFrame):
         self.animation.setStartValue(QRect(-300, 0, 300, 820))
         self.animation.setEndValue(QRect(0, 0, 300, 820))
         self.animation.start()
-        self.loader.start_animation()
 
     def close_menu(self):
         self.animation.setDuration(300)
         self.animation.setStartValue(QRect(0, 0, 300, 820))
         self.animation.setEndValue(QRect(-300, 0, 300, 820))
         self.animation.start()
-        self.loader.stop_animation()
 
     # For window change
     def update_size(self, new_size):
@@ -142,4 +172,19 @@ class MenuSlideFrame(QFrame):
         self.logic_board.sets_game("analyze")
         self.close_menu()
 
+    def open_saving(self):
+        save_dialog = SaveDialog()
+        save_dialog.exec()
+
+    def open_loading(self):
+        load_dialog = LoadDialog()
+        load_dialog.exec()
+
+    def open_endings(self):
+        ending_dialog = EndingDialog()
+        ending_dialog.exec()
+
+    def open_openings(self):
+        opening_dialog = OpeningsDialog()
+        opening_dialog.exec()
 

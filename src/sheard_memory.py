@@ -12,51 +12,25 @@ class SharedMemoryStorage():
         self.create_content_rows()
 
     def create_head_labels(self):
-        header_styles = f"""
-            background-color: {color_theme[3]};
-            color: {color_theme[0]};
-            font-size: 18px;
-        """
-
         for i in range(102):
             self.head_labels.append(QLabel())
-            self.head_labels[i].setStyleSheet(header_styles)
+            self.head_labels[i].setObjectName("head-label")
 
     def create_content_rows(self):
-        coils_style1 = f'''
-           QWidget{{
-               background-color: {color_theme[1]};
-               color: {color_theme[3]};
-               font-size: 18px;
-               border-bottom: 1px solid {color_theme[3]};
-           }}
+        coils_style1 = "coli-label-one"
+        coils_style2 = "coli-label-two"
+        nonlabel = "no-border-label"
 
-           QLabel {{
-               border: none
-           }}
-       '''
-
-        coils_style2 = f'''
-           QWidget{{
-               background-color: {color_theme[0]};
-               color: {color_theme[3]};
-               font-size: 18px;
-               border-bottom: 1px solid {color_theme[3]};
-           }}
-
-           QLabel {{
-               border: none
-           }}
-       '''
         for i in range(12):
             row = []
             score_widget = QWidget()
             score_layout = QHBoxLayout()
             score_label = QLabel()
+            score_label.setObjectName(nonlabel)
             score_layout.addWidget(score_label)
             score_widget.setLayout(score_layout)
             row.append(score_widget)
-            score_widget.setStyleSheet(coils_style1)
+            score_widget.setObjectName(coils_style1)
 
             for j in range(102):
 
@@ -69,11 +43,13 @@ class SharedMemoryStorage():
                 move_widget = QWidget()
                 move_layout = QHBoxLayout()
                 move_label = QLabel()
+                move_label.setObjectName(nonlabel)
                 image_label = QLabel()
+                image_label.setObjectName(nonlabel)
                 move_layout.addWidget(image_label)
                 move_layout.addWidget(move_label)
                 move_widget.setLayout(move_layout)
-                move_widget.setStyleSheet(coils_style)
+                move_widget.setObjectName(coils_style)
                 row.append(move_widget)
             self.content_rows.append(row)
 

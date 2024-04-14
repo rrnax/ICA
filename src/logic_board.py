@@ -238,5 +238,5 @@ class LogicBoard(Board):
         piece.make_move()
         if self.forward_moves:
             self.cleaar_forwards()
-        print(piece.current_field.chess_pos)
-        self.make_analyze()
+        if self.ended_game is None:
+            self.make_analyze()

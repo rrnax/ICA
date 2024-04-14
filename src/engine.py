@@ -127,12 +127,3 @@ class ChessEngine:
         return result
 
 
-        # field_id = square_name(result.move.from_square)
-        # piece = self.graphic_board.find_piece_by_id(field_id)
-        # piece.legal_fields = piece.logic_board.find_possible_fields(piece.current_field.chess_pos)
-        # target_field = self.graphic_board.find_field(square_name(result.move.to_square))
-        # print(target_field.chess_pos)
-        # piece.graphic_move(target_field)
-        # piece.make_move()
-
-

@@ -95,20 +95,20 @@ class StatsFrame(QFrame):
         self.history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.history_area.setWidget(self.history_widget)
 
-        self.advantage_chart = QChart()
-        self.advantage_chart.legend().hide()
-        self.advantage_chart.setContentsMargins(0, 0, 0, 0)
-        self.advantage_chart.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.advantage_chart.setTitleBrush(QColor(color_theme[3]))
-        self.advantage_chart.setBackgroundBrush(QColor(color_theme[0]))
-        self.update_chart()
+        # self.advantage_chart = QChart()
+        # self.advantage_chart.legend().hide()
+        # self.advantage_chart.setContentsMargins(0, 0, 0, 0)
+        # self.advantage_chart.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # self.advantage_chart.setTitleBrush(QColor(color_theme[3]))
+        # self.advantage_chart.setBackgroundBrush(QColor(color_theme[0]))
+        # self.update_chart()
 
-        chart_view = QChartView(self.advantage_chart, self)
-        # chart_view.setFixedSize(450, 210)
-        chart_view.setContentsMargins(0, 0, 0, 0)
-        chart_view.setBackgroundBrush(QColor(color_theme[0]))
-        chart_view.setRenderHint(QPainter.Antialiasing)
-        chart_view.setObjectName("chart-view")
+        # chart_view = QChartView(self.advantage_chart, self)
+        # # chart_view.setFixedSize(450, 210)
+        # chart_view.setContentsMargins(0, 0, 0, 0)
+        # chart_view.setBackgroundBrush(QColor(color_theme[0]))
+        # chart_view.setRenderHint(QPainter.Antialiasing)
+        # chart_view.setObjectName("chart-view")
 
         stats_layout = QVBoxLayout()
         stats_layout.setContentsMargins(0, 0, 0, 0)
@@ -117,7 +117,6 @@ class StatsFrame(QFrame):
         stats_layout.addWidget(operation_widget)
         stats_layout.addWidget(history_label)
         stats_layout.addWidget(self.history_area)
-        stats_layout.addWidget(chart_view)
 
         # Set frame general options
         self.setGeometry(750, 0, 450, 550)
@@ -125,17 +124,22 @@ class StatsFrame(QFrame):
         self.setLayout(stats_layout)
         self.setStyleSheet(f"""
             #stats-frame {{
-                background-color: {color_theme[1]};
-                border-left: 1px solid {color_theme[3]};
+                background-color: {color_theme[0]};
             }}
             
             #operation-layout {{
+                background-color: {color_theme[1]};
                 border-bottom: 1px solid {color_theme[3]};
+                border-left: 1px solid {color_theme[3]};
+                border-top: none;
             }}
             
             #history-label {{
+                background-color: {color_theme[1]};
                 color: {color_theme[3]};
                 font-size: 20px;
+                border-left: 1px solid {color_theme[3]};
+                border-top: none;
             }}
             
             #history-widget {{
@@ -146,12 +150,11 @@ class StatsFrame(QFrame):
                 border-top: 1px solid {color_theme[3]};
             }}
             
-            
-            
             QScrollArea {{
                 background-color: {color_theme[0]};
                 border-top: none;
                 border-left: 1px solid {color_theme[3]};
+                border-bottom: 1px solid {color_theme[3]};
             }}
             
             QScrollBar:vertical {{

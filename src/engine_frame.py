@@ -140,10 +140,12 @@ class EngineFrame(QFrame):
     def better_black(self):
         black_sorted_list = sorted(self.engine.last_result, key=lambda x: x[0].score())
         self.engine.last_result = black_sorted_list
+        self.engine.pieces_ids_list = self.engine.find_pieces_ids()
         self.engine.moves_frame.set_move_table(self.engine.last_result)
 
     def better_white(self):
         white_sorted_list = sorted(self.engine.last_result, key=lambda x: x[0].score(), reverse=True)
         self.engine.last_result = white_sorted_list
+        self.engine.pieces_ids_list = self.engine.find_pieces_ids()
         self.engine.moves_frame.set_move_table(self.engine.last_result)
 

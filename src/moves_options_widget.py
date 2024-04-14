@@ -92,6 +92,31 @@ class MovesOptionsList(QScrollArea):
                 color: {color_theme[3]};
                 border: none;            
             }}
+            
+            #head-label {{
+                background-color: {color_theme[3]};
+                color: {color_theme[0]};
+                font-size: 18px;
+            }}
+            
+            #coli-label-one {{
+                background-color: {color_theme[1]};
+                color: {color_theme[3]};
+                font-size: 18px;
+                border-bottom: 1px solid {color_theme[3]};
+            }}
+            
+            #coli-label-two {{
+                background-color: {color_theme[0]};
+                color: {color_theme[3]};
+                font-size: 18px;
+                border-bottom: 1px solid {color_theme[3]};
+            }}
+        
+            #no-border-label {{
+                color: {color_theme[3]};
+                border: none
+            }}
         
             QScrollBar:horizontal, QScrollBar:vertical {{
                 background-color: {color_theme[1]};
@@ -214,7 +239,6 @@ class MovesOptionsList(QScrollArea):
         for list_id in option_list:
             if len(list_id) > column_amount:
                 column_amount = len(list_id)
-
         self.create_header(column_amount)
         self.create_content_rows(column_amount, row_amount, option_list)
 
