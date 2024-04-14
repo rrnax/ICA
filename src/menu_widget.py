@@ -7,8 +7,8 @@ from save_dialog import SaveDialog
 from load_dialog import LoadDialog
 from openings_dialog import OpeningsDialog
 from endings_dialog import EndingDialog
+from sheard_memory import color_theme, color_theme_light, color_theme_dark
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 # <a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/insight" title="insight icons">Insight icons created by Awicon - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/open-door" title="open door icons">Open door icons created by rizal2109 - Flaticon</a>
@@ -21,6 +21,7 @@ color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
 
 
 class MenuSlideFrame(QFrame):
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.logic_board = LogicBoard()
@@ -75,7 +76,7 @@ class MenuSlideFrame(QFrame):
         moon_pixmap = moon_pixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         moon.setPixmap(moon_pixmap)
 
-        switch = SwitchControl(bg_color=color_theme[1], active_color=color_theme[3], change_cursor=True)
+        self.switch = SwitchControl(bg_color=color_theme[1], active_color=color_theme[3], change_cursor=True)
 
         sun = QLabel()
         sun_pixmap = QPixmap("../resources/sun.png")
@@ -85,7 +86,7 @@ class MenuSlideFrame(QFrame):
         theme_mode_layout = QHBoxLayout()
         theme_mode_layout.setAlignment(Qt.AlignCenter)
         theme_mode_layout.addWidget(moon)
-        theme_mode_layout.addWidget(switch)
+        theme_mode_layout.addWidget(self.switch)
         theme_mode_layout.addWidget(sun)
 
         theme_mode = QWidget()
@@ -115,7 +116,7 @@ class MenuSlideFrame(QFrame):
         self.setGeometry(-300, 0, 300, 820)
         self.setLayout(menu_layout)
         self.setObjectName("menu-slide-frame")
-        self.setStyleSheet(f"""
+        self.css = f"""
         #menu-slide-frame {{
             background-color: {color_theme[0]};
             border-right: none; 
@@ -136,7 +137,8 @@ class MenuSlideFrame(QFrame):
             background-color: {color_theme[3]};
             color: {color_theme[0]};
         }}
-        """)
+        """
+        self.setStyleSheet(self.css)
 
         # Actions
         new_game_btn.clicked.connect(self.open_game)
@@ -146,6 +148,7 @@ class MenuSlideFrame(QFrame):
         load_btn.clicked.connect(self.open_loading)
         openings_btn.clicked.connect(self.open_openings)
         endings_btn.clicked.connect(self.open_endings)
+        self.switch.stateChanged.connect(self.change_theme)
 
     # Show or hide menu
     def open_menu(self):
@@ -187,4 +190,37 @@ class MenuSlideFrame(QFrame):
     def open_openings(self):
         opening_dialog = OpeningsDialog()
         opening_dialog.exec()
+
+    def change_theme(self):
+        if self.switch.checkState() == 2:
+            color_theme = color_theme_light
+        else:
+            color_theme = color_theme_dark
+
+        self.css = f"""
+                #menu-slide-frame {{
+                    background-color: {color_theme[0]};
+                    border-right: none; 
+                }}
+
+                QPushButton {{
+                    width: 300px;
+                    height: 50px;
+                    padding-left: 20px;
+                    background-color: {color_theme[0]};
+                    color: {color_theme[3]};
+                    font-size: 30px;
+                    text-align: left;
+                    border: none;
+                }}
+
+                QPushButton:hover {{
+                    background-color: {color_theme[3]};
+                    color: {color_theme[0]};
+                }}
+                """
+
+        self.setStyleSheet(self.css)
+        self.repaint()
+
 
