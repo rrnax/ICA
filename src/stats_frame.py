@@ -95,21 +95,6 @@ class StatsFrame(QFrame):
         self.history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.history_area.setWidget(self.history_widget)
 
-        # self.advantage_chart = QChart()
-        # self.advantage_chart.legend().hide()
-        # self.advantage_chart.setContentsMargins(0, 0, 0, 0)
-        # self.advantage_chart.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # self.advantage_chart.setTitleBrush(QColor(color_theme[3]))
-        # self.advantage_chart.setBackgroundBrush(QColor(color_theme[0]))
-        # self.update_chart()
-
-        # chart_view = QChartView(self.advantage_chart, self)
-        # # chart_view.setFixedSize(450, 210)
-        # chart_view.setContentsMargins(0, 0, 0, 0)
-        # chart_view.setBackgroundBrush(QColor(color_theme[0]))
-        # chart_view.setRenderHint(QPainter.Antialiasing)
-        # chart_view.setObjectName("chart-view")
-
         stats_layout = QVBoxLayout()
         stats_layout.setContentsMargins(0, 0, 0, 0)
         stats_layout.setSpacing(0)
@@ -181,9 +166,6 @@ class StatsFrame(QFrame):
                 font-size: 18 ;
             }}
             
-            QChart {{
-                background-color: {color_theme[1]};
-            }}
         """)
 
         board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
@@ -374,7 +356,8 @@ class StatsFrame(QFrame):
             self.surrender_btn.setCursor((QCursor(Qt.ArrowCursor)))
             self.surrender_btn.setStyleSheet(self.chose_style(False))
 
-    def chose_style(self, option):
+    @staticmethod
+    def chose_style(option):
         if option:
             return f"""
             QPushButton {{
@@ -414,49 +397,3 @@ class StatsFrame(QFrame):
 
     def surrender(self):
         self.logic_board.make_surrender()
-
-############################################################
-
-    def update_chart(self):
-        series = QLineSeries()
-
-        data = [
-            QPointF(0, 0.0),
-            QPointF(1, -0.4),
-            QPointF(2, -2.0),
-            QPointF(3, 1.2),
-            QPointF(4, 2.0)
-        ]
-
-        pen = QPen(QColor("#20a16d"))
-        pen.setWidth(3)
-
-        axis_X = QValueAxis()
-        axis_X.setTickCount(5)
-        axis_X.setRange(0, 4)
-        axis_X.setLabelFormat("%d")
-        axis_X.setLabelsColor(QColor(color_theme[4]))
-        axis_X.setTitleText("Ruch")
-        axis_X.setTitleBrush(QColor(color_theme[3]))
-        axis_X.setGridLineColor(QColor(color_theme[1]))
-
-        axis_Y = QValueAxis()
-        axis_Y.setTickCount(5)
-        axis_Y.setRange(-2.0, 2.00)
-        axis_Y.setLabelsColor(QColor(color_theme[4]))
-        axis_Y.setTitleText("Przewaga")
-        axis_Y.setTitleBrush(QColor(color_theme[3]))
-        axis_Y.setGridLineColor(QColor(color_theme[1]))
-
-        self.advantage_chart.addAxis(axis_X, Qt.AlignmentFlag.AlignBottom)
-        self.advantage_chart.addAxis(axis_Y, Qt.AlignmentFlag.AlignLeft)
-
-        series.append(data)
-        self.advantage_chart.addSeries(series)
-        series.setPen(pen)
-
-        # self.advantage_chart.createDefaultAxes()
-        # advantage_axis = QValueAxis()
-        # advantage_axis.setRange(-2.0, 2.0)
-        #
-

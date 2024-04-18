@@ -1,9 +1,8 @@
-from PyQt5.QtCore import QPointF, Qt
+from PyQt5.QtCore import QPointF, Qt, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem
 from logic_board import LogicBoard
 from chess import Move, square_name
-import time
 
 # Here are contribution license links fo images
 # <a href="https://www.flaticon.com/free-icons/chess-piece" title="chess piece icons">Chess piece icons created by rizal2109 - Flaticon</a>
@@ -79,7 +78,7 @@ class VirtualPiece(QGraphicsPixmapItem):
                         self.logic_board.make_analyze()
                 else:
                     if self.logic_board.ended_game is None:
-                        self.logic_board.make_engine_move()
+                        self.logic_board.engine_move()
 
             else:
                 self.set_in_field(self.current_field)

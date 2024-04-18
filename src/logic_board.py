@@ -1,5 +1,7 @@
 from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name, WHITE, BLACK
 from engine import ChessEngine
+from PyQt5.QtCore import QThread
+from engine_thread import PlayWorker, AnalyzeWorker
 import threading
 
 
@@ -16,6 +18,10 @@ class LogicBoard(Board):
     forward_moves = []
     player_side = None
     last_engine_thread = None
+    worker1 = None
+    thread1 = None
+    worker2 = None
+    thread2 = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -81,7 +87,7 @@ class LogicBoard(Board):
         self.stats_frame.update_buttons()
         self.ended_game = None
         if self.player_side == "black":
-            self.make_engine_move()
+            self.engine_move()
         else:
             self.make_analyze()
 
@@ -211,32 +217,34 @@ class LogicBoard(Board):
         else:
             winner_widget = self.game_widget.make_winner_msg("draw")
         self.game_widget.winner_up(winner_widget)
-    #
-    # def engine_validation(self):
-    #     if self.mode == "analyze":
-    #         return True
-    #     else:
-    #         return False
 
     def make_analyze(self):
-        # if self.engine_validation():
-        fen = self.fen()
-        new_board = Board(fen)
-        self.last_engine_thread = threading.Thread(target=self.engine.analyze_procedure, args=(new_board, self.halfmove_clock))
-        self.last_engine_thread.start()
+        self.worker1 = AnalyzeWorker(logic_board=self)
+        self.thread1 = QThread()
+        self.worker1.moveToThread(self.thread1)
+        self.worker1.finished.connect(self.thread1.quit)
+        self.thread1.started.connect(self.worker1.analyze_move)
+        self.thread1.start()
 
-    def make_engine_move(self):
-        fen = self.fen()
-        new_board = Board(fen)
-        # if self.last_engine_thread.is_alive():
-        #     self.last_engine_thread.join()
-        engine_move = self.engine.create_move(new_board)
-        piece = self.graphic_board.find_piece_by_id(square_name(engine_move.move.from_square))
+    def engine_move(self):
+        self.worker2 = PlayWorker(logic_board=self)
+        self.thread2 = QThread()
+        self.worker2.moveToThread(self.thread2)
+        self.worker2.finished.connect(self.engine_done)
+        self.worker2.finished.connect(self.thread2.quit)
+        self.thread2.started.connect(self.worker2.calc_move)
+        self.thread2.start()
+
+    def engine_done(self, move):
+        piece = self.graphic_board.find_piece_by_id(square_name(move.from_square))
         piece.legal_fields = self.find_possible_fields(piece.current_field.chess_pos)
-        target_field = self.graphic_board.find_field(square_name(engine_move.move.to_square))
+        target_field = self.graphic_board.find_field(square_name(move.to_square))
+        print(target_field)
         piece.graphic_move(target_field)
         piece.make_move()
+        print("XD")
         if self.forward_moves:
             self.cleaar_forwards()
         if self.ended_game is None:
             self.make_analyze()
+
