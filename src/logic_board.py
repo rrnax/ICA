@@ -134,6 +134,13 @@ class LogicBoard(Board):
         else:
             self.remove_last_move()
 
+    def valid_forward(self):
+        if self.mode == "game":
+            for i in range(2):
+                self.make_forward()
+        else:
+            self.make_forward()
+
     def remove_last_move(self):
         if self.advanced_history:
             last_move = self.advanced_history.pop()
@@ -257,3 +264,15 @@ class LogicBoard(Board):
         if self.ended_game is None:
             self.make_analyze()
 
+    def make_forward(self):
+        forward_description = self.forward_move()
+        if forward_description is not None:
+            forward_piece = forward_description.get("piece")
+            forward_move = forward_description.get("move")
+            forward_field = self.graphic_board.find_field(square_name(forward_move.to_square))
+            forward_piece.graphic_move(forward_field)
+            forward_piece.make_move()
+            self.graphic_board.clear_highlighted()
+            from_field_uci = self.graphic_board.find_field(square_name(forward_move.from_square))
+            self.graphic_board.highlight_field(from_field_uci)
+            self.make_analyze()
