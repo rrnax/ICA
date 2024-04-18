@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
             }}
         """)
 
+        self.logic_board.initial_workers()
         self.engine.initialize()
         self.logic_board.make_analyze()
 
