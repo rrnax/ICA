@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt
 from chess_board import ChessBoard
 from side_dialog import SideDialog
 from message_dialog import MessageDialog
-
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+from sheard_memory import color_theme
 
 
 class GameFrame(QFrame):
@@ -69,3 +68,7 @@ class GameFrame(QFrame):
         widget.setLayout(layout)
 
         return widget
+
+
+
+

@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
-color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
-color_theme_light = ["#96b7d4", "#FFFFFF", "#FFFFFF",  "#FFC66C", "#FFFFFF", "#FFFFFF"]
+color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
+color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
+color_theme_light = ["#e8e9eb", "#FFFFFF", "#FFFFFF",  "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
 
-class SharedMemoryStorage():
+class SharedMemoryStorage:
     head_labels = []
     content_rows = []
 

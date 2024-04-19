@@ -2,11 +2,9 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QGridLayout
 from PyQt5.QtCore import Qt
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
-
 
 class MessageDialog(QDialog):
-    def __init__(self, parent=None, content=None):
+    def __init__(self, parent=None, content=None, color_theme=None):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
 
@@ -60,4 +58,31 @@ class MessageDialog(QDialog):
 
         close_btn.clicked.connect(self.close)
 
+    def update_theme(self, themes):
+        style = f"""
+            #engine-setting-dialog {{
+                background-color: {themes[1]};
+                border: 1px solid {themes[3]}; 
+            }}
+
+            #engine-settings-close {{
+                background-color: {themes[1]};
+                color: {themes[3]};
+                font-size: 20px;
+                border: none;
+            }}
+
+            #engine-settings-close:hover {{
+                background-color: red;
+                color: {themes[0]};
+                border: 5px solid red;
+                border-radius: 10px;
+            }}
+
+            QLabel {{
+                color: {themes[3]};
+                font-size: 18px;
+            }}
+        """
+        self.setStyleSheet(style)
 

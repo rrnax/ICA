@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy
-from PyQt5.QtCore import Qt, QSize, QPointF
-from PyQt5.QtGui import QIcon, QCursor, QPixmap, QColor, QPainter, QPen
-from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QCursor
 from logic_board import LogicBoard
 from chess import square_name
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#20a16d"]
+from sheard_memory import color_theme
+
 
 # <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons">Sports and competition icons created by BZZRINCANTATION - Flaticon</a>
@@ -20,6 +20,7 @@ class StatsFrame(QFrame):
         self.history_items = []
         self.graphic_board = None
         self.mode_label = None
+        self.main_color = color_theme
 
         self.again_btn = QPushButton()
         self.again_btn.setFixedSize(40, 40)
@@ -118,43 +119,43 @@ class StatsFrame(QFrame):
         self.setLayout(stats_layout)
         self.setStyleSheet(f"""
             #stats-frame {{
-                background-color: {color_theme[0]};
+                background-color: {self.main_color[0]};
             }}
             
             #operation-layout {{
-                background-color: {color_theme[1]};
-                border-bottom: 1px solid {color_theme[3]};
-                border-left: 1px solid {color_theme[3]};
+                background-color: {self.main_color[1]};
+                border-bottom: 1px solid {self.main_color[3]};
+                border-left: 1px solid {self.main_color[3]};
                 border-top: none;
             }}
             
             #history-label {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
+                background-color: {self.main_color[1]};
+                color: {self.main_color[3]};
                 font-size: 20px;
-                border-left: 1px solid {color_theme[3]};
+                border-left: 1px solid {self.main_color[3]};
                 border-top: none;
             }}
             
             #history-widget {{
-                background-color: {color_theme[1]};
+                background-color: {self.main_color[1]};
             }}
             
             #chart-view {{
-                border-top: 1px solid {color_theme[3]};
+                border-top: 1px solid {self.main_color[3]};
             }}
             
             QScrollArea {{
-                background-color: {color_theme[0]};
+                background-color: {self.main_color[0]};
                 border-top: none;
-                border-left: 1px solid {color_theme[3]};
-                border-bottom: 1px solid {color_theme[3]};
+                border-left: 1px solid {self.main_color[3]};
+                border-bottom: 1px solid {self.main_color[3]};
             }}
             
             QScrollBar:vertical {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
-                border: 1px solid {color_theme[3]}
+                background-color: {self.main_color[1]};
+                color: {self.main_color[3]};
+                border: 1px solid {self.main_color[3]}
             }}
             
             QScrollBar::handle:vertical {{
@@ -166,22 +167,22 @@ class StatsFrame(QFrame):
             }}
             
             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
-                background: {color_theme[3]};
+                background: {self.main_color[3]};
                 border: none;
             }}
             
             QLabel {{
-                color: {color_theme[3]};
+                color: {self.main_color[3]};
                 font-size: 18 ;
             }}
             
              QPushButton {{
-                background-color: {color_theme[1]};
-                border: 1px solid {color_theme[1]};
+                background-color: {self.main_color[1]};
+                border: 1px solid {self.main_color[1]};
             }}
             
             QPushButton:hover {{
-                background-color: {color_theme[3]};
+                background-color: {self.main_color[3]};
                 border-radius: 10px;
             }}
             
@@ -250,27 +251,34 @@ class StatsFrame(QFrame):
                 add_info = element.get("about")
                 style = None
                 if (row_amount - index - 1) % 2 == 0:
-                    style = f"""
-                        #move-label {{
-                            color: white;
-                        }}
-                    """
+                    if self.main_color[0] == "#1E1F22":
+                        style = f"""
+                            #move-label {{
+                                color: white;
+                            }}
+                        """
+                    else:
+                        style = f"""
+                           #move-label {{
+                               color: {self.main_color[6]};
+                           }}
+                        """
                 else:
                     style = f"""
                         #move-label {{
-                            color: {color_theme[3]};
+                            color: {self.main_color[3]};
                         }}
                     """
                 if index % 2 == 0:
                     style += f"""
                         QWidget {{
-                            background-color: {color_theme[0]};
+                            background-color: {self.main_color[0]};
                         }}
                     """
                 else:
                     style += f"""
                         QWidget {{
-                            background-color: {color_theme[1]};
+                            background-color: {self.main_color[1]};
                         }}
                     """
 
@@ -324,7 +332,7 @@ class StatsFrame(QFrame):
         self.clear_history()
         empty_label = QLabel("Pusto")
         empty_label.setFixedSize(450, 40)
-        empty_label.setStyleSheet(f"background-color: {color_theme[0]};")
+        empty_label.setStyleSheet(f"background-color: {self.main_color[0]};")
         empty_label.setAlignment(Qt.AlignCenter)
         self.layout_history.addWidget(empty_label)
         self.history_items.append(empty_label)
@@ -353,3 +361,79 @@ class StatsFrame(QFrame):
 
     def surrender(self):
         self.logic_board.make_surrender()
+
+    def update_theme(self, themes):
+        self.main_color = themes
+        print(self.main_color)
+        style = f"""
+            #stats-frame {{
+                background-color: {themes[0]};
+            }}
+            
+            #operation-layout {{
+                background-color: {themes[1]};
+                border-bottom: 1px solid {themes[3]};
+                border-left: 1px solid {themes[3]};
+                border-top: none;
+            }}
+            
+            #history-label {{
+                background-color: {themes[1]};
+                color: {themes[3]};
+                font-size: 20px;
+                border-left: 1px solid {themes[3]};
+                border-top: none;
+            }}
+            
+            #history-widget {{
+                background-color: {themes[1]};
+            }}
+            
+            #chart-view {{
+                border-top: 1px solid {themes[3]};
+            }}
+            
+            QScrollArea {{
+                background-color: {themes[0]};
+                border-top: none;
+                border-left: 1px solid {themes[3]};
+                border-bottom: 1px solid {themes[3]};
+            }}
+            
+            QScrollBar:vertical {{
+                background-color: {themes[1]};
+                color: {themes[3]};
+                border: 1px solid {themes[3]}
+            }}
+            
+            QScrollBar::handle:vertical {{
+                border: none;
+            }}
+            
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+                height: 0;
+            }}
+            
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
+                background: {themes[3]};
+                border: none;
+            }}
+            
+            QLabel {{
+                color: {themes[3]};
+                font-size: 18 ;
+            }}
+            
+             QPushButton {{
+                background-color: {themes[1]};
+                border: 1px solid {themes[1]};
+            }}
+            
+            QPushButton:hover {{
+                background-color: {themes[3]};
+                border-radius: 10px;
+            }}
+            
+        """
+        self.setStyleSheet(style)
+        self.update_history()

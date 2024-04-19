@@ -1,8 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen, QFont, QColor
 from PyQt5.QtWidgets import QGraphicsRectItem, QGraphicsTextItem
-
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+from sheard_memory import color_theme
 
 
 # Virtual representation of chess board field
@@ -24,3 +23,5 @@ class VirtualField(QGraphicsRectItem):
         for label in self.field_labels:
             label.setFont(font)
             label.setDefaultTextColor(QColor(color_theme[3]))
+
+

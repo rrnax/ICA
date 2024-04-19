@@ -6,8 +6,7 @@ from chess import parse_square, Move
 from logic_board import LogicBoard
 from piece import VirtualPiece
 from field import VirtualField
-
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
+from sheard_memory import color_theme
 
 
 class ChessBoard(QGraphicsScene):

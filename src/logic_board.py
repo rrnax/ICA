@@ -2,7 +2,6 @@ from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_n
 from engine import ChessEngine
 from PyQt5.QtCore import QThread
 from engine_thread import PlayWorker, AnalyzeWorker
-import threading
 
 
 class LogicBoard(Board):

@@ -27,11 +27,11 @@ class MenuSlideFrame(QFrame):
         self.logic_board = LogicBoard()
 
         # Layout elements
-        app_logo = QPixmap("../resources/appmark.png")
-        app_label = QLabel()
-        app_label.setFixedSize(300, 200)
-        app_label.setPixmap(app_logo)
-        app_label.setScaledContents(True)
+        self.app_logo = QPixmap("../resources/appmark.png")
+        self.app_label = QLabel()
+        self.app_label.setFixedSize(300, 200)
+        self.app_label.setPixmap(self.app_logo)
+        self.app_label.setScaledContents(True)
 
         space_block = QLabel()
         space_block.setFixedSize(300, 20)
@@ -76,7 +76,7 @@ class MenuSlideFrame(QFrame):
         moon_pixmap = moon_pixmap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         moon.setPixmap(moon_pixmap)
 
-        self.switch = SwitchControl(bg_color=color_theme[1], active_color=color_theme[3], change_cursor=True)
+        self.switch = SwitchControl(bg_color=color_theme[3], active_color=color_theme[1], change_cursor=True)
 
         sun = QLabel()
         sun_pixmap = QPixmap("../resources/sun.png")
@@ -101,7 +101,7 @@ class MenuSlideFrame(QFrame):
         menu_layout.setContentsMargins(0, 0, 0, 0)
         menu_layout.setSpacing(20)
         menu_layout.setAlignment(Qt.AlignTop)
-        menu_layout.addWidget(app_label)
+        menu_layout.addWidget(self.app_label)
         menu_layout.addWidget(new_game_btn)
         menu_layout.addWidget(analyze_btn)
         menu_layout.addWidget(openings_btn)
@@ -116,7 +116,7 @@ class MenuSlideFrame(QFrame):
         self.setGeometry(-300, 0, 300, 820)
         self.setLayout(menu_layout)
         self.setObjectName("menu-slide-frame")
-        self.css = f"""
+        self.menu_style = f"""
         #menu-slide-frame {{
             background-color: {color_theme[0]};
             border-right: none; 
@@ -138,7 +138,7 @@ class MenuSlideFrame(QFrame):
             color: {color_theme[0]};
         }}
         """
-        self.setStyleSheet(self.css)
+        self.setStyleSheet(self.menu_style)
 
         # Actions
         new_game_btn.clicked.connect(self.open_game)
@@ -194,10 +194,14 @@ class MenuSlideFrame(QFrame):
     def change_theme(self):
         if self.switch.checkState() == 2:
             color_theme = color_theme_light
+            self.app_logo = QPixmap("../resources/appmark_gray.png")
+            self.app_label.setPixmap(self.app_logo)
         else:
             color_theme = color_theme_dark
+            self.app_logo = QPixmap("../resources/appmark.png")
+            self.app_label.setPixmap(self.app_logo)
 
-        self.css = f"""
+        style = f"""
                 #menu-slide-frame {{
                     background-color: {color_theme[0]};
                     border-right: none; 
@@ -219,8 +223,6 @@ class MenuSlideFrame(QFrame):
                     color: {color_theme[0]};
                 }}
                 """
-
-        self.setStyleSheet(self.css)
-        self.repaint()
-
+        self.setStyleSheet(style)
+        self.parent().change_theme(themes=color_theme)
 

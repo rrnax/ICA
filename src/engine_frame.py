@@ -3,8 +3,7 @@ from PyQt5.QtGui import QCursor, QIcon, QFontDatabase, QFont
 from PyQt5.QtCore import Qt, QSize
 from settings_dialog import SettingsDialog
 from engine import ChessEngine
-
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+from sheard_memory import color_theme
 #<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/sort-ascending" title="sort ascending icons">Sort ascending icons created by Infinite Dendrogram - Flaticon</a>
 #<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
@@ -149,3 +148,48 @@ class EngineFrame(QFrame):
         self.engine.pieces_ids_list = self.engine.find_pieces_ids()
         self.engine.moves_frame.set_move_table(self.engine.last_result)
 
+    def update_theme(self, themes):
+        style = f"""
+            #engine-frame {{
+                background-color: {themes[1]};
+                border-top: 1px solid {themes[3]};
+                border-bottom: 1px solid {themes[3]};
+            }}
+                
+            QWidget {{
+                background-color: {themes[1]};
+                color: {themes[3]};
+                font-size: 18px;
+            }}
+            
+            QPushButton {{
+                border: none;
+            }}
+            
+            QPushButton::menu-indicator {{
+                width: 0px;
+            }}
+            
+            QPushButton:hover {{
+                color: {themes[0]};
+                background-color: {themes[3]};
+                border: 1px solid {themes[0]};
+                border-radius: 10px;
+            }}
+            
+            QMenu {{
+                color: {themes[3]};
+                background-color: {themes[1]};
+                border: 1px solid {themes[3]};
+            }}
+            
+            QMenu::item {{
+                padding: 5px 10px;
+            }}
+            
+            QMenu::item:selected {{
+                color: {themes[0]};
+                background-color: {themes[1]};
+            }}
+            """
+        self.setStyleSheet(style)
