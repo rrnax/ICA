@@ -1,11 +1,13 @@
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QGridLayout
 from PyQt5.QtCore import Qt
+from sheard_memory import SharedMemoryStorage
 
 
 class MessageDialog(QDialog):
-    def __init__(self, parent=None, content=None, color_theme=None):
+    def __init__(self, parent=None, content=None):
         super().__init__(parent)
+        self.storage = SharedMemoryStorage()
         self.setWindowFlag(Qt.FramelessWindowHint)
 
         close_btn = QPushButton("X", self)
@@ -32,26 +34,26 @@ class MessageDialog(QDialog):
         self.setLayout(message_layout)
         self.setStyleSheet(f"""
             #engine-setting-dialog {{
-                background-color: {color_theme[1]};
-                border: 1px solid {color_theme[3]}; 
+                background-color: { self.storage.color_theme[1]};
+                border: 1px solid { self.storage.color_theme[3]}; 
             }}
 
             #engine-settings-close {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
+                background-color: { self.storage.color_theme[1]};
+                color: { self.storage.color_theme[3]};
                 font-size: 20px;
                 border: none;
             }}
 
             #engine-settings-close:hover {{
                 background-color: red;
-                color: {color_theme[0]};
+                color: { self.storage.color_theme[0]};
                 border: 5px solid red;
                 border-radius: 10px;
             }}
 
             QLabel {{
-                color: {color_theme[3]};
+                color: { self.storage.color_theme[3]};
                 font-size: 18px;
             }}
             """)

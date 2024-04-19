@@ -4,24 +4,29 @@ from PyQt5.QtCore import Qt
 from chess_board import ChessBoard
 from side_dialog import SideDialog
 from message_dialog import MessageDialog
-from sheard_memory import color_theme
+from sheard_memory import SharedMemoryStorage
 
 
 class GameFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setGeometry(0, 0, 750, 550)
-        self.setStyleSheet(f"""
-                    #game-frame {{
-                        border: none;
-                    }}
-                """)
+        self.storage = SharedMemoryStorage()
 
+        # Containers creation
         self.game_scene = ChessBoard(self)
         self.game_view = QGraphicsView(self.game_scene, self)
+        self.set_properties()
+        self.no_frame = self.create_style()
+        self.setStyleSheet(self.no_frame)
+
+    def set_properties(self):
+        # This container
+        self.setGeometry(0, 0, 750, 550)
+
+        # Items
         self.game_view.setRenderHint(QPainter.Antialiasing)
         self.game_view.setFixedSize(750, 550)
-        self.game_view.setBackgroundBrush(QColor(color_theme[0]))
+        self.game_view.setBackgroundBrush(QColor(self.storage.color_theme[0]))
         self.game_view.setObjectName("game-frame")
 
     def update_size(self, new_size):
@@ -31,6 +36,7 @@ class GameFrame(QFrame):
         self.game_scene.draw_board((new_size.height() - 820) + 490)
         self.game_scene.resize_pieces()
 
+    # Occasionally dialogs
     def side_up(self):
         side_dialog = SideDialog()
         side_dialog.exec()
@@ -68,6 +74,13 @@ class GameFrame(QFrame):
         widget.setLayout(layout)
 
         return widget
+
+    def create_style(self):
+        return f"""
+            #game-frame {{
+                border: none;
+            }}
+        """
 
 
 

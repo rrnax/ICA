@@ -2,15 +2,15 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QGridLayout
 from PyQt5.QtCore import Qt
 from engine import ChessEngine
-
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF"]
+from sheard_memory import SharedMemoryStorage
 
 
 class OpeningsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowFlag(Qt.FramelessWindowHint)
         self.engine = ChessEngine()
+        self.storage = SharedMemoryStorage()
+        self.setWindowFlag(Qt.FramelessWindowHint)
 
         close_btn = QPushButton("X", self)
         close_btn.setObjectName("engine-settings-close")
@@ -53,49 +53,49 @@ class OpeningsDialog(QDialog):
         self.setLayout(settings_layout)
         self.setStyleSheet(f"""
             #engine-setting-dialog {{
-                background-color: {color_theme[0]};
-                border: 1px solid {color_theme[3]}; 
+                background-color: {self.storage.color_theme[0]};
+                border: 1px solid {self.storage.color_theme[3]}; 
             }}
 
             #engine-settings-close {{
-                background-color: {color_theme[0]};
-                color: {color_theme[3]};
+                background-color: {self.storage.color_theme[0]};
+                color: {self.storage.color_theme[3]};
                 font-size: 20px;
                 border: none;
             }}
 
             #engine-settings-close:hover {{
                 background-color: red;
-                color: {color_theme[0]};
+                color: {self.storage.color_theme[0]};
                 border: 5px solid red;
                 border-radius: 10px;
             }}
 
             #engine_title {{
-                border-bottom: 1px solid {color_theme[3]};
+                border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
 
             QLabel {{
-                color: {color_theme[3]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
             }}
 
             QComboBox {{
-                background-color: {color_theme[0]};
-                color: {color_theme[3]};
+                background-color: {self.storage.color_theme[0]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
-                border: 1px solid {color_theme[3]}; 
+                border: 1px solid {self.storage.color_theme[3]}; 
             }}
 
             QComboBox QAbstractItemView {{
-                background-color: {color_theme[0]};
-                color: {color_theme[3]};
+                background-color: {self.storage.color_theme[0]};
+                color: {self.storage.color_theme[3]};
             }}
 
             QSpinBox {{
-                background-color: {color_theme[0]};
-                color: {color_theme[3]};
+                background-color: {self.storage.color_theme[0]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
-                border: 1px solid {color_theme[3]}; 
+                border: 1px solid {self.storage.color_theme[3]}; 
             }}
             """)

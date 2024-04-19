@@ -6,10 +6,20 @@ color_theme_light = ["#e8e9eb", "#FFFFFF", "#FFFFFF",  "#2B2D30", "#FFFFFF", "#9
 
 
 class SharedMemoryStorage:
+    _instance = None
     head_labels = []
     content_rows = []
+    color_theme = []
+    color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
+    color_theme_light = ["#e8e9eb", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
-    def __init__(self):
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    def initialize(self):
+        self.set_dark()
         self.create_head_labels()
         self.create_content_rows()
 
@@ -54,4 +64,10 @@ class SharedMemoryStorage:
                 move_widget.setObjectName(coils_style)
                 row.append(move_widget)
             self.content_rows.append(row)
+
+    def set_dark(self):
+        self.color_theme = self.color_theme_dark
+
+    def set_light(self):
+        self.color_theme = self.color_theme_light
 
