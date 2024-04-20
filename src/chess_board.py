@@ -151,7 +151,10 @@ class ChessBoard(QGraphicsScene):
 
     # Create pieces from logic board for all fields
     def init_pieces(self):
+        print(self.logic_board.fen())
+        print(self.pieces)
         for field in self.fields:
+            print(self.logic_board.fen())
             square_pos = parse_square(field.chess_pos)
             piece_fen = self.logic_board.piece_at(square_pos)
             if piece_fen is not None:
@@ -159,6 +162,7 @@ class ChessBoard(QGraphicsScene):
                     if value == piece_fen.symbol():
                         piece = VirtualPiece(key, value, field, self)
                         self.pieces.append(piece)
+
 
     # Scale and place pieces on scene
     def draw_pieces(self):

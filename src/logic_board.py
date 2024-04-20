@@ -7,6 +7,7 @@ import datetime
 
 class LogicBoard(Board):
     _instance = None
+    main_board = Board()
     engine = ChessEngine()
     graphic_board = None
     game_widget = None
@@ -295,4 +296,15 @@ class LogicBoard(Board):
 
         return game
 
+    def load_position_fen(self, fen):
+        print(fen)
+        self.main_board.set_fen(fen=fen)
+        self.graphic_board.clear_pieces()
+        self.graphic_board.init_pieces()
+        self.graphic_board.draw_pieces()
+        # self.advanced_history.clear()
+        # self.forward_moves.clear()
+        # self.stats_frame.clear_history()
+        # self.stats_frame.empty_history()
+        # self.stats_frame.update_buttons()
 

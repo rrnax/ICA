@@ -180,7 +180,7 @@ class MenuSlideFrame(QFrame):
         save_dialog.exec()
 
     def open_loading(self):
-        load_dialog = LoadDialog()
+        load_dialog = LoadDialog(self)
         load_dialog.exec()
 
     def open_endings(self):
@@ -225,6 +225,12 @@ class MenuSlideFrame(QFrame):
     def update_style(self):
         style = self.create_style()
         self.setStyleSheet(style)
+
+    def load_board(self, notation, content):
+        if notation == "pgn":
+            print(content)
+        elif notation == "fen":
+            self.logic_board.load_position_fen(fen=content)
 
 # <a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Freepik - Flaticon</a>
 # <a href="https://www.flaticon.com/free-icons/insight" title="insight icons">Insight icons created by Awicon - Flaticon</a>

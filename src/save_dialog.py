@@ -43,7 +43,7 @@ class SaveDialog(QDialog):
 
     def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setObjectName("engine-setting-dialog")
+        self.setObjectName("save-dialog")
         self.setFixedSize(800, 600)
 
     def set_layouts(self):
@@ -105,7 +105,7 @@ class SaveDialog(QDialog):
         # Top bar
         self.bar_space.setFixedSize(760, 40)
         self.close_bar.setFixedSize(800, 40)
-        self.close_bar.setObjectName("engine_title")
+        self.close_bar.setObjectName("save-title")
 
         # Fen area
         self.fen_value.setMaximumHeight(40)
@@ -113,11 +113,13 @@ class SaveDialog(QDialog):
         self.fen_value.setLineWrapMode(QTextEdit.NoWrap)
         self.fen_value.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.fen_value.setReadOnly(True)
+        self.fen_value.setObjectName("save-fen-area")
 
         # Pgn area
         self.pgn_value.setFixedHeight(300)
         self.pgn_value.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.pgn_value.setReadOnly(True)
+        self.pgn_value.setObjectName("save-pgn-area")
 
         # Buttons
         self.fen_save_in.setCursor(Qt.PointingHandCursor)
@@ -131,7 +133,7 @@ class SaveDialog(QDialog):
 
     def create_style(self):
         return f"""
-            #engine-setting-dialog {{
+            #save-dialog {{
                 background-color: {self.storage.color_theme[0]};
                 border: 1px solid {self.storage.color_theme[3]}; 
             }}
@@ -150,7 +152,7 @@ class SaveDialog(QDialog):
                 border-radius: 10px;
             }}
 
-            #engine_title {{
+            #save-title {{
                 border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
 
@@ -159,26 +161,7 @@ class SaveDialog(QDialog):
                 font-size: 18px;
             }}
 
-            QComboBox {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border: 1px solid {self.storage.color_theme[3]}; 
-            }}
-
-            QComboBox QAbstractItemView {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-            }}
-
-            QSpinBox {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border: 1px solid {self.storage.color_theme[3]}; 
-            }}
-            
-            QTextEdit {{
+            #save-fen-area, #save-pgn-area {{
                 background-color: {self.storage.color_theme[1]};
                 font-size: 20px;
                 color: {self.storage.color_theme[3]};
