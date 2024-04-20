@@ -71,36 +71,43 @@ class MenuSlideFrame(QFrame):
         self.new_game_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.new_game_btn.setIcon(QIcon("../resources/mini-board.png"))
         self.new_game_btn.setIconSize(QSize(80, 40))
+        self.new_game_btn.setObjectName("new-game-btn")
 
         # Analyze mode button
         self.analyze_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.analyze_btn.setIcon(QIcon("../resources/loupe.png"))
         self.analyze_btn.setIconSize(QSize(80, 40))
+        self.analyze_btn.setObjectName("analyze-btn")
         
         # Openings section button
         self.openings_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.openings_btn.setIcon(QIcon("../resources/opens.png"))
         self.openings_btn.setIconSize(QSize(80, 40))
+        self.openings_btn.setObjectName("openings-btn")
 
         # Endings section button
         self.endings_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.endings_btn.setIcon(QIcon("../resources/ends.png"))
         self.endings_btn.setIconSize(QSize(80, 40))
+        self.endings_btn.setObjectName("endings-btn")
 
         # Load game or position on board
         self.load_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.load_btn.setIcon(QIcon("../resources/load_game.png"))
         self.load_btn.setIconSize(QSize(80, 40))
+        self.load_btn.setObjectName("load-btn")
         
         # Save position or board
         self.save_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.save_btn.setIcon(QIcon("../resources/saves.png"))
         self.save_btn.setIconSize(QSize(80, 40))
+        self.save_btn.setObjectName("save-btn")
 
         # Hide menu button
         self.hide_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.hide_btn.setIcon(QIcon("../resources/back_arrow.png"))
         self.hide_btn.setIconSize(QSize(80, 40))
+        self.hide_btn.setObjectName("hide-btn")
 
         # Images to switch and switch to change theme
         moon_pixmap = QPixmap("../resources/moon.png")
@@ -198,7 +205,7 @@ class MenuSlideFrame(QFrame):
                 border-right: none; 
             }}
 
-            QPushButton {{
+            #new-game-btn, #analyze-btn, #openings-btn, #endings-btn, #load-btn, #save-btn, #hide-btn {{
                 width: 300px;
                 height: 50px;
                 padding-left: 20px;
@@ -209,8 +216,8 @@ class MenuSlideFrame(QFrame):
                 border: none;
             }}
 
-            QPushButton:hover {{
-                background-color: {self.storage.color_theme[3]};
+            #new-game-btn:hover, #analyze-btn:hover, #openings-btn:hover, #endings-btn:hover, #load-btn:hover, 
+            #save-btn:hover, #hide-btn:hover {{ background-color: {self.storage.color_theme[3]};
                 color: {self.storage.color_theme[0]};
             }}
         """

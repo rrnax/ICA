@@ -66,6 +66,7 @@ class MovesOptionsList(QScrollArea):
         self.content_area = QScrollArea()
         self.content_area.setFixedHeight(173)
         self.content_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.content_area.setObjectName("moves-scroll-area")
         self.content_area.setWidget(self.content_widget)
 
         self.fill_layout = QVBoxLayout()
@@ -87,6 +88,7 @@ class MovesOptionsList(QScrollArea):
         self.setWidget(self.moves_widget)
         self.options_style = self.create_style()
         self.setStyleSheet(self.options_style)
+        self.setObjectName("main-scroll")
 
     def create_header(self, column_amount):
         self.hide_headers()
@@ -202,7 +204,7 @@ class MovesOptionsList(QScrollArea):
         
     def create_style(self):
         return f"""
-            QScrollArea {{
+            #main-scroll, #moves-scroll-area {{
                 background-color: {self.storage.color_theme[1]};
                 color: {self.storage.color_theme[3]};
                 border: none;            

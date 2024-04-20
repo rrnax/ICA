@@ -63,10 +63,12 @@ class SideDialog(QDialog):
         self.white_button.setIcon(QIcon(self.white_knight))
         self.white_button.setIconSize(self.white_knight.size())
         self.white_button.setCursor(Qt.PointingHandCursor)
+        self.white_button.setObjectName("white-btn")
         self.black_button.setFixedSize(100, 100)
         self.black_button.setIcon(QIcon(self.black_knight))
         self.black_button.setIconSize(self.black_knight.size())
         self.black_button.setCursor(Qt.PointingHandCursor)
+        self.black_button.setObjectName("black-btn")
 
     def set_layouts(self):
         # Bar on the top
@@ -133,12 +135,12 @@ class SideDialog(QDialog):
                 font-size: 18px;
             }}
             
-            QPushButton {{
-                        background-color: {self.storage.color_theme[1]};
-                        border: 1px solid {self.storage.color_theme[1]};
-                    }}
+            #white-btn, #black-btn {{
+                background-color: {self.storage.color_theme[1]};
+                border: 1px solid {self.storage.color_theme[1]};
+            }}
 
-            QPushButton:hover {{
+            #white-btn:hover, #black-btn:hover {{
                 background-color: {self.storage.color_theme[3]};
                 border-radius: 10px;
             }}

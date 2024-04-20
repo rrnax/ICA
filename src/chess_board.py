@@ -297,6 +297,10 @@ class ChessBoard(QGraphicsScene):
         if king is not None:
             king.current_field.setBrush(QColor(king.current_field.orginal_brush))
 
+    def clear_fields(self):
+        for field in self.fields:
+            field.setBrush(QColor(field.orginal_brush))
+
     def remove_undo_check(self):
         if self.logic_board.turn:
             king = self.find_piece_by_name("b_king")

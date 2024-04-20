@@ -90,7 +90,7 @@ class LogicBoard(Board):
 
     def restart(self):
         self.reset()
-        self.graphic_board.clear_check()
+        self.graphic_board.clear_fields()
         self.graphic_board.clear_pieces()
         self.graphic_board.init_pieces()
         self.graphic_board.draw_pieces()
@@ -169,10 +169,6 @@ class LogicBoard(Board):
             self.graphic_board.clear_captures()
             self.stats_frame.update_buttons()
             self.make_analyze()
-            # if self.player_side == "black":
-            #     self.engine_move()
-            # else:
-            #     self.make_analyze()
 
     def valid_remove(self, action, move):
         if action == "Roszada":

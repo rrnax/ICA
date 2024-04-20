@@ -98,7 +98,7 @@ class SaveDialog(QDialog):
         
     def set_items_properties(self):
         # Close
-        self.close_btn.setObjectName("engine-settings-close")
+        self.close_btn.setObjectName("saves-close")
         self.close_btn.setCursor(QCursor(Qt.PointingHandCursor))
         self.close_btn.setFixedSize(30, 30)
 
@@ -121,9 +121,13 @@ class SaveDialog(QDialog):
 
         # Buttons
         self.fen_save_in.setCursor(Qt.PointingHandCursor)
+        self.fen_save_in.setObjectName("fen-save")
         self.fen_copy.setCursor(Qt.PointingHandCursor)
+        self.fen_copy.setObjectName("fen-copy")
         self.pgn_save_in.setCursor(Qt.PointingHandCursor)
+        self.pgn_save_in.setObjectName("pgn-save")
         self.pgn_copy.setCursor(Qt.PointingHandCursor)
+        self.pgn_copy.setObjectName("pgn-copy")
 
     def create_style(self):
         return f"""
@@ -132,14 +136,14 @@ class SaveDialog(QDialog):
                 border: 1px solid {self.storage.color_theme[3]}; 
             }}
 
-            #engine-settings-close {{
+            #saves-close {{
                 background-color: {self.storage.color_theme[0]};
                 color: {self.storage.color_theme[3]};
                 font-size: 20px;
                 border: none;
             }}
 
-            #engine-settings-close:hover {{
+            #saves-close:hover {{
                 background-color: red;
                 color: {self.storage.color_theme[0]};
                 border: 5px solid red;
@@ -209,7 +213,7 @@ class SaveDialog(QDialog):
                 border: none;
             }}
             
-            QPushButton {{
+            #fen-save, #fen-copy, #pgn-save, #pgn-copy {{
                 width: 150px;
                 height: 30px;
                 background-color: {self.storage.color_theme[3]};
@@ -219,7 +223,7 @@ class SaveDialog(QDialog):
                 border-radius: 5px;
             }}
 
-            QPushButton:hover {{
+            #fen-save:hover, #fen-copy:hover, #pgn-save:hover, #pgn-copy:hover {{
                 background-color: {self.storage.color_theme[0]};
                 color: {self.storage.color_theme[3]};
             }}

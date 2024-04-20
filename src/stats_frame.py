@@ -23,46 +23,12 @@ class StatsFrame(QFrame):
         self.mode_label = None
 
         self.again_btn = QPushButton()
-        self.again_btn.setFixedSize(40, 40)
-        self.again_btn.setIconSize(QSize(40, 40))
-        self.again_btn.setToolTip("Od nowa")
-        self.again_btn.setIcon((QIcon("../resources/again.png")))
-        self.again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-
         self.move_back_btn = QPushButton()
-        self.move_back_btn.setFixedSize(40, 40)
-        self.move_back_btn.setIconSize(QSize(30, 30))
-        self.move_back_btn.setToolTip("Ruch wstecz")
-        self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller.png"))
-        self.move_back_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-
         self.move_froward_btn = QPushButton()
-        self.move_froward_btn.setFixedSize(40, 40)
-        self.move_froward_btn.setIconSize(QSize(30, 30))
-        self.move_froward_btn.setToolTip("Ruch naprzód")
-        self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow.png"))
-        self.move_froward_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-
         self.surrender_btn = QPushButton()
-        self.surrender_btn.setFixedSize(40, 40)
-        self.surrender_btn.setIconSize(QSize(30, 30))
-        self.surrender_btn.setToolTip("Poddaj")
-        self.surrender_btn.setIcon(QIcon("../resources/surrender.png"))
-        self.surrender_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-
         self.draw_btn = QPushButton()
-        self.draw_btn.setFixedSize(40, 40)
-        self.draw_btn.setIconSize(QSize(30, 30))
-        self.draw_btn.setToolTip("Zaproponuj remis")
-        self.draw_btn.setIcon(QIcon("../resources/draw.png"))
-        self.draw_btn.setCursor((QCursor(Qt.PointingHandCursor)))
-
-        board_rotation = QPushButton()
-        board_rotation.setFixedSize(40, 40)
-        board_rotation.setIcon(QIcon("../resources/rotation.png"))
-        board_rotation.setCursor(QCursor(Qt.PointingHandCursor))
-        board_rotation.setIconSize(QSize(30, 30))
-        board_rotation.setToolTip("Obróć plansze")
+        self.board_rotation = QPushButton()
+        self.history_area = QScrollArea()
 
         space_item = QWidget()
         space_item.setFixedSize(20, 40)
@@ -75,7 +41,7 @@ class StatsFrame(QFrame):
         self.operation_layout.addWidget(self.move_froward_btn)
         self.operation_layout.addWidget(self.surrender_btn)
         self.operation_layout.addWidget(self.draw_btn)
-        self.operation_layout.addWidget(board_rotation)
+        self.operation_layout.addWidget(self.board_rotation)
         self.operation_layout.addWidget(space_item)
         # self.operation_layout.addWidget(self.game_type_label)
 
@@ -99,11 +65,6 @@ class StatsFrame(QFrame):
         self.history_widget.setObjectName("history-widget")
         self.history_widget.setLayout(self.layout_history)
 
-        self.history_area = QScrollArea()
-        self.history_area.setFixedSize(450, 250)
-        self.history_area.setContentsMargins(0, 0, 0, 0)
-        self.history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.history_area.setWidget(self.history_widget)
 
         stats_layout = QVBoxLayout()
         stats_layout.setContentsMargins(0, 0, 0, 0)
@@ -113,6 +74,8 @@ class StatsFrame(QFrame):
         stats_layout.addWidget(history_label)
         stats_layout.addWidget(self.history_area)
 
+        self.set_items_properties()
+
         # Set frame general options
         self.setGeometry(750, 0, 450, 550)
         self.setObjectName("stats-frame")
@@ -120,7 +83,7 @@ class StatsFrame(QFrame):
         self.stats_style = self.create_style()
         self.setStyleSheet(self.stats_style)
 
-        board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
+        self.board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
         self.again_btn.clicked.connect(self.logic_board.restart)
         self.move_back_btn.clicked.connect(self.logic_board.valid_undo)
         self.move_froward_btn.clicked.connect(self.logic_board.valid_forward)
@@ -129,6 +92,62 @@ class StatsFrame(QFrame):
         self.set_game_label("analyze")
         self.empty_history()
         self.update_buttons()
+
+    def set_items_properties(self):
+        # From start button
+        self.again_btn.setFixedSize(40, 40)
+        self.again_btn.setIconSize(QSize(40, 40))
+        self.again_btn.setToolTip("Od nowa")
+        self.again_btn.setIcon((QIcon("../resources/again.png")))
+        self.again_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        self.again_btn.setObjectName("again-btn")
+
+        # Move back
+        self.move_back_btn.setFixedSize(40, 40)
+        self.move_back_btn.setIconSize(QSize(30, 30))
+        self.move_back_btn.setToolTip("Ruch wstecz")
+        self.move_back_btn.setIcon(QIcon("../resources/back_arrow_smaller.png"))
+        self.move_back_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        self.move_back_btn.setObjectName("move-back-btn")
+
+        # Move forward
+        self.move_froward_btn.setFixedSize(40, 40)
+        self.move_froward_btn.setIconSize(QSize(30, 30))
+        self.move_froward_btn.setToolTip("Ruch naprzód")
+        self.move_froward_btn.setIcon(QIcon("../resources/forward_arrow.png"))
+        self.move_froward_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        self.move_froward_btn.setObjectName("move-forward")
+
+        # Surrender button
+        self.surrender_btn.setFixedSize(40, 40)
+        self.surrender_btn.setIconSize(QSize(30, 30))
+        self.surrender_btn.setToolTip("Poddaj")
+        self.surrender_btn.setIcon(QIcon("../resources/surrender.png"))
+        self.surrender_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        self.surrender_btn.setObjectName("surrender-btn")
+
+        # Draw button
+        self.draw_btn.setFixedSize(40, 40)
+        self.draw_btn.setIconSize(QSize(30, 30))
+        self.draw_btn.setToolTip("Zaproponuj remis")
+        self.draw_btn.setIcon(QIcon("../resources/draw.png"))
+        self.draw_btn.setCursor((QCursor(Qt.PointingHandCursor)))
+        self.draw_btn.setObjectName("draw-btn")
+
+        # Rotate board
+        self.board_rotation.setFixedSize(40, 40)
+        self.board_rotation.setIcon(QIcon("../resources/rotation.png"))
+        self.board_rotation.setCursor(QCursor(Qt.PointingHandCursor))
+        self.board_rotation.setIconSize(QSize(30, 30))
+        self.board_rotation.setToolTip("Obróć plansze")
+        self.board_rotation.setObjectName("rotate-btn")
+
+        # Scroll Area
+        self.history_area.setFixedSize(450, 250)
+        self.history_area.setContentsMargins(0, 0, 0, 0)
+        self.history_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.history_area.setWidget(self.history_widget)
+        self.history_area.setObjectName("scroll-history")
 
     # On window resize
     def update_size(self, new_size):
@@ -145,26 +164,12 @@ class StatsFrame(QFrame):
         styles = None
         if mode == "analyze":
             label.setText("Tryb: Analiza")
-            styles = f"""#game-type {{
-                        padding: 5px;
-                        color: white;
-                        background-color: #144d91;
-                        font-size: 18px;
-                        border: 1px solid #144d91;
-                        border-radius: 10px;
-                    }}"""
+            label.setStyleSheet(f"padding: 5px; color: white; background-color: #144d91; font-size: 18px; border: 1px "
+                                f"solid #144d91; border-radius: 10px;")
         elif mode == "game":
             label.setText("Tryb: Gra")
-            styles = f"""#game-type {{
-                        padding: 5px;
-                        color: white;
-                        background-color: #20a16d;
-                        font-size: 18px;
-                        border: 1px solid #20a16d;
-                        border-radius: 10px;
-                    }}"""
-        label.setObjectName("game-type")
-        label.setStyleSheet(styles)
+            label.setStyleSheet(f"padding: 5px; color: white; background-color: #20a16d; font-size: 18px; border: 1px "
+                                f"solid #20a16d; border-radius: 10px;")
         self.operation_layout.addWidget(label)
         self.mode_label = label
 
@@ -177,42 +182,31 @@ class StatsFrame(QFrame):
             for index, element in enumerate(reversed(self.logic_board.advanced_history)):
                 no_label = QLabel(str(row_amount - index) + ".")
                 no_label.setFixedSize(50, 40)
+                no_label.setStyleSheet(f"color:{self.storage.color_theme[3]}; font-size: 18;")
                 move = element.get("move")
                 move_str = move.uci()
                 piece = element.get("piece")
                 add_info = element.get("about")
-                style = None
+
+                widget_row = QWidget()
+
+                if move_str == "0000":
+                    move_label = QLabel("")
+                else:
+                    move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
+
                 if (row_amount - index - 1) % 2 == 0:
                     if self.storage.color_theme[0] == "#1E1F22":
-                        style = f"""
-                            #move-label {{
-                                color: white;
-                            }}
-                        """
+                        move_label.setStyleSheet(f"color: white")
                     else:
-                        style = f"""
-                           #move-label {{
-                               color: {self.storage.color_theme[6]};
-                           }}
-                        """
+                        move_label.setStyleSheet(f"color: {self.storage.color_theme[6]};")
                 else:
-                    style = f"""
-                        #move-label {{
-                            color: {self.storage.color_theme[3]};
-                        }}
-                    """
+                    move_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+
                 if index % 2 == 0:
-                    style += f"""
-                        QWidget {{
-                            background-color: {self.storage.color_theme[0]};
-                        }}
-                    """
+                    widget_row.setStyleSheet(f"background-color: {self.storage.color_theme[0]};")
                 else:
-                    style += f"""
-                        QWidget {{
-                            background-color: {self.storage.color_theme[1]};
-                        }}
-                    """
+                    widget_row.setStyleSheet(f"background-color: {self.storage.color_theme[1]};")
 
                 piece_label = QLabel()
                 piece_label.setFixedSize(40, 40)
@@ -220,14 +214,10 @@ class StatsFrame(QFrame):
                 pixmap = pixmap.scaled(QSize(25, 25), transformMode=Qt.SmoothTransformation)
                 piece_label.setPixmap(pixmap)
 
-                if move_str == "0000":
-                    move_label = QLabel("")
-                else:
-                    move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
-                move_label.setObjectName("move-label")
                 move_label.setFixedSize(60, 40)
 
                 info_label = QLabel(add_info)
+                info_label.setStyleSheet(f"color:{self.storage.color_theme[3]}; font-size: 18;")
                 info_label.setFixedSize(100, 40)
                 info_label.setAlignment(Qt.AlignCenter)
 
@@ -240,9 +230,7 @@ class StatsFrame(QFrame):
                 layout_row.addWidget(move_label)
                 layout_row.addWidget(info_label)
 
-                widget_row = QWidget()
                 widget_row.setFixedSize(450, 40)
-                widget_row.setStyleSheet(style)
                 widget_row.setLayout(layout_row)
 
                 self.layout_history.addWidget(widget_row)
@@ -264,7 +252,8 @@ class StatsFrame(QFrame):
         self.clear_history()
         empty_label = QLabel("Pusto")
         empty_label.setFixedSize(450, 40)
-        empty_label.setStyleSheet(f"background-color: {self.storage.color_theme[0]};")
+        empty_label.setStyleSheet(f"background-color:{self.storage.color_theme[0]};"
+                                  f"color:{self.storage.color_theme[3]}; font-size: 18;")
         empty_label.setAlignment(Qt.AlignCenter)
         self.layout_history.addWidget(empty_label)
         self.history_items.append(empty_label)
@@ -323,12 +312,8 @@ class StatsFrame(QFrame):
             #history-widget {{
                 background-color: {self.storage.color_theme[1]};
             }}
-            
-            #chart-view {{
-                border-top: 1px solid {self.storage.color_theme[3]};
-            }}
-            
-            QScrollArea {{
+                            
+            #scroll-history {{
                 background-color: {self.storage.color_theme[0]};
                 border-top: none;
                 border-left: 1px solid {self.storage.color_theme[3]};
@@ -354,19 +339,15 @@ class StatsFrame(QFrame):
                 border: none;
             }}
             
-            QLabel {{
-                color: {self.storage.color_theme[3]};
-                font-size: 18 ;
-            }}
-            
-             QPushButton {{
+            #again-btn, #move-back-btn, #move-forward, #surrender-btn, #draw-btn, #rotate-btn {{
                 background-color: {self.storage.color_theme[1]};
                 border: 1px solid {self.storage.color_theme[1]};
             }}
             
-            QPushButton:hover {{
-                background-color: {self.storage.color_theme[3]};
+            #again-btn:hover, #move-back-btn:hover, #move-forward:hover, #surrender-btn:hover, #draw-btn:hover, 
+            #rotate-btn:hover {{ background-color: {self.storage.color_theme[3]};
                 border-radius: 10px;
-            }} 
+            }}
+            
         """
 
