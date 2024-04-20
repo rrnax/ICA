@@ -1,9 +1,5 @@
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
-color_theme = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
-color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
-color_theme_light = ["#e8e9eb", "#FFFFFF", "#FFFFFF",  "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
-
 
 class SharedMemoryStorage:
     _instance = None
@@ -11,7 +7,7 @@ class SharedMemoryStorage:
     content_rows = []
     color_theme = []
     color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
-    color_theme_light = ["#e8e9eb", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
+    color_theme_light = ["#d4d4d4", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:

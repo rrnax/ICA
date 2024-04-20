@@ -91,6 +91,10 @@ class MainWindow(QMainWindow):
 
         # Other
         self.menu_widget.update_style()
+        self.game_frame.update_theme()
+        self.stats_frame.update_theme()
+        self.engine_frame.update_theme()
+        self.moves_frame.update_theme()
 
     # Produce style for this container
     def create_style(self):
@@ -110,35 +114,3 @@ class MainWindow(QMainWindow):
             }}
         """
 
-    # def change_theme(self, themes):
-    #     style = f"""
-    #         #main-window {{
-    #             background-color: {themes[0]};
-    #         }}
-    #
-    #         #menu-btn {{
-    #             background-color: {themes[1]};
-    #             border: 2px solid {themes[3]};
-    #             border-radius: 5px;
-    #         }}
-    #
-    #         #menu-btn:hover {{
-    #             background-color: {themes[3]};
-    #         }}
-    #     """
-    #     self.setStyleSheet(style)
-    #     self.game_frame.game_view.setBackgroundBrush(QColor(themes[0]))
-    #     for field in self.game_frame.game_scene.fields:
-    #         field.field_labels[0].setDefaultTextColor(QColor(themes[3]))
-    #         field.field_labels[1].setDefaultTextColor(QColor(themes[3]))
-    #         if themes[0] == "#1E1F22":
-    #             pen = QPen(Qt.NoPen)
-    #             field.setPen(pen)
-    #         else:
-    #             pen = QPen(QColor(themes[3]))
-    #             field.setPen(pen)
-    #
-    #     self.stats_frame.update_theme(themes)
-    #     self.engine_frame.update_theme(themes)
-    #     self.moves_frame.update_theme(themes)
-    #

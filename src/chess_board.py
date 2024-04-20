@@ -6,7 +6,7 @@ from chess import parse_square, Move
 from logic_board import LogicBoard
 from piece import VirtualPiece
 from field import VirtualField
-from sheard_memory import color_theme
+from sheard_memory import SharedMemoryStorage
 
 
 class ChessBoard(QGraphicsScene):
@@ -14,6 +14,7 @@ class ChessBoard(QGraphicsScene):
         super().__init__(parent)
         self.setSceneRect(0, 0, 750, 550)
         self.logic_board = LogicBoard()
+        self.storage = SharedMemoryStorage()
 
         # Position left up corner on scene and board side length
         self.board_x = None
@@ -56,11 +57,11 @@ class ChessBoard(QGraphicsScene):
             for id_column, column in enumerate(self.fields_alph):
                 field = VirtualField(column + row)
                 if (id_column + id_row) % 2 == 0:
-                    field.setBrush(QColor(color_theme[3]))
-                    field.orginal_brush = QColor(color_theme[3])
+                    field.setBrush(QColor(self.storage.color_theme[3]))
+                    field.orginal_brush = QColor(self.storage.color_theme[3])
                 else:
-                    field.setBrush(QColor(color_theme[4]))
-                    field.orginal_brush = QColor(color_theme[4])
+                    field.setBrush(QColor(self.storage.color_theme[4]))
+                    field.orginal_brush = QColor(self.storage.color_theme[4])
 
                 self.fields.append(field)
         self.draw_board(480)
@@ -207,7 +208,7 @@ class ChessBoard(QGraphicsScene):
         for field in legal_fields:
             move_uci = field_from.chess_pos + field.chess_pos
             if self.logic_board.is_capture(Move.from_uci(move_uci)):
-                field.setBrush(QColor(color_theme[6]))
+                field.setBrush(QColor(self.storage.color_theme[6]))
                 self.capture_fields.append(field)
             else:
                 self.draw_circle(field)
@@ -219,8 +220,8 @@ class ChessBoard(QGraphicsScene):
                                  field.rect().y() + (field.rect().height() - circle_size) / 2,
                                  circle_size,
                                  circle_size,
-                                 pen=QColor(color_theme[5]),
-                                 brush=QColor(color_theme[5]))
+                                 pen=QColor(self.storage.color_theme[5]),
+                                 brush=QColor(self.storage.color_theme[5]))
         self.circles.append(circle)
 
     def clear_circles(self):
@@ -246,7 +247,7 @@ class ChessBoard(QGraphicsScene):
         if self.highlited_field is not None:
             self.highlited_field.setBrush(QColor(self.highlited_field.orginal_brush))
         self.highlited_field = field
-        field.setBrush(QColor(color_theme[5]))
+        field.setBrush(QColor(self.storage.color_theme[5]))
 
     def clear_highlighted(self):
         if self.highlited_field is not None:
@@ -279,7 +280,7 @@ class ChessBoard(QGraphicsScene):
             king = self.find_piece_by_name("b_king")
         else:
             king = self.find_piece_by_name("w_king")
-        king.current_field.setBrush(QColor(color_theme[6]))
+        king.current_field.setBrush(QColor(self.storage.color_theme[6]))
 
     def remove_check(self):
         if self.logic_board.turn:

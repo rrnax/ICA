@@ -7,7 +7,7 @@ from save_dialog import SaveDialog
 from load_dialog import LoadDialog
 from openings_dialog import OpeningsDialog
 from endings_dialog import EndingDialog
-from sheard_memory import SharedMemoryStorage, color_theme
+from sheard_memory import SharedMemoryStorage
 
 
 class MenuSlideFrame(QFrame):
@@ -28,7 +28,7 @@ class MenuSlideFrame(QFrame):
         self.save_btn = QPushButton("Zapisz")
         self.hide_btn = QPushButton("Powrót")
         self.moon = QLabel()
-        self.switch = SwitchControl(bg_color=color_theme[3], active_color=color_theme[1], change_cursor=True)
+        self.switch = SwitchControl(bg_color=self.storage.color_theme[3], active_color=self.storage.color_theme[1], change_cursor=True)
         self.sun = QLabel()
         self.theme_mode = QWidget()
         self.menu_style = self.create_style()

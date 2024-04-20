@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QFrame, QGraphicsView, QLabel, QWidget, QVBoxLayout
-from PyQt5.QtGui import QColor, QPainter, QPixmap
+from PyQt5.QtGui import QColor, QPainter, QPixmap, QPen
 from PyQt5.QtCore import Qt
 from chess_board import ChessBoard
 from side_dialog import SideDialog
@@ -82,6 +82,16 @@ class GameFrame(QFrame):
             }}
         """
 
-
+    def update_theme(self):
+        self.game_view.setBackgroundBrush(QColor(self.storage.color_theme[0]))
+        for field in self.game_scene.fields:
+            field.field_labels[0].setDefaultTextColor(QColor(self.storage.color_theme[3]))
+            field.field_labels[1].setDefaultTextColor(QColor(self.storage.color_theme[3]))
+            if self.storage.color_theme[0] == "#1E1F22":
+                pen = QPen(Qt.NoPen)
+                field.setPen(pen)
+            else:
+                pen = QPen(QColor(self.storage.color_theme[3]))
+                field.setPen(pen)
 
 

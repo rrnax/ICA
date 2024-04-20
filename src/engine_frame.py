@@ -3,10 +3,7 @@ from PyQt5.QtGui import QCursor, QIcon, QFontDatabase, QFont
 from PyQt5.QtCore import Qt, QSize
 from settings_dialog import SettingsDialog
 from engine import ChessEngine
-from sheard_memory import color_theme
-#<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/sort-ascending" title="sort ascending icons">Sort ascending icons created by Infinite Dendrogram - Flaticon</a>
-#<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
+from sheard_memory import SharedMemoryStorage
 
 
 class EngineFrame(QFrame):
@@ -14,6 +11,7 @@ class EngineFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.engine = ChessEngine()
+        self.storage = SharedMemoryStorage()
 
         # Nodes elements
         sort_menu = QMenu(self)
@@ -70,49 +68,8 @@ class EngineFrame(QFrame):
         self.setLayout(self.engine_frame_layout)
         self.setGeometry(0, 550, 1200, 50)
         self.setObjectName("engine-frame")
-        self.setStyleSheet(f"""
-            #engine-frame {{
-                background-color: {color_theme[1]};
-                border-top: 1px solid {color_theme[3]};
-                border-bottom: 1px solid {color_theme[3]};
-            }}
-                
-            QWidget {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
-                font-size: 18px;
-            }}
-            
-            QPushButton {{
-                border: none;
-            }}
-            
-            QPushButton::menu-indicator {{
-                width: 0px;
-            }}
-            
-            QPushButton:hover {{
-                color: {color_theme[0]};
-                background-color: {color_theme[3]};
-                border: 1px solid {color_theme[0]};
-                border-radius: 10px;
-            }}
-            
-            QMenu {{
-                color: {color_theme[3]};
-                background-color: {color_theme[1]};
-                border: 1px solid {color_theme[3]};
-            }}
-            
-            QMenu::item {{
-                padding: 5px 10px;
-            }}
-            
-            QMenu::item:selected {{
-                color: {color_theme[0]};
-                background-color: {color_theme[1]};
-            }}
-            """)
+        self.engine_style = self.create_style()
+        self.setStyleSheet(self.engine_style)
 
     def update_size(self, new_size):
         # self.engine_frame_layout.setSpacing(400 + new_size.width()-1200)
@@ -148,17 +105,21 @@ class EngineFrame(QFrame):
         self.engine.pieces_ids_list = self.engine.find_pieces_ids()
         self.engine.moves_frame.set_move_table(self.engine.last_result)
 
-    def update_theme(self, themes):
-        style = f"""
+    def update_theme(self):
+        style = self.create_style()
+        self.setStyleSheet(style)
+        
+    def create_style(self):
+        return f"""
             #engine-frame {{
-                background-color: {themes[1]};
-                border-top: 1px solid {themes[3]};
-                border-bottom: 1px solid {themes[3]};
+                background-color: {self.storage.color_theme[1]};
+                border-top: 1px solid {self.storage.color_theme[3]};
+                border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
                 
             QWidget {{
-                background-color: {themes[1]};
-                color: {themes[3]};
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
             }}
             
@@ -171,16 +132,16 @@ class EngineFrame(QFrame):
             }}
             
             QPushButton:hover {{
-                color: {themes[0]};
-                background-color: {themes[3]};
-                border: 1px solid {themes[0]};
+                color: {self.storage.color_theme[0]};
+                background-color: {self.storage.color_theme[3]};
+                border: 1px solid {self.storage.color_theme[0]};
                 border-radius: 10px;
             }}
             
             QMenu {{
-                color: {themes[3]};
-                background-color: {themes[1]};
-                border: 1px solid {themes[3]};
+                color: {self.storage.color_theme[3]};
+                background-color: {self.storage.color_theme[1]};
+                border: 1px solid {self.storage.color_theme[3]};
             }}
             
             QMenu::item {{
@@ -188,8 +149,12 @@ class EngineFrame(QFrame):
             }}
             
             QMenu::item:selected {{
-                color: {themes[0]};
-                background-color: {themes[1]};
+                color: {self.storage.color_theme[0]};
+                background-color: {self.storage.color_theme[1]};
             }}
-            """
-        self.setStyleSheet(style)
+        """
+
+#<a href="https://www.flaticon.com/free-icons/menu-bar" title="menu bar icons">Menu bar icons created by Vector Squad - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/sort-ascending" title="sort ascending icons">Sort ascending icons created by Infinite Dendrogram - Flaticon</a>
+#<a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
+

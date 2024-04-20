@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 import math
 from loader import Loader
-from sheard_memory import SharedMemoryStorage, color_theme
+from sheard_memory import SharedMemoryStorage
 from engine import ChessEngine
 
 
@@ -85,62 +85,8 @@ class MovesOptionsList(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAlignment(Qt.AlignCenter)
         self.setWidget(self.moves_widget)
-        self.setStyleSheet(f"""
-            QScrollArea {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
-                border: none;            
-            }}
-            
-            #head-label {{
-                background-color: {color_theme[3]};
-                color: {color_theme[0]};
-                font-size: 18px;
-            }}
-            
-            #coli-label-one {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
-                font-size: 18px;
-                border-bottom: 1px solid {color_theme[3]};
-            }}
-            
-            #coli-label-two {{
-                background-color: {color_theme[0]};
-                color: {color_theme[3]};
-                font-size: 18px;
-                border-bottom: 1px solid {color_theme[3]};
-            }}
-        
-            #no-border-label {{
-                color: {color_theme[3]};
-                border: none
-            }}
-        
-            QScrollBar:horizontal, QScrollBar:vertical {{
-                background-color: {color_theme[1]};
-                color: {color_theme[3]};
-                border: 1px solid {color_theme[3]}
-            }}
-            
-            QScrollBar::handle:horizontal, QScrollBar::handle:vertical {{
-                border: none;
-            }}
-            
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
-                border: none;
-            }}
-            
-            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
-            {{
-                background: {color_theme[3]};
-                border: none;
-            }}
-            
-            #loader {{
-                background-color: {color_theme[1]};
-            }}
-        """)
+        self.options_style = self.create_style()
+        self.setStyleSheet(self.options_style)
 
     def create_header(self, column_amount):
         self.hide_headers()
@@ -250,43 +196,47 @@ class MovesOptionsList(QScrollArea):
             for j, item_column in enumerate(self.storage.content_rows[i]):
                 item_column.hide()
 
-    def update_theme(self, themes):
-        style = f"""
+    def update_theme(self):
+        style = self.create_style()
+        self.setStyleSheet(style)
+        
+    def create_style(self):
+        return f"""
             QScrollArea {{
-                background-color: {themes[1]};
-                color: {themes[3]};
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
                 border: none;            
             }}
             
             #head-label {{
-                background-color: {themes[3]};
-                color: {themes[0]};
+                background-color: {self.storage.color_theme[3]};
+                color: {self.storage.color_theme[0]};
                 font-size: 18px;
             }}
             
             #coli-label-one {{
-                background-color: {themes[1]};
-                color: {themes[3]};
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
-                border-bottom: 1px solid {themes[3]};
+                border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
             
             #coli-label-two {{
-                background-color: {themes[0]};
-                color: {themes[3]};
+                background-color: {self.storage.color_theme[0]};
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
-                border-bottom: 1px solid {themes[3]};
+                border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
         
             #no-border-label {{
-                color: {themes[3]};
+                color: {self.storage.color_theme[3]};
                 border: none
             }}
         
             QScrollBar:horizontal, QScrollBar:vertical {{
-                background-color: {themes[1]};
-                color: {themes[3]};
-                border: 1px solid {themes[3]}
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
+                border: 1px solid {self.storage.color_theme[3]}
             }}
             
             QScrollBar::handle:horizontal, QScrollBar::handle:vertical {{
@@ -299,12 +249,12 @@ class MovesOptionsList(QScrollArea):
             
             QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
             {{
-                background: {themes[3]};
+                background: {self.storage.color_theme[3]};
                 border: none;
             }}
             
             #loader {{
-                background-color: {themes[1]};
+                background-color: {self.storage.color_theme[1]};
             }}
         """
-        self.setStyleSheet(style)
+
