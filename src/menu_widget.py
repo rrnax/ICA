@@ -167,6 +167,7 @@ class MenuSlideFrame(QFrame):
 
     def open_saving(self):
         save_dialog = SaveDialog()
+        save_dialog.load_fen(actual_FEN=self.logic_board.fen())
         save_dialog.exec()
 
     def open_loading(self):
