@@ -113,11 +113,11 @@ class SaveDialog(QDialog):
         self.fen_value.setLineWrapMode(QTextEdit.NoWrap)
         self.fen_value.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.fen_value.setReadOnly(True)
-        self.fen_value.setAlignment(Qt.AlignCenter)
 
         # Pgn area
         self.pgn_value.setFixedHeight(300)
         self.pgn_value.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.pgn_value.setReadOnly(True)
 
         # Buttons
         self.fen_save_in.setCursor(Qt.PointingHandCursor)
@@ -228,6 +228,9 @@ class SaveDialog(QDialog):
     def load_fen(self, actual_FEN):
         self.fen_value.append(actual_FEN)
 
+    def load_pgn(self, actual_PGN):
+        self.pgn_value.append(str(actual_PGN) + "\n\n")
+
     def copy_fen(self):
         clip_board = QApplication.clipboard()
         clip_board.clear(mode=clip_board.Clipboard)
@@ -248,8 +251,8 @@ class SaveDialog(QDialog):
 
     def save_pgn_in_file(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getSaveFileName(self, "Zapisz plik", "", "Pliki tekstowe (*.txt);;Wszystkie pliki (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "Zapisz plik", "", "Pliki Portable Game Notation (*.pgn);;Wszystkie pliki (*)", options=options)
         if file_name:
-            pgn = self.fen_value.toPlainText()
+            pgn = self.pgn_value.toPlainText()
             with open(file_name, "w") as file:
                 file.write(pgn)

@@ -1,7 +1,8 @@
-from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name, WHITE, BLACK
+from chess import Board, parse_square, Termination, Move, STARTING_FEN, square_name, WHITE, BLACK, pgn
 from engine import ChessEngine
 from PyQt5.QtCore import QThread
 from engine_thread import PlayWorker, AnalyzeWorker
+import datetime
 
 
 class LogicBoard(Board):
@@ -275,3 +276,27 @@ class LogicBoard(Board):
             from_field_uci = self.graphic_board.find_field(square_name(forward_move.from_square))
             self.graphic_board.highlight_field(from_field_uci)
             self.make_analyze()
+
+    def create_pgn(self):
+        game = pgn.Game()
+        game.headers["Event"] = "Simple " + self.mode + " " + datetime.datetime.now().time().strftime("%H:%M")
+        game.headers["Date"] = datetime.datetime.now().date().strftime("%Y.%m.%d")
+        if self.mode == "analyze":
+            game.headers["White"] = "User"
+            game.headers["Black"] = "User"
+        else:
+            if self.player_side == "black":
+                game.headers["White"] = "Engine"
+                game.headers["Black"] = "User"
+            else:
+                game.headers["White"] = "User"
+                game.headers["Black"] = "Engine"
+        if self.ended_game is not None:
+            game.headers["Result"] = self.ended_game.result()
+
+        if self.move_stack:
+            game.add_line(self.move_stack)
+
+        return game
+
+
