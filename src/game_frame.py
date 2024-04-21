@@ -51,7 +51,6 @@ class GameFrame(QFrame):
         image = QLabel()
         image.setPixmap(pixmap)
         image.setAlignment(Qt.AlignCenter)
-        print(winner)
 
         label = None
         if "king" in winner:
@@ -63,6 +62,7 @@ class GameFrame(QFrame):
             label = QLabel("Remis!")
         label.setAlignment(Qt.AlignCenter)
         label.setFixedSize(160, 20)
+        label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)

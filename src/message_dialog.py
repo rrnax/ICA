@@ -8,83 +8,67 @@ class MessageDialog(QDialog):
     def __init__(self, parent=None, content=None):
         super().__init__(parent)
         self.storage = SharedMemoryStorage()
-        self.setWindowFlag(Qt.FramelessWindowHint)
 
-        close_btn = QPushButton("X", self)
-        close_btn.setObjectName("engine-settings-close")
-        close_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        close_btn.setFixedSize(30, 30)
+        self.close_btn = QPushButton("X", self)
+        self.close_bar = QWidget()
+        self.msg = content
+        print(self.msg)
 
+        self.set_properties()
+        self.sets_layouts()
+
+        self.msg_style = self.create_style()
+        self.setStyleSheet(self.msg_style)
+        self.close_btn.clicked.connect(self.close)
+        
+    def sets_layouts(self):
         bar_layout = QHBoxLayout()
         bar_layout.setAlignment(Qt.AlignRight)
         bar_layout.setContentsMargins(0, 0, 0, 0)
-        bar_layout.addWidget(close_btn)
-
-        close_bar = QWidget()
-        close_bar.setLayout(bar_layout)
+        bar_layout.addWidget(self.close_btn)
+        self.close_bar.setLayout(bar_layout)
 
         message_layout = QVBoxLayout()
-        message_layout.setContentsMargins(5, 5, 5, 5)
+        message_layout.setContentsMargins(5, 5, 5, 30)
         message_layout.setAlignment(Qt.AlignTop)
-        message_layout.addWidget(close_bar)
-        message_layout.addWidget(content)
-
-        self.setObjectName("engine-setting-dialog")
-        # self.setFixedSize(200, 100)
+        message_layout.addWidget(self.close_bar)
+        message_layout.addWidget(self.msg)
         self.setLayout(message_layout)
-        self.setStyleSheet(f"""
-            #engine-setting-dialog {{
-                background-color: { self.storage.color_theme[1]};
-                border: 1px solid { self.storage.color_theme[3]}; 
+
+    def set_properties(self):
+        # Exit button
+        self.close_btn.setObjectName("msg-close")
+        self.close_btn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.close_btn.setFixedSize(30, 30)
+
+        # General
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setObjectName("msg-dialog")
+
+    def create_style(self):
+        return f"""
+            #msg-dialog {{
+                background-color: {self.storage.color_theme[1]};
+                border: 1px solid {self.storage.color_theme[3]}; 
             }}
 
-            #engine-settings-close {{
-                background-color: { self.storage.color_theme[1]};
-                color: { self.storage.color_theme[3]};
+            #msg-close {{
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
                 font-size: 20px;
                 border: none;
             }}
 
-            #engine-settings-close:hover {{
+            #msg-close:hover {{
                 background-color: red;
-                color: { self.storage.color_theme[0]};
+                color: {self.storage.color_theme[0]};
                 border: 5px solid red;
                 border-radius: 10px;
             }}
 
-            QLabel {{
-                color: { self.storage.color_theme[3]};
-                font-size: 18px;
-            }}
-            """)
-
-        close_btn.clicked.connect(self.close)
-
-    def update_theme(self, themes):
-        style = f"""
-            #engine-setting-dialog {{
-                background-color: {themes[1]};
-                border: 1px solid {themes[3]}; 
-            }}
-
-            #engine-settings-close {{
-                background-color: {themes[1]};
-                color: {themes[3]};
-                font-size: 20px;
-                border: none;
-            }}
-
-            #engine-settings-close:hover {{
-                background-color: red;
-                color: {themes[0]};
-                border: 5px solid red;
-                border-radius: 10px;
-            }}
-
-            QLabel {{
-                color: {themes[3]};
+            #content {{
+                color: {self.storage.color_theme[3]};
                 font-size: 18px;
             }}
         """
-        self.setStyleSheet(style)
 

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLa
 from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
 from chess import Board, pgn
-
+from message_dialog import MessageDialog
 
 class LoadDialog(QDialog):
     def __init__(self, parent=None):
@@ -197,7 +197,10 @@ class LoadDialog(QDialog):
                     check_board = Board()
                     check_board.set_fen(fen)
                 except ValueError as error:
-                    print(error)
+                    msg_label = QLabel("Nieprawidłowy FEN")
+                    msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+                    error_msg = MessageDialog(msg_label)
+                    error_msg.exec()
                 else:
                     self.parent().load_board("fen", fen)
                     self.close()
@@ -209,7 +212,10 @@ class LoadDialog(QDialog):
             check_board = Board()
             check_board.set_fen(fen)
         except ValueError as error:
-            print(error)
+            msg_label = QLabel("Nieprawidłowy FEN")
+            msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+            error_msg = MessageDialog(content=msg_label)
+            error_msg.exec()
         else:
             self.parent().load_board("fen", fen)
             self.close()
@@ -227,7 +233,10 @@ class LoadDialog(QDialog):
                     self.parent().close_menu()
                     self.parent().load_board("pgn", game)
                 else:
-                    print(game)
+                    msg_label = QLabel("Nieprawidłowy PGN")
+                    msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+                    error_msg = MessageDialog(msg_label)
+                    error_msg.exec()
 
     def load_paste_pgn(self):
         pgn_str = self.pgn_value.toPlainText()
@@ -238,4 +247,7 @@ class LoadDialog(QDialog):
             self.parent().close_menu()
             self.parent().load_board("pgn", game)
         else:
-            print(game)
+            msg_label = QLabel("Nieprawidłowy PGN")
+            msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+            error_msg = MessageDialog(content=msg_label)
+            error_msg.exec()

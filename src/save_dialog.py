@@ -2,7 +2,7 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QTextEdit, QSizePolicy, QApplication, QFileDialog
 from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
-
+from message_dialog import MessageDialog
 
 class SaveDialog(QDialog):
     def __init__(self, parent=None):
@@ -222,11 +222,19 @@ class SaveDialog(QDialog):
         clip_board = QApplication.clipboard()
         clip_board.clear(mode=clip_board.Clipboard)
         clip_board.setText(self.fen_value.toPlainText(), mode=clip_board.Clipboard)
+        msg_label = QLabel("Skopiowano")
+        msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+        info_msg = MessageDialog(content=msg_label)
+        info_msg.exec()
 
     def copy_pgn(self):
         clip_board = QApplication.clipboard()
         clip_board.clear(mode=clip_board.Clipboard)
         clip_board.setText(self.pgn_value.toPlainText(), mode=clip_board.Clipboard)
+        msg_label = QLabel("Skopiowano")
+        msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+        info_msg = MessageDialog(content=msg_label)
+        info_msg.exec()
 
     def save_fen_in_file(self):
         options = QFileDialog.Options()
