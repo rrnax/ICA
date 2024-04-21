@@ -112,5 +112,26 @@ class MainWindow(QMainWindow):
             #menu-btn:hover {{
                 background-color: {self.storage.color_theme[3]};
             }}
+            
+            QScrollBar:vertical, QScrollBar:horizontal {{
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
+                border: 1px solid {self.storage.color_theme[3]}
+            }}
+            
+            QScrollBar::handle:vertical, QScrollBar::handle:horizontal {{
+                border: none;
+            }}
+            
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, 
+            QScrollBar::sub-line:vertical {{
+                height: 0;
+            }}
+            
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical, QScrollBar::add-page:horizontal,
+            QScrollBar::sub-page:horizontal {{
+                background: {self.storage.color_theme[3]};
+                border: none;
+            }}
         """
 

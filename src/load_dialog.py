@@ -1,9 +1,11 @@
+import io
+
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QTextEdit, QSizePolicy,
                              QFileDialog)
 from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
-from chess import Board
+from chess import Board, pgn
 
 
 class LoadDialog(QDialog):
@@ -38,10 +40,10 @@ class LoadDialog(QDialog):
 
     def assign_actions(self):
         self.close_btn.clicked.connect(self.close)
-        # self.fen_load_paste.clicked.connect(self.copy_fen)
-        # self.pgn_load_paste.clicked.connect(self.copy_pgn)
+        self.fen_load_paste.clicked.connect(self.load_paste_fen)
+        self.pgn_load_paste.clicked.connect(self.load_paste_pgn)
         self.fen_load_file.clicked.connect(self.load_fen_from_file)
-        # self.pgn_load_file.clicked.connect(self.save_pgn_in_file)
+        self.pgn_load_file.clicked.connect(self.load_pgn_from_file)
 
     def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -131,6 +133,11 @@ class LoadDialog(QDialog):
         self.pgn_load_paste.setCursor(Qt.PointingHandCursor)
         self.pgn_load_paste.setObjectName("pgn-paste")
 
+        # Labels
+        self.dialog_title.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
+        self.fen_label.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
+        self.pgn_label.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
+
     def create_style(self):
         return f"""
             #load-dialog {{
@@ -156,42 +163,11 @@ class LoadDialog(QDialog):
                 border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
 
-            QLabel {{
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-            }}
-
             #load-fen-area, #load-pgn-area {{
                 background-color: {self.storage.color_theme[1]};
                 font-size: 20px;
                 color: {self.storage.color_theme[3]};
                 border: 1px solid {self.storage.color_theme[3]}; 
-            }}
-
-            QScrollBar:horizontal {{
-                height: 10px;
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                border: 1px solid {self.storage.color_theme[3]}
-            }}
-
-            QScrollBar:vertical {{
-                width: 10px;
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                border: 1px solid {self.storage.color_theme[3]}
-            }}
-
-            QScrollBar::handle:horizontal, QScrollBar::handle:vertical {{
-                border: none;
-            }}
-
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, 
-            QScrollBar::sub-line:vertical {{ border: none; }}
-
-            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-page:vertical, 
-            QScrollBar::sub-page:vertical {{ background: {self.storage.color_theme[3]};
-                border: none;
             }}
 
             #fen-load-file, #fen-paste, #pgn-load-file, #pgn-paste {{
@@ -216,10 +192,50 @@ class LoadDialog(QDialog):
                                                    "Wszystkie pliki (*);;Tekstowe pliki (*.txt)", options=options)
         if file_name:
             with open(file_name, 'r') as file:
-                fen = file.readline()
-                check_board = Board(fen)
-                print(check_board)
-                if check_board.is_valid():
+                try:
+                    fen = file.readline()
+                    check_board = Board()
+                    check_board.set_fen(fen)
+                except ValueError as error:
+                    print(error)
+                else:
                     self.parent().load_board("fen", fen)
+                    self.close()
+                    self.parent().close_menu()
 
+    def load_paste_fen(self):
+        try:
+            fen = self.fen_value.toPlainText()
+            check_board = Board()
+            check_board.set_fen(fen)
+        except ValueError as error:
+            print(error)
+        else:
+            self.parent().load_board("fen", fen)
+            self.close()
+            self.parent().close_menu()
 
+    def load_pgn_from_file(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Wybierz plik", "",
+                                                   "Pliki Portaable Game Notation (*.pgn);;Tekstowe pliki (*.txt)", options=options)
+        if file_name:
+            with open(file_name) as file:
+                game = pgn.read_game(file)
+                if game is not None:
+                    self.close()
+                    self.parent().close_menu()
+                    self.parent().load_board("pgn", game)
+                else:
+                    print(game)
+
+    def load_paste_pgn(self):
+        pgn_str = self.pgn_value.toPlainText()
+        string_io = io.StringIO(pgn_str)
+        game = pgn.read_game(string_io)
+        if game is not None:
+            self.close()
+            self.parent().close_menu()
+            self.parent().load_board("pgn", game)
+        else:
+            print(game)

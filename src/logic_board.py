@@ -207,19 +207,18 @@ class LogicBoard(Board):
         self.ended_game = "Surrender"
         self.update_history()
 
-    def sets_game(self, type):
-        if type != self.mode or self.advanced_history:
-            if type == "game":
-                self.game_widget.side_up()
-                if self.player_side is not None:
-                    self.prepare_board()
-                    self.mode = type
-            elif type == "analyze":
+    def sets_game(self, ty):
+        if ty == "game":
+            self.game_widget.side_up()
+            if self.player_side is not None:
+                self.prepare_board()
+                self.mode = ty
+        elif ty == "analyze":
+            if ty != self.mode or self.advanced_history:
                 self.player_side = None
                 self.prepare_board()
-                self.mode = type
-
-            self.stats_frame.set_game_label()
+                self.mode = ty
+        self.stats_frame.set_game_label()
 
     def prepare_board(self):
         self.restart()
@@ -306,4 +305,23 @@ class LogicBoard(Board):
         self.stats_frame.hide_history_rows()
         self.stats_frame.empty_history()
         self.stats_frame.update_buttons()
+        if self.mode == "game":
+            if self.turn and self.player_side == "black":
+                self.engine_move()
+            elif not self.turn and self.player_side == "white":
+                self.engine_move()
 
+    def load_position_pgn(self, game):
+        self.restart()
+        for move in game.mainline_moves():
+            piece = self.graphic_board.find_piece_by_id(move.uci()[:2])
+            next_field = self.graphic_board.find_field(move.uci()[2:])
+            piece.graphic_move(next_field)
+            piece.make_move()
+        if self.mode == "game":
+            if self.turn and self.player_side == "black":
+                self.engine_move()
+            elif not self.turn and self.player_side == "white":
+                self.engine_move()
+        else:
+            self.make_analyze()

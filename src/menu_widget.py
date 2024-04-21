@@ -14,7 +14,7 @@ class MenuSlideFrame(QFrame):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.logic_board = LogicBoard()
+        self.logic_board = self.parent().logic_board
         self.storage = SharedMemoryStorage()
 
         # Init elements
@@ -228,7 +228,7 @@ class MenuSlideFrame(QFrame):
 
     def load_board(self, notation, content):
         if notation == "pgn":
-            print(content)
+            self.logic_board.load_position_pgn(game=content)
         elif notation == "fen":
             self.logic_board.load_position_fen(fen=content)
 

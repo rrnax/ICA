@@ -38,7 +38,7 @@ class GameFrame(QFrame):
 
     # Occasionally dialogs
     def side_up(self):
-        side_dialog = SideDialog()
+        side_dialog = SideDialog(self, logic=self.parent().logic_board)
         side_dialog.exec()
 
     def winner_up(self, widget):

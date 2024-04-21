@@ -6,10 +6,10 @@ from sheard_memory import SharedMemoryStorage
 
 
 class SideDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, logic=None):
         super().__init__(parent)
         self.storage = SharedMemoryStorage()
-        self.logic_board = LogicBoard()
+        self.logic_board = logic
 
         # Elements
         self.close_btn = QPushButton("X", self)
@@ -20,7 +20,6 @@ class SideDialog(QDialog):
         self.black_button = QPushButton()
         self.equal_widget = QWidget()
         self.sides_style = self.create_style()
-
 
         # Pieces to choose pictures
         self.white_knight = QPixmap("../resources/pieces/w_knight.png")

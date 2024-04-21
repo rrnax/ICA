@@ -163,8 +163,7 @@ class StatsFrame(QFrame):
 
         # Empty label
         self.empty_label.setFixedSize(450, 40)
-        self.empty_label.setStyleSheet(f"background-color:{self.storage.color_theme[0]};"
-                                       f"color:{self.storage.color_theme[3]}; font-size: 18;")
+        self.empty_label.setObjectName("empty")
         self.empty_label.setAlignment(Qt.AlignCenter)
 
         # Mode labels
@@ -301,23 +300,10 @@ class StatsFrame(QFrame):
                 border-bottom: 1px solid {self.storage.color_theme[3]};
             }}
             
-            QScrollBar:vertical {{
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                border: 1px solid {self.storage.color_theme[3]}
-            }}
-            
-            QScrollBar::handle:vertical {{
-                border: none;
-            }}
-            
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
-                height: 0;
-            }}
-            
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
-                background: {self.storage.color_theme[3]};
-                border: none;
+            #empty {{
+                background-color:{self.storage.color_theme[0]};
+                color:{self.storage.color_theme[3]}; 
+                font-size: 18;
             }}
             
             #again-btn, #move-back-btn, #move-forward, #surrender-btn, #draw-btn, #rotate-btn {{
