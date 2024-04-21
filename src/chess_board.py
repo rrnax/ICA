@@ -3,17 +3,16 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from math import floor
 from chess import parse_square, Move
-from logic_board import LogicBoard
 from piece import VirtualPiece
 from field import VirtualField
 from sheard_memory import SharedMemoryStorage
 
 
 class ChessBoard(QGraphicsScene):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, logic=None):
         super().__init__(parent)
         self.setSceneRect(0, 0, 750, 550)
-        self.logic_board = LogicBoard()
+        self.logic_board = logic
         self.storage = SharedMemoryStorage()
 
         # Position left up corner on scene and board side length
@@ -151,10 +150,8 @@ class ChessBoard(QGraphicsScene):
 
     # Create pieces from logic board for all fields
     def init_pieces(self):
-        print(self.logic_board.fen())
-        print(self.pieces)
+
         for field in self.fields:
-            print(self.logic_board.fen())
             square_pos = parse_square(field.chess_pos)
             piece_fen = self.logic_board.piece_at(square_pos)
             if piece_fen is not None:

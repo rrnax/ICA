@@ -1,7 +1,6 @@
 from PyQt5.QtCore import QPointF, Qt, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem
-from logic_board import LogicBoard
 from chess import Move, square_name
 
 # Here are contribution license links fo images
@@ -18,7 +17,7 @@ class VirtualPiece(QGraphicsPixmapItem):
         super().__init__()
         self.setZValue(3)
         self.setAcceptHoverEvents(True)
-        self.logic_board = LogicBoard()
+        self.logic_board = graphic_board.logic_board
         self.graphic_board = graphic_board
 
         self.name = name

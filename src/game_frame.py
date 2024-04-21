@@ -13,7 +13,7 @@ class GameFrame(QFrame):
         self.storage = SharedMemoryStorage()
 
         # Containers creation
-        self.game_scene = ChessBoard(self)
+        self.game_scene = ChessBoard(self, logic=self.parent().logic_board)
         self.game_view = QGraphicsView(self.game_scene, self)
         self.set_properties()
         self.no_frame = self.create_style()

@@ -1,27 +1,18 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QIcon, QCursor
-from logic_board import LogicBoard
-from chess import square_name
 from sheard_memory import SharedMemoryStorage
-
-
-# <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
-# <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons">Sports and competition icons created by BZZRINCANTATION - Flaticon</a>
-# <a href="https://www.flaticon.com/free-icons/reset" title="reset icons">Reset icons created by Freepik - Flaticon</a>
-# <a href="https://www.flaticon.com/free-icons/white-flag" title="white flag icons">White flag icons created by Freepik - Flaticon</a>
-# <a href="https://www.flaticon.com/free-icons/back" title="back icons">Back icons created by Google - Flaticon</a>
 
 
 class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.logic_board = LogicBoard()
+        self.logic_board = self.parent().logic_board
         self.storage = SharedMemoryStorage()
-        self.history_items = []
         self.graphic_board = None
         self.mode_label = None
 
+        # Items
         self.again_btn = QPushButton()
         self.move_back_btn = QPushButton()
         self.move_froward_btn = QPushButton()
@@ -29,11 +20,44 @@ class StatsFrame(QFrame):
         self.draw_btn = QPushButton()
         self.board_rotation = QPushButton()
         self.history_area = QScrollArea()
+        self.space_item = QWidget()
+        self.operation_widget = QWidget(self)
+        self.history_label = QLabel("Historia ruchów")
+        self.history_widget = QWidget()
+        self.empty_label = QLabel("Pusto")
+        self.game_label = QLabel("Tryb: Gra")
+        self.analyze_label = QLabel("Tryb: Analiza")
 
-        space_item = QWidget()
-        space_item.setFixedSize(20, 40)
-
+        # Layouts
         self.operation_layout = QHBoxLayout()
+        self.layout_history = QVBoxLayout()
+
+        # Create container
+        self.set_items_properties()
+        self.sets_layouts()
+        self.set_general_properties()
+        self.assign_actions()
+        self.stats_style = self.create_style()
+        self.setStyleSheet(self.stats_style)
+        self.set_game_label()
+        self.hide_history_rows()
+        self.empty_history()
+        self.update_buttons()
+
+    # Connect button about game to actions
+    def assign_actions(self):
+        self.board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
+        self.again_btn.clicked.connect(self.logic_board.restart)
+        self.move_back_btn.clicked.connect(self.logic_board.valid_undo)
+        self.move_froward_btn.clicked.connect(self.logic_board.valid_forward)
+        self.surrender_btn.clicked.connect(self.surrender)
+
+    def set_general_properties(self):
+        self.setGeometry(750, 0, 450, 550)
+        self.setObjectName("stats-frame")
+
+    def sets_layouts(self):
+        # Layout with buttons
         self.operation_layout.setAlignment(Qt.AlignCenter)
         self.operation_layout.setContentsMargins(0, 0, 0, 0)
         self.operation_layout.addWidget(self.again_btn)
@@ -42,56 +66,29 @@ class StatsFrame(QFrame):
         self.operation_layout.addWidget(self.surrender_btn)
         self.operation_layout.addWidget(self.draw_btn)
         self.operation_layout.addWidget(self.board_rotation)
-        self.operation_layout.addWidget(space_item)
-        # self.operation_layout.addWidget(self.game_type_label)
+        self.operation_layout.addWidget(self.space_item)
+        self.operation_layout.addWidget(self.game_label)
+        self.operation_layout.addWidget(self.analyze_label)
+        self.operation_widget.setLayout(self.operation_layout)
 
-        operation_widget = QWidget(self)
-        operation_widget.setObjectName("operation-layout")
-        operation_widget.setFixedSize(450, 50)
-        operation_widget.setLayout(self.operation_layout)
-
-        history_label = QLabel("Historia ruchów", self)
-        history_label.setAlignment(Qt.AlignCenter)
-        history_label.setFixedSize(450, 40)
-        history_label.setObjectName("history-label")
-
-        self.layout_history = QVBoxLayout()
+        # History layout
         self.layout_history.setContentsMargins(0, 0, 0, 0)
         self.layout_history.setSpacing(0)
         self.layout_history.setAlignment(Qt.AlignCenter)
-        # self.update_history()
-
-        self.history_widget = QWidget()
-        self.history_widget.setObjectName("history-widget")
+        self.layout_history.addWidget(self.empty_label)
+        for item in self.storage.history_rows:
+            self.layout_history.addWidget(item)
         self.history_widget.setLayout(self.layout_history)
 
-
+        # General layout
         stats_layout = QVBoxLayout()
         stats_layout.setContentsMargins(0, 0, 0, 0)
         stats_layout.setSpacing(0)
         stats_layout.setAlignment(Qt.AlignTop)
-        stats_layout.addWidget(operation_widget)
-        stats_layout.addWidget(history_label)
+        stats_layout.addWidget(self.operation_widget)
+        stats_layout.addWidget(self.history_label)
         stats_layout.addWidget(self.history_area)
-
-        self.set_items_properties()
-
-        # Set frame general options
-        self.setGeometry(750, 0, 450, 550)
-        self.setObjectName("stats-frame")
         self.setLayout(stats_layout)
-        self.stats_style = self.create_style()
-        self.setStyleSheet(self.stats_style)
-
-        self.board_rotation.clicked.connect(self.parentWidget().game_frame.game_scene.rotate_board)
-        self.again_btn.clicked.connect(self.logic_board.restart)
-        self.move_back_btn.clicked.connect(self.logic_board.valid_undo)
-        self.move_froward_btn.clicked.connect(self.logic_board.valid_forward)
-        self.surrender_btn.clicked.connect(self.surrender)
-
-        self.set_game_label("analyze")
-        self.empty_history()
-        self.update_buttons()
 
     def set_items_properties(self):
         # From start button
@@ -134,6 +131,9 @@ class StatsFrame(QFrame):
         self.draw_btn.setCursor((QCursor(Qt.PointingHandCursor)))
         self.draw_btn.setObjectName("draw-btn")
 
+        # Spacing between game type and buttons
+        self.space_item.setFixedSize(20, 40)
+
         # Rotate board
         self.board_rotation.setFixedSize(40, 40)
         self.board_rotation.setIcon(QIcon("../resources/rotation.png"))
@@ -149,116 +149,74 @@ class StatsFrame(QFrame):
         self.history_area.setWidget(self.history_widget)
         self.history_area.setObjectName("scroll-history")
 
+        # Buttons widget
+        self.operation_widget.setObjectName("operation-layout")
+        self.operation_widget.setFixedSize(450, 50)
+
+        # Label for history
+        self.history_label.setAlignment(Qt.AlignCenter)
+        self.history_label.setFixedSize(450, 40)
+        self.history_label.setObjectName("history-label")
+
+        # Widget for history
+        self.history_widget.setObjectName("history-widget")
+
+        # Empty label
+        self.empty_label.setFixedSize(450, 40)
+        self.empty_label.setStyleSheet(f"background-color:{self.storage.color_theme[0]};"
+                                       f"color:{self.storage.color_theme[3]}; font-size: 18;")
+        self.empty_label.setAlignment(Qt.AlignCenter)
+
+        # Mode labels
+        self.analyze_label.setStyleSheet(f"padding: 5px; color: white; background-color: #144d91; font-size: 18px; "
+                                         f"border: 1px solid #144d91; border-radius: 10px;")
+        self.game_label.setStyleSheet(f"padding: 5px; color: white; background-color: #20a16d; font-size: 18px; "
+                                      f"border: 1px solid #20a16d; border-radius: 10px;")
+
     # On window resize
     def update_size(self, new_size):
         self.setGeometry((new_size.width() - 1200) + 750, 0, 450, (new_size.height() - 820) + 550)
         self.history_area.setFixedSize(450, (new_size.height() - 820) + 250)
 
     # Set type label
-    def set_game_label(self, mode):
-        if self.mode_label is not None:
-            self.operation_layout.removeWidget(self.mode_label)
-            self.mode_label.deleteLater()
+    def set_game_label(self):
+        if self.logic_board.mode == "analyze":
+            self.game_label.hide()
+            self.analyze_label.show()
+        elif self.logic_board.mode == "game":
+            self.analyze_label.hide()
+            self.game_label.show()
 
-        label = QLabel()
-        styles = None
-        if mode == "analyze":
-            label.setText("Tryb: Analiza")
-            label.setStyleSheet(f"padding: 5px; color: white; background-color: #144d91; font-size: 18px; border: 1px "
-                                f"solid #144d91; border-radius: 10px;")
-        elif mode == "game":
-            label.setText("Tryb: Gra")
-            label.setStyleSheet(f"padding: 5px; color: white; background-color: #20a16d; font-size: 18px; border: 1px "
-                                f"solid #20a16d; border-radius: 10px;")
-        self.operation_layout.addWidget(label)
-        self.mode_label = label
-
-    # History creation
+    # History containers update
     def update_history(self):
         if self.logic_board.advanced_history:
-            self.clear_history()
+            self.hide_history_rows()
+            self.empty_label.hide()
             row_amount = len(self.logic_board.advanced_history)
             self.history_widget.resize(QSize(450, row_amount * 40))
             for index, element in enumerate(reversed(self.logic_board.advanced_history)):
-                no_label = QLabel(str(row_amount - index) + ".")
-                no_label.setFixedSize(50, 40)
-                no_label.setStyleSheet(f"color:{self.storage.color_theme[3]}; font-size: 18;")
                 move = element.get("move")
                 move_str = move.uci()
                 piece = element.get("piece")
                 add_info = element.get("about")
-
-                widget_row = QWidget()
-
-                if move_str == "0000":
-                    move_label = QLabel("")
-                else:
-                    move_label = QLabel(move_str[:2] + " -> " + move_str[2:])
-
-                if (row_amount - index - 1) % 2 == 0:
-                    if self.storage.color_theme[0] == "#1E1F22":
-                        move_label.setStyleSheet(f"color: white")
-                    else:
-                        move_label.setStyleSheet(f"color: {self.storage.color_theme[6]};")
-                else:
-                    move_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
-
-                if index % 2 == 0:
-                    widget_row.setStyleSheet(f"background-color: {self.storage.color_theme[0]};")
-                else:
-                    widget_row.setStyleSheet(f"background-color: {self.storage.color_theme[1]};")
-
-                piece_label = QLabel()
-                piece_label.setFixedSize(40, 40)
+                self.storage.history_rows[index].layout().itemAt(0).widget().setText(str(row_amount - index) + ".")
                 pixmap = piece.image
                 pixmap = pixmap.scaled(QSize(25, 25), transformMode=Qt.SmoothTransformation)
-                piece_label.setPixmap(pixmap)
-
-                move_label.setFixedSize(60, 40)
-
-                info_label = QLabel(add_info)
-                info_label.setStyleSheet(f"color:{self.storage.color_theme[3]}; font-size: 18;")
-                info_label.setFixedSize(100, 40)
-                info_label.setAlignment(Qt.AlignCenter)
-
-                layout_row = QHBoxLayout()
-                layout_row.setSpacing(50)
-                layout_row.setContentsMargins(15, 0, 0, 0)
-                layout_row.setAlignment(Qt.AlignLeft)
-                layout_row.addWidget(no_label)
-                layout_row.addWidget(piece_label)
-                layout_row.addWidget(move_label)
-                layout_row.addWidget(info_label)
-
-                widget_row.setFixedSize(450, 40)
-                widget_row.setLayout(layout_row)
-
-                self.layout_history.addWidget(widget_row)
-                self.history_items.append(widget_row)
-
+                self.storage.history_rows[index].layout().itemAt(1).widget().setPixmap(pixmap)
+                self.storage.history_rows[index].layout().itemAt(2).widget().setText(move_str[:2] +
+                                                                                     " -> " + move_str[2:])
+                self.storage.history_rows[index].layout().itemAt(3).widget().setText(add_info)
+                self.storage.history_rows[index].show()
         else:
             self.empty_history()
 
-########################################################
-
-    def clear_history(self):
-        for widget in self.history_items:
-            self.layout_history.removeWidget(widget)
-            widget.deleteLater()
-        self.history_items.clear()
-        self.history_widget.resize(QSize(0, 0))
-
+    # Show special container if history is empty
     def empty_history(self):
-        self.clear_history()
-        empty_label = QLabel("Pusto")
-        empty_label.setFixedSize(450, 40)
-        empty_label.setStyleSheet(f"background-color:{self.storage.color_theme[0]};"
-                                  f"color:{self.storage.color_theme[3]}; font-size: 18;")
-        empty_label.setAlignment(Qt.AlignCenter)
-        self.layout_history.addWidget(empty_label)
-        self.history_items.append(empty_label)
+        self.hide_history_rows()
         self.history_widget.resize(QSize(450, 40))
+        self.empty_label.show()
 
+    # Change button in actions
     def update_buttons(self):
         if self.logic_board.advanced_history:
             self.again_btn.setEnabled(True)
@@ -286,8 +244,13 @@ class StatsFrame(QFrame):
     def update_theme(self):
         style = self.create_style()
         self.setStyleSheet(style)
-        self.update_history()
-        
+        self.storage.update_history_style()
+
+    # Clear history containers
+    def hide_history_rows(self):
+        for item in self.storage.history_rows:
+            item.hide()
+
     def create_style(self):
         return f"""
             #stats-frame {{
@@ -311,6 +274,24 @@ class StatsFrame(QFrame):
             
             #history-widget {{
                 background-color: {self.storage.color_theme[1]};
+            }}
+            
+            #row-labels {{ 
+                color:{self.storage.color_theme[3]}; 
+                font-size: 18;
+            }}
+            
+            #row-dark {{
+                background-color: {self.storage.color_theme[0]};
+            }}
+            
+            #row-light {{
+                background-color: {self.storage.color_theme[1]};
+            }}
+            
+            #white-label {{
+                color: white; 
+                font-size: 18;
             }}
                             
             #scroll-history {{
@@ -348,6 +329,10 @@ class StatsFrame(QFrame):
             #rotate-btn:hover {{ background-color: {self.storage.color_theme[3]};
                 border-radius: 10px;
             }}
-            
         """
 
+# <a href="https://www.flaticon.com/free-icons/back-arrow" title="back arrow icons">Back arrow icons created by Vector Squad - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/sports-and-competition" title="sports and competition icons">Sports and competition icons created by BZZRINCANTATION - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/reset" title="reset icons">Reset icons created by Freepik - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/white-flag" title="white flag icons">White flag icons created by Freepik - Flaticon</a>
+# <a href="https://www.flaticon.com/free-icons/back" title="back icons">Back icons created by Google - Flaticon</a>
