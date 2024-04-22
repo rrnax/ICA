@@ -121,5 +121,8 @@ class SharedMemoryStorage:
                 item.layout().itemAt(2).widget().setStyleSheet(f"color:{self.color_theme[3]}; font-size: 15px;")
                 item.setStyleSheet(f"background-color: {self.color_theme[0]};")
             else:
-                item.layout().itemAt(2).widget().setStyleSheet(f"color: white; font-size: 15px;")
+                if self.color_theme[0] == "#1E1F22":
+                    item.layout().itemAt(2).widget().setStyleSheet(f"color: white; font-size: 15px;")
+                else:
+                    item.layout().itemAt(2).widget().setStyleSheet(f"color: #1c51a6; font-size: 15px;")
                 item.setStyleSheet(f"background-color: {self.color_theme[1]};")

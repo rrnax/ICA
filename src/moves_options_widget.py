@@ -56,7 +56,7 @@ class MovesOptionsList(QScrollArea):
             for j, item_column in enumerate(self.storage.content_rows[i]):
                 self.moves_table_layout.addWidget(item_column, i, j)
 
-        self.loader = Loader("../resources/pika.gif")
+        self.loader = Loader("../resources/duck.gif")
         self.loader.setObjectName("loader")
         self.loader.start_animation()
 

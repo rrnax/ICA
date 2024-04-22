@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 class Loader(QLabel):
     def __init__(self, path):
         super().__init__()
-        self.setFixedSize(100, 100)
+        self.setFixedSize(150, 200)
         self.setScaledContents(True)
         self.movie = QMovie(path)
         self.setMovie(self.movie)

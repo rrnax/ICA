@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon, QCursor
 from sheard_memory import SharedMemoryStorage
 from math import ceil
 
+
 class StatsFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -85,7 +86,7 @@ class StatsFrame(QFrame):
 
         self.w_proc.setText(str(round(w_proc, 1)) + "%")
         self.b_proc.setText(str(round(b_proc, 1)) + "%")
-        print(w_proc, " ", b_proc)
+
         self.white_chance.setGeometry(0, 0, w_pixels, 30)
         self.black_chance.setGeometry(w_pixels, 0, b_pixels, 30)
 
