@@ -6,8 +6,8 @@ from PyQt5.QtCore import Qt
 class ChessEngine:
     _instance = None
     stockfish = r"../engines/stockfish/stockfish-windows-x86-64.exe"
-    graphic_board = None
     engine_frame = None
+    stats_frame = None
     moves_frame = None
     engine_name = None
     actual_engine = None
@@ -72,6 +72,7 @@ class ChessEngine:
             self.moves_frame.loader.show()
             results = self.actual_engine.analyse(board=board, limit=self.limits, multipv=self.multi)
             message = self.create_log_message(results, halfs)
+            self.send_wdl(results, halfs)
             logging.info(message)
             self.last_result = self.creat_option_list(results)
             self.pieces_ids_list = self.find_pieces_ids()
@@ -82,6 +83,16 @@ class ChessEngine:
             self.moves_frame.content_area.show()
         except Exception as e:
             print("Błąd: ", e)
+
+    def send_wdl(self, results, halfs):
+        wdl_result = results[0]['score'].wdl(model='sf16', ply=halfs)
+        final = None
+        if not wdl_result.turn:
+            wdl_result = results[-1]['score'].wdl(model='sf16', ply=halfs)
+            final = wdl_result.black()
+        else:
+            final = wdl_result.white()
+        self.stats_frame.set_probability(values=final)
 
     def create_log_message(self, results, halfs):
         message = ""

@@ -234,26 +234,6 @@ class MovesOptionsList(QScrollArea):
                 color: {self.storage.color_theme[3]};
                 border: none
             }}
-        
-            QScrollBar:horizontal, QScrollBar:vertical {{
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                border: 1px solid {self.storage.color_theme[3]}
-            }}
-            
-            QScrollBar::handle:horizontal, QScrollBar::handle:vertical {{
-                border: none;
-            }}
-            
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
-                border: none;
-            }}
-            
-            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
-            {{
-                background: {self.storage.color_theme[3]};
-                border: none;
-            }}
             
             #loader {{
                 background-color: {self.storage.color_theme[1]};

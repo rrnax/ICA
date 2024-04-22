@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QScrollArea
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QIcon, QCursor
 from sheard_memory import SharedMemoryStorage
-
+from math import ceil
 
 class StatsFrame(QFrame):
     def __init__(self, parent=None):
@@ -27,10 +27,25 @@ class StatsFrame(QFrame):
         self.empty_label = QLabel("Pusto")
         self.game_label = QLabel("Tryb: Gra")
         self.analyze_label = QLabel("Tryb: Analiza")
+        self.turn_widget = QWidget()
+        self.turn_label = QLabel("RUCH CZARNYCH")
+        self.probability_widget = QWidget()
+        self.probability_label = QLabel("Szanse")
+        self.probability_diagram = QWidget()
+        self.proc_widget = QWidget()
+        self.w_proc = QLabel()
+        self.b_proc = QLabel()
+        self.white_chance = QLabel()
+        self.draw_chance = QLabel()
+        self.black_chance = QLabel()
 
         # Layouts
         self.operation_layout = QHBoxLayout()
         self.layout_history = QVBoxLayout()
+        self.turn_layout = QHBoxLayout()
+        self.probability_layout = QVBoxLayout()
+        self.diagram_layout = QHBoxLayout()
+        self.proc_layout = QHBoxLayout()
 
         # Create container
         self.set_items_properties()
@@ -41,8 +56,41 @@ class StatsFrame(QFrame):
         self.setStyleSheet(self.stats_style)
         self.set_game_label()
         self.hide_history_rows()
+        self.set_turn_label()
         self.empty_history()
         self.update_buttons()
+
+        # Turn pulse
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.pulse_turn)
+        self.timer.start(1000)
+
+        self.draw_chance.hide()
+
+    def set_probability(self, values):
+        whites = 0
+        blacks = 0
+        if self.logic_board.turn:
+            whites = values.wins * 0.001
+            blacks = values.losses * 0.001
+        else:
+            blacks = values.wins * 0.001
+            whites = values.losses * 0.001
+        draws = values.draws * 0.001
+
+        w_pixels = ceil(whites * 420 + (draws * 420)/2)
+        b_pixels = ceil(blacks * 420 + (draws * 420)/2)
+        w_proc = (whites + draws/2) * 100
+        b_proc = (blacks + draws/2) * 100
+
+        self.w_proc.setText(str(round(w_proc, 1)) + "%")
+        self.b_proc.setText(str(round(b_proc, 1)) + "%")
+        print(w_proc, " ", b_proc)
+        self.white_chance.setGeometry(0, 0, w_pixels, 30)
+        self.black_chance.setGeometry(w_pixels, 0, b_pixels, 30)
+
+    def pulse_turn(self):
+        self.turn_label.setVisible(not self.turn_label.isVisible())
 
     # Connect button about game to actions
     def assign_actions(self):
@@ -80,6 +128,31 @@ class StatsFrame(QFrame):
             self.layout_history.addWidget(item)
         self.history_widget.setLayout(self.layout_history)
 
+        # Turn layout
+        self.turn_layout.setAlignment(Qt.AlignCenter)
+        self.turn_layout.addWidget(self.turn_label)
+        self.turn_widget.setLayout(self.turn_layout)
+
+        # Probability widget
+        self.diagram_layout.setContentsMargins(0, 0, 0, 0)
+        self.diagram_layout.setSpacing(0)
+        self.diagram_layout.setAlignment(Qt.AlignLeft)
+        self.diagram_layout.addWidget(self.white_chance)
+        self.diagram_layout.addWidget(self.draw_chance)
+        self.diagram_layout.addWidget(self.black_chance)
+        self.proc_layout.setContentsMargins(0, 0, 0, 0)
+        self.proc_layout.addWidget(self.w_proc)
+        self.proc_layout.addStretch(1)
+        self.proc_layout.addWidget(self.b_proc)
+        self.proc_widget.setLayout(self.proc_layout)
+        self.probability_diagram.setLayout(self.diagram_layout)
+        self.probability_layout.setAlignment(Qt.AlignCenter)
+        self.probability_layout.setSpacing(10)
+        self.probability_layout.addWidget(self.probability_label)
+        self.probability_layout.addWidget(self.proc_widget)
+        self.probability_layout.addWidget(self.probability_diagram)
+        self.probability_widget.setLayout(self.probability_layout)
+
         # General layout
         stats_layout = QVBoxLayout()
         stats_layout.setContentsMargins(0, 0, 0, 0)
@@ -88,6 +161,8 @@ class StatsFrame(QFrame):
         stats_layout.addWidget(self.operation_widget)
         stats_layout.addWidget(self.history_label)
         stats_layout.addWidget(self.history_area)
+        stats_layout.addWidget(self.turn_widget)
+        stats_layout.addWidget(self.probability_widget)
         self.setLayout(stats_layout)
 
     def set_items_properties(self):
@@ -172,6 +247,26 @@ class StatsFrame(QFrame):
         self.game_label.setStyleSheet(f"padding: 5px; color: white; background-color: #20a16d; font-size: 18px; "
                                       f"border: 1px solid #20a16d; border-radius: 10px;")
 
+        # Turn label
+        self.turn_label.setStyleSheet(f"color: {self.storage.color_theme[3]}; border: none;")
+        self.turn_widget.setFixedSize(450, 40)
+        self.turn_widget.setStyleSheet(
+            f"background-color: {self.storage.color_theme[0]};"
+            f"font-size: 20px; border-left: 1px solid {self.storage.color_theme[3]};" 
+            f"border-bottom: 1px solid {self.storage.color_theme[3]};")
+
+        # Probability widget
+        self.probability_widget.setFixedSize(450, 160)
+        self.probability_label.setAlignment(Qt.AlignCenter)
+        self.probability_label.setStyleSheet(f"font-size: 20px; color: {self.storage.color_theme[3]};")
+        self.proc_widget.setFixedSize(420, 30)
+        self.proc_widget.setStyleSheet(f"font-size: 13px; color: {self.storage.color_theme[3]};")
+        self.probability_diagram.setFixedSize(420, 30)
+        self.probability_diagram.setStyleSheet(f"border-radius: 10px;")
+        self.white_chance.setStyleSheet(f"background-color: white;")
+        self.draw_chance.setStyleSheet(f"background-color: gray;")
+        self.black_chance.setStyleSheet(f"background-color: black;")
+
     # On window resize
     def update_size(self, new_size):
         self.setGeometry((new_size.width() - 1200) + 750, 0, 450, (new_size.height() - 820) + 550)
@@ -185,6 +280,7 @@ class StatsFrame(QFrame):
         elif self.logic_board.mode == "game":
             self.analyze_label.hide()
             self.game_label.show()
+        self.set_turn_label()
 
     # History containers update
     def update_history(self):
@@ -208,6 +304,7 @@ class StatsFrame(QFrame):
                 self.storage.history_rows[index].show()
         else:
             self.empty_history()
+        self.set_turn_label()
 
     # Show special container if history is empty
     def empty_history(self):
@@ -243,12 +340,26 @@ class StatsFrame(QFrame):
     def update_theme(self):
         style = self.create_style()
         self.setStyleSheet(style)
+        self.turn_label.setStyleSheet(f"color: {self.storage.color_theme[3]}; border: none;")
+        self.turn_widget.setStyleSheet(
+            f"background-color: {self.storage.color_theme[0]};"
+            f"font-size: 20px; border-left: 1px solid {self.storage.color_theme[3]};"
+            f"border-bottom: 1px solid {self.storage.color_theme[3]};")
+        self.probability_label.setStyleSheet(f"font-size: 20px; color: {self.storage.color_theme[3]};")
+        self.proc_widget.setStyleSheet(f"font-size: 13px; color: {self.storage.color_theme[3]};")
+        self.proc_widget.setStyleSheet(f"font-size: 13px; color: {self.storage.color_theme[3]};")
         self.storage.update_history_style()
 
     # Clear history containers
     def hide_history_rows(self):
         for item in self.storage.history_rows:
             item.hide()
+
+    def set_turn_label(self):
+        if self.logic_board.turn:
+            self.turn_label.setText("RUCH BIAŁYCH")
+        else:
+            self.turn_label.setText("RUCH CZARNYCH")
 
     def create_style(self):
         return f"""

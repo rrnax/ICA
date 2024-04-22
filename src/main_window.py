@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         self.logic_board.stats_frame = self.stats_frame
         self.logic_board.graphic_board = self.game_frame.game_scene
         self.stats_frame.graphic_board = self.game_frame.game_scene
-        self.engine.graphic_board = self.game_frame.game_scene
+        self.engine.stats_frame = self.stats_frame
         self.engine.moves_frame = self.moves_frame
         self.engine.engine_frame = self.engine_frame
 
@@ -95,6 +95,7 @@ class MainWindow(QMainWindow):
         self.stats_frame.update_theme()
         self.engine_frame.update_theme()
         self.moves_frame.update_theme()
+        self.logic_board.make_analyze()
 
     # Produce style for this container
     def create_style(self):
