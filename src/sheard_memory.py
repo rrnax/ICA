@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QListWidgetItem
 from PyQt5.QtCore import Qt
+import csv
 
 
 class SharedMemoryStorage:
@@ -23,6 +24,7 @@ class SharedMemoryStorage:
         self.create_content_rows()
         self.create_history_rows()
         self.create_openings()
+        self.load_openings()
 
     def create_head_labels(self):
         for i in range(102):
@@ -133,3 +135,10 @@ class SharedMemoryStorage:
                 else:
                     item.layout().itemAt(2).widget().setStyleSheet(f"color: #1c51a6; font-size: 15px;")
                 item.setStyleSheet(f"background-color: {self.color_theme[1]};")
+
+    def load_openings(self):
+        openings_csv = "../resources/schemas/debiuts.csv"
+        with open(openings_csv, 'r') as openings_file:
+            csv_reader = csv.reader(openings_file, delimiter=";")
+            for row in csv_reader:
+                print(row[0])

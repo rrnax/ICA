@@ -1,10 +1,14 @@
 import sys
+import os
 from main_window import MainWindow
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QFontDatabase, QFont
 from PyQt5.QtCore import Qt
-from engine import ChessEngine
 
+script_name = sys.argv[0]
+full_path = os.path.abspath(script_name)
+work_dir = os.path.dirname(full_path)
+os.chdir(work_dir)
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
