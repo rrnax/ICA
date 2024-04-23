@@ -102,7 +102,6 @@ class OpeningsDialog(QDialog):
             error_msg = MessageDialog(content=msg_label)
             error_msg.exec()
 
-
     def create_style(self):
         return f"""
                #openings-dialog {{

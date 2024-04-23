@@ -5,16 +5,19 @@ from chess_board import ChessBoard
 from side_dialog import SideDialog
 from message_dialog import MessageDialog
 from sheard_memory import SharedMemoryStorage
+from promotion_dialog import PromotionDialog
 
 
 class GameFrame(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.storage = SharedMemoryStorage()
+        self.promoted_info = []
 
         # Containers creation
         self.game_scene = ChessBoard(self, logic=self.parent().logic_board)
         self.game_view = QGraphicsView(self.game_scene, self)
+        self.promotion_dialog = PromotionDialog(self)
         self.set_properties()
         self.no_frame = self.create_style()
         self.setStyleSheet(self.no_frame)
@@ -94,4 +97,9 @@ class GameFrame(QFrame):
                 pen = QPen(QColor(self.storage.color_theme[3]))
                 field.setPen(pen)
 
+    def open_promotion_dialog(self, color_str):
+        self.promotion_dialog.set_pieces_color(color=color_str)
+        self.promotion_dialog.exec()
 
+    def set_promoted_info(self, vals):
+        self.promoted_info = vals

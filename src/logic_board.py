@@ -325,3 +325,5 @@ class LogicBoard(Board):
                 self.engine_move()
         else:
             self.make_analyze()
+
+

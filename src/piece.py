@@ -1,7 +1,11 @@
+from math import floor
+from time import sleep
 from PyQt5.QtCore import QPointF, Qt, QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsPixmapItem
-from chess import Move, square_name
+from chess import Move, square_name, QUEEN
+from promotion_dialog import PromotionDialog
+
 
 # Here are contribution license links fo images
 # <a href="https://www.flaticon.com/free-icons/chess-piece" title="chess piece icons">Chess piece icons created by rizal2109 - Flaticon</a>
@@ -27,6 +31,7 @@ class VirtualPiece(QGraphicsPixmapItem):
         self.image = None
         self.legal_fields = None
         self.last_move = None
+        self.promoted = False
         self.set_image()
 
     # Deal with piece images
@@ -68,6 +73,7 @@ class VirtualPiece(QGraphicsPixmapItem):
             piece_position = self.new_piece_position(event)
             target_field = self.match_field(piece_position)
             if target_field is not None:
+                self.check_promotion(target_field)
                 self.graphic_move(target_field)
                 self.make_move()
                 if self.logic_board.forward_moves:
@@ -87,6 +93,8 @@ class VirtualPiece(QGraphicsPixmapItem):
     # Making move operations
     def make_move(self):
         additional_info = self.logic_board.find_info(self.last_move)
+        if self.promoted:
+            self.last_move.promotion = QUEEN
         self.logic_board.push(self.last_move)
         temp = self.logic_board.check_end()
         if additional_info != "" and temp != "":
@@ -221,3 +229,28 @@ class VirtualPiece(QGraphicsPixmapItem):
                 move_uci = self.previous_fields[-1].chess_pos + last_field.chess_pos
                 self.last_move = Move.from_uci(move_uci)
 
+    def check_promotion(self, target_field):
+        if ((self.fen_id == "p" or self.fen_id == "P") and
+                (target_field.chess_pos[1] == "8" or target_field.chess_pos[1] == "1")) and not self.promoted:
+            try:
+                self.promoted = True
+                if self.fen_id == "p":
+                    self.graphic_board.parent().open_promotion_dialog(color_str="black")
+                    result = self.graphic_board.parent().promoted_info
+                    self.update_image(path=result[0], p_type=result[1])
+                else:
+                    self.graphic_board.parent().open_promotion_dialog(color_str="white")
+                    result = self.graphic_board.parent().promoted_info
+                    self.update_image(path=result[0], p_type=result[1])
+            except Exception as e:
+                print(e)
+
+    def update_image(self, path, p_type):
+        self.pixmap().size()
+        self.image = QPixmap(path)
+        self.image = self.image.scaled(floor(self.current_field.rect().width() * 0.8),
+                                       floor(self.current_field.rect().height() * 0.8),
+                                       Qt.KeepAspectRatio,
+                                       Qt.SmoothTransformation)
+        self.fen_id = p_type
+        self.setPixmap(self.image)
