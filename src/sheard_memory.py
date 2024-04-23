@@ -11,6 +11,8 @@ class SharedMemoryStorage:
     history_rows = []
     openings = []
     openings_widgets = []
+    endings = []
+    ending_widgets = []
     color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
     color_theme_light = ["#d4d4d4", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
@@ -26,6 +28,7 @@ class SharedMemoryStorage:
         self.create_history_rows()
         self.load_openings()
         self.create_openings()
+        self.create_endings()
 
     def create_head_labels(self):
         for i in range(102):
@@ -116,6 +119,11 @@ class SharedMemoryStorage:
         for opening in self.openings:
             opening_widget = QListWidgetItem(opening[0])
             self.openings_widgets.append(opening_widget)
+
+    def create_endings(self):
+        for ending in self.endings:
+            ending_widget = QListWidgetItem(ending[0])
+            self.ending_widgets.append(ending_widget)
 
     def find_opening(self, name):
         for item in self.openings:

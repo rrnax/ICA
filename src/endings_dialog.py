@@ -1,7 +1,6 @@
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QGridLayout
+from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QListWidget
 from PyQt5.QtCore import Qt
-from engine import ChessEngine
 from sheard_memory import SharedMemoryStorage
 
 
@@ -16,6 +15,7 @@ class EndingDialog(QDialog):
         self.bar_space = QWidget()
         self.close_bar = QWidget()
         self.content_widget = QWidget()
+        self.ending_list_widget = QListWidget()
 
         # Creating container
         self.set_items_properties()
@@ -23,6 +23,9 @@ class EndingDialog(QDialog):
         self.set_general_properties()
         self.save_style = self.create_style()
         self.setStyleSheet(self.save_style)
+        for item in self.storage.ending_widgets:
+            self.ending_list_widget.addItem(item)
+
         self.assign_actions()
 
     def assign_actions(self):
@@ -31,7 +34,7 @@ class EndingDialog(QDialog):
     def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setObjectName("endings-dialog")
-        self.setFixedSize(800, 600)
+        self.setFixedSize(500, 600)
 
     def set_layouts(self):
         # Dialog title
@@ -50,7 +53,8 @@ class EndingDialog(QDialog):
         # Content
         content_layout = QVBoxLayout()
         content_layout.setAlignment(Qt.AlignVCenter)
-        content_layout.setContentsMargins(40, 10, 40, 10)
+        content_layout.setContentsMargins(20, 5, 20, 20)
+        content_layout.addWidget(self.ending_list_widget)
         self.content_widget.setLayout(content_layout)
 
         # General
@@ -68,7 +72,11 @@ class EndingDialog(QDialog):
         self.close_btn.setFixedSize(30, 30)
 
         # Labels
-        self.dialog_title.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
+        self.dialog_title.setObjectName("endings-title")
+
+        # List
+        self.ending_list_widget.setSpacing(5)
+        self.ending_list_widget.setObjectName("list-endings")
 
     def update_style(self):
         style = self.create_style()
@@ -86,6 +94,18 @@ class EndingDialog(QDialog):
                    color: {self.storage.color_theme[3]};
                    font-size: 20px;
                    border: none;
+               }}
+               
+               #endings-title {{
+                   color: {self.storage.color_theme[3]};
+                   font-size: 18px;
+               }}
+               
+               #list-endings {{
+                   background-color: {self.storage.color_theme[1]};
+                   color: {self.storage.color_theme[3]};
+                   font-size: 20px;
+                   border: 1px solid {self.storage.color_theme[3]};
                }}
 
                #endings-close:hover {{
