@@ -8,94 +8,90 @@ from sheard_memory import SharedMemoryStorage
 class EndingDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.engine = ChessEngine()
         self.storage = SharedMemoryStorage()
+
+        # Items
+        self.close_btn = QPushButton("X", self)
+        self.dialog_title = QLabel("Końcówki szachowe")
+        self.bar_space = QWidget()
+        self.close_bar = QWidget()
+        self.content_widget = QWidget()
+
+        # Creating container
+        self.set_items_properties()
+        self.set_layouts()
+        self.set_general_properties()
+        self.save_style = self.create_style()
+        self.setStyleSheet(self.save_style)
+        self.assign_actions()
+
+    def assign_actions(self):
+        self.close_btn.clicked.connect(self.close)
+
+    def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setObjectName("endings-dialog")
+        self.setFixedSize(800, 600)
 
-        close_btn = QPushButton("X", self)
-        close_btn.setObjectName("engine-settings-close")
-        close_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        close_btn.setFixedSize(30, 30)
-        close_btn.clicked.connect(self.close)
-
-        dialog_title = QLabel("Końcówki")
+    def set_layouts(self):
+        # Dialog title
         title_layout = QHBoxLayout()
-        title_layout.addWidget(dialog_title)
+        title_layout.addWidget(self.dialog_title)
+        self.bar_space.setLayout(title_layout)
 
-        bar_space = QWidget()
-        bar_space.setFixedSize(380, 40)
-        bar_space.setLayout(title_layout)
-
+        # Top bar
         bar_layout = QHBoxLayout()
         bar_layout.setAlignment(Qt.AlignTop)
-        bar_layout.setContentsMargins(0, 0, 0, 0)
-        bar_layout.addWidget(bar_space)
-        bar_layout.addWidget(close_btn)
+        bar_layout.setContentsMargins(0, 0, 5, 0)
+        bar_layout.addWidget(self.bar_space)
+        bar_layout.addWidget(self.close_btn)
+        self.close_bar.setLayout(bar_layout)
 
-        close_bar = QWidget()
-        close_bar.setFixedSize(420, 40)
-        close_bar.setLayout(bar_layout)
-        close_bar.setObjectName("engine_title")
+        # Content
+        content_layout = QVBoxLayout()
+        content_layout.setAlignment(Qt.AlignVCenter)
+        content_layout.setContentsMargins(40, 10, 40, 10)
+        self.content_widget.setLayout(content_layout)
 
-        grid_settings = QGridLayout()
-        grid_settings.setColumnMinimumWidth(1, 300)
-
-        grid_widget = QWidget()
-        grid_widget.setLayout(grid_settings)
-
+        # General
         settings_layout = QVBoxLayout()
-        settings_layout.setContentsMargins(0, 0, 20, 0)
-        settings_layout.addWidget(close_bar)
-        settings_layout.addWidget(grid_widget)
-
-        self.setObjectName("engine-setting-dialog")
-        self.setFixedSize(420, 600)
+        settings_layout.setContentsMargins(0, 0, 0, 0)
+        settings_layout.setAlignment(Qt.AlignTop)
+        settings_layout.addWidget(self.close_bar)
+        settings_layout.addWidget(self.content_widget)
         self.setLayout(settings_layout)
-        self.setStyleSheet(f"""
-            #engine-setting-dialog {{
-                background-color: {self.storage.color_theme[0]};
-                border: 1px solid {self.storage.color_theme[3]}; 
-            }}
 
-            #engine-settings-close {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 20px;
-                border: none;
-            }}
+    def set_items_properties(self):
+        # Close
+        self.close_btn.setObjectName("endings-close")
+        self.close_btn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.close_btn.setFixedSize(30, 30)
 
-            #engine-settings-close:hover {{
-                background-color: red;
-                color: {self.storage.color_theme[0]};
-                border: 5px solid red;
-                border-radius: 10px;
-            }}
+        # Labels
+        self.dialog_title.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
 
-            #engine_title {{
-                border-bottom: 1px solid {self.storage.color_theme[3]};
-            }}
+    def update_style(self):
+        style = self.create_style()
+        self.setStyleSheet(style)
 
-            QLabel {{
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-            }}
+    def create_style(self):
+        return f"""
+               #endings-dialog {{
+                   background-color: {self.storage.color_theme[0]};
+                   border: 1px solid {self.storage.color_theme[3]}; 
+               }}
 
-            QComboBox {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border: 1px solid {self.storage.color_theme[3]}; 
-            }}
+               #endings-close {{
+                   background-color: {self.storage.color_theme[0]};
+                   color: {self.storage.color_theme[3]};
+                   font-size: 20px;
+                   border: none;
+               }}
 
-            QComboBox QAbstractItemView {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-            }}
-
-            QSpinBox {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border: 1px solid {self.storage.color_theme[3]}; 
-            }}
-            """)
+               #endings-close:hover {{
+                   background-color: red;
+                   color: {self.storage.color_theme[0]};
+                   border: 5px solid red;
+                   border-radius: 10px;
+               }}
+        """

@@ -1,5 +1,4 @@
 import io
-
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QTextEdit, QSizePolicy,
                              QFileDialog)
@@ -7,6 +6,7 @@ from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
 from chess import Board, pgn
 from message_dialog import MessageDialog
+
 
 class LoadDialog(QDialog):
     def __init__(self, parent=None):
@@ -137,6 +137,10 @@ class LoadDialog(QDialog):
         self.dialog_title.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
         self.fen_label.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
         self.pgn_label.setStyleSheet(f"color: {self.storage.color_theme[3]};font-size: 18px;")
+
+    def update_style(self):
+        style = self.create_style()
+        self.setStyleSheet(style)
 
     def create_style(self):
         return f"""

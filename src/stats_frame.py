@@ -37,7 +37,6 @@ class StatsFrame(QFrame):
         self.w_proc = QLabel()
         self.b_proc = QLabel()
         self.white_chance = QLabel()
-        self.draw_chance = QLabel()
         self.black_chance = QLabel()
 
         # Layouts
@@ -66,7 +65,6 @@ class StatsFrame(QFrame):
         self.timer.timeout.connect(self.pulse_turn)
         self.timer.start(1000)
 
-        self.draw_chance.hide()
 
     def set_probability(self, values):
         whites = 0
@@ -139,7 +137,6 @@ class StatsFrame(QFrame):
         self.diagram_layout.setSpacing(0)
         self.diagram_layout.setAlignment(Qt.AlignLeft)
         self.diagram_layout.addWidget(self.white_chance)
-        self.diagram_layout.addWidget(self.draw_chance)
         self.diagram_layout.addWidget(self.black_chance)
         self.proc_layout.setContentsMargins(0, 0, 0, 0)
         self.proc_layout.addWidget(self.w_proc)
@@ -265,7 +262,6 @@ class StatsFrame(QFrame):
         self.probability_diagram.setFixedSize(420, 30)
         self.probability_diagram.setStyleSheet(f"border-radius: 10px;")
         self.white_chance.setStyleSheet(f"background-color: white;")
-        self.draw_chance.setStyleSheet(f"background-color: gray;")
         self.black_chance.setStyleSheet(f"background-color: black;")
 
     # On window resize

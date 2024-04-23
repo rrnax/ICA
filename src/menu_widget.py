@@ -18,6 +18,11 @@ class MenuSlideFrame(QFrame):
         self.storage = SharedMemoryStorage()
 
         # Init elements
+        self.opening_dialog = OpeningsDialog(self)
+        self.ending_dialog = EndingDialog(self)
+        self.load_dialog = LoadDialog(self)
+        self.save_dialog = SaveDialog(self)
+
         self.app_label = QLabel()
         self.space_block = QLabel()
         self.new_game_btn = QPushButton("Gra")
@@ -173,23 +178,19 @@ class MenuSlideFrame(QFrame):
         self.close_menu()
 
     def open_saving(self):
-        save_dialog = SaveDialog()
         pgn = self.logic_board.create_pgn()
-        save_dialog.load_fen(actual_FEN=self.logic_board.fen())
-        save_dialog.load_pgn(actual_PGN=pgn)
-        save_dialog.exec()
+        self.save_dialog.load_fen(actual_FEN=self.logic_board.fen())
+        self.save_dialog.load_pgn(actual_PGN=pgn)
+        self.save_dialog.exec()
 
     def open_loading(self):
-        load_dialog = LoadDialog(self)
-        load_dialog.exec()
+        self.load_dialog.exec()
 
     def open_endings(self):
-        ending_dialog = EndingDialog()
-        ending_dialog.exec()
+        self.ending_dialog.exec()
 
     def open_openings(self):
-        opening_dialog = OpeningsDialog()
-        opening_dialog.exec()
+        self.opening_dialog.exec()
 
     def veify_state(self):
         if self.switch.checkState() == 2:
@@ -225,6 +226,12 @@ class MenuSlideFrame(QFrame):
     def update_style(self):
         style = self.create_style()
         self.setStyleSheet(style)
+        app_logo = QPixmap("../resources/appmark_gray.png")
+        self.app_label.setPixmap(app_logo)
+        self.opening_dialog.update_style()
+        self.ending_dialog.update_style()
+        self.load_dialog.update_style()
+        self.save_dialog.update_style()
 
     def load_board(self, notation, content):
         if notation == "pgn":

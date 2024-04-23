@@ -131,6 +131,10 @@ class SaveDialog(QDialog):
         self.pgn_copy.setCursor(Qt.PointingHandCursor)
         self.pgn_copy.setObjectName("pgn-copy")
 
+    def update_style(self):
+        style = self.create_style()
+        self.setStyleSheet(style)
+
     def create_style(self):
         return f"""
             #save-dialog {{
@@ -213,9 +217,11 @@ class SaveDialog(QDialog):
         """
 
     def load_fen(self, actual_FEN):
+        self.fen_value.clear()
         self.fen_value.append(actual_FEN)
 
     def load_pgn(self, actual_PGN):
+        self.pgn_value.clear()
         self.pgn_value.append(str(actual_PGN) + "\n\n")
 
     def copy_fen(self):

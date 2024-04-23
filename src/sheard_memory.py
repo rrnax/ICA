@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QListWidgetItem
 from PyQt5.QtCore import Qt
 
 
@@ -8,6 +8,7 @@ class SharedMemoryStorage:
     content_rows = []
     color_theme = []
     history_rows = []
+    openings = []
     color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
     color_theme_light = ["#d4d4d4", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
@@ -21,6 +22,7 @@ class SharedMemoryStorage:
         self.create_head_labels()
         self.create_content_rows()
         self.create_history_rows()
+        self.create_openings()
 
     def create_head_labels(self):
         for i in range(102):
@@ -106,6 +108,11 @@ class SharedMemoryStorage:
                 widget_row.setStyleSheet(f"background-color: {self.color_theme[1]};")
 
             self.history_rows.append(widget_row)
+
+    def create_openings(self):
+        for i in range(0, 25):
+            opening = QListWidgetItem("Otwarcie" + str(i))
+            self.openings.append(opening)
 
     def set_dark(self):
         self.color_theme = self.color_theme_dark
