@@ -160,7 +160,6 @@ class ChessBoard(QGraphicsScene):
                         piece = VirtualPiece(key, value, field, self)
                         self.pieces.append(piece)
 
-
     # Scale and place pieces on scene
     def draw_pieces(self):
         for piece in self.pieces:

@@ -95,6 +95,9 @@ class VirtualPiece(QGraphicsPixmapItem):
         additional_info = self.logic_board.find_info(self.last_move)
         if self.promoted:
             self.last_move.promotion = QUEEN
+            if additional_info != "":
+                additional_info += "\n"
+            additional_info += "Promocja"
         self.logic_board.push(self.last_move)
         temp = self.logic_board.check_end()
         if additional_info != "" and temp != "":
@@ -229,6 +232,22 @@ class VirtualPiece(QGraphicsPixmapItem):
                 move_uci = self.previous_fields[-1].chess_pos + last_field.chess_pos
                 self.last_move = Move.from_uci(move_uci)
 
+    def undo_promotion(self):
+        self.promoted = False
+        path = None
+        if self.fen_id.isupper():
+            path = "../resources/pieces/w_pawn.png"
+            self.fen_id = "P"
+        else:
+            path = "../resources/pieces/b_pawn.png"
+            self.fen_id = "p"
+        self.image = QPixmap(path)
+        self.image = self.image.scaled(floor(self.current_field.rect().width() * 0.6),
+                                       floor(self.current_field.rect().height() * 0.6),
+                                       Qt.KeepAspectRatio,
+                                       Qt.SmoothTransformation)
+        self.setPixmap(self.image)
+
     def check_promotion(self, target_field):
         if ((self.fen_id == "p" or self.fen_id == "P") and
                 (target_field.chess_pos[1] == "8" or target_field.chess_pos[1] == "1")) and not self.promoted:
@@ -246,7 +265,6 @@ class VirtualPiece(QGraphicsPixmapItem):
                 print(e)
 
     def update_image(self, path, p_type):
-        self.pixmap().size()
         self.image = QPixmap(path)
         self.image = self.image.scaled(floor(self.current_field.rect().width() * 0.8),
                                        floor(self.current_field.rect().height() * 0.8),

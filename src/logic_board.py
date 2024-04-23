@@ -152,6 +152,8 @@ class LogicBoard(Board):
                 self.ended_game = None
                 self.graphic_board.undo_capture()
             else:
+                if "Promocja" in action:
+                    piece.undo_promotion()
                 self.pop()
                 self.valid_remove(action, move)
                 piece.undo_last_move()
@@ -182,6 +184,7 @@ class LogicBoard(Board):
 
         if "Szach" in action:
             self.graphic_board.remove_undo_check()
+
 
     def forward_move(self):
         if self.forward_moves:
@@ -265,6 +268,7 @@ class LogicBoard(Board):
             forward_piece = forward_description.get("piece")
             forward_move = forward_description.get("move")
             forward_field = self.graphic_board.find_field(square_name(forward_move.to_square))
+            forward_piece.check_promotion(forward_field)
             forward_piece.graphic_move(forward_field)
             forward_piece.make_move()
             self.graphic_board.clear_highlighted()
