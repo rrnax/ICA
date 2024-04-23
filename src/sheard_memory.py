@@ -10,6 +10,7 @@ class SharedMemoryStorage:
     color_theme = []
     history_rows = []
     openings = []
+    openings_widgets = []
     color_theme_dark = ["#1E1F22", "#2B2D30", "#4E9F3D", "#FFC66C", "#FFFFFF", "#96b3e0", "#bd755c"]
     color_theme_light = ["#d4d4d4", "#FFFFFF", "#FFFFFF", "#2B2D30", "#FFFFFF", "#96b3e0", "#bd755c"]
 
@@ -23,8 +24,8 @@ class SharedMemoryStorage:
         self.create_head_labels()
         self.create_content_rows()
         self.create_history_rows()
-        self.create_openings()
         self.load_openings()
+        self.create_openings()
 
     def create_head_labels(self):
         for i in range(102):
@@ -112,9 +113,14 @@ class SharedMemoryStorage:
             self.history_rows.append(widget_row)
 
     def create_openings(self):
-        for i in range(0, 25):
-            opening = QListWidgetItem("Otwarcie" + str(i))
-            self.openings.append(opening)
+        for opening in self.openings:
+            opening_widget = QListWidgetItem(opening[0])
+            self.openings_widgets.append(opening_widget)
+
+    def find_opening(self, name):
+        for item in self.openings:
+            if item[0] == name:
+                return item[1]
 
     def set_dark(self):
         self.color_theme = self.color_theme_dark
@@ -138,7 +144,8 @@ class SharedMemoryStorage:
 
     def load_openings(self):
         openings_csv = "../resources/schemas/debiuts.csv"
-        with open(openings_csv, 'r') as openings_file:
+        with open(openings_csv, 'r', encoding="utf-8") as openings_file:
             csv_reader = csv.reader(openings_file, delimiter=";")
             for row in csv_reader:
-                print(row[0])
+                self.openings.append(row)
+

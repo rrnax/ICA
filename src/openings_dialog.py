@@ -2,6 +2,9 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QListWidget
 from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
+import io
+from chess import pgn
+from message_dialog import MessageDialog
 
 
 class OpeningsDialog(QDialog):
@@ -23,13 +26,14 @@ class OpeningsDialog(QDialog):
         self.set_general_properties()
         self.save_style = self.create_style()
         self.setStyleSheet(self.save_style)
-        for item in self.storage.openings:
+        for item in self.storage.openings_widgets:
             self.openings_list_widget.addItem(item)
 
         self.assign_actions()
 
     def assign_actions(self):
         self.close_btn.clicked.connect(self.close)
+        self.openings_list_widget.itemDoubleClicked.connect(self.chosed_item)
 
     def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -82,6 +86,22 @@ class OpeningsDialog(QDialog):
     def update_style(self):
         style = self.create_style()
         self.setStyleSheet(style)
+
+    def chosed_item(self):
+        actual_item = self.openings_list_widget.currentItem().text()
+        pgn_str = self.storage.find_opening(actual_item)
+        string_io = io.StringIO(pgn_str)
+        game = pgn.read_game(string_io)
+        if game is not None:
+            self.close()
+            self.parent().close_menu()
+            self.parent().load_board("pgn", game)
+        else:
+            msg_label = QLabel("Błąd w otwarciu!")
+            msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+            error_msg = MessageDialog(content=msg_label)
+            error_msg.exec()
+
 
     def create_style(self):
         return f"""
