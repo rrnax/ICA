@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QPushButton
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QCursor, QColor, QPen
-from moves_options_widget import MovesOptionsList
+from optional_moves_widget import OptionalMovesList
 from engine_frame import EngineFrame
 from menu_widget import MenuSlideFrame
 from stats_frame import StatsFrame
@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.menu_btn = QPushButton(self)
         self.menu_widget = MenuSlideFrame(self)
         self.stats_frame = StatsFrame(self)
-        self.moves_frame = MovesOptionsList(self)
+        self.moves_frame = OptionalMovesList(self)
         self.engine_frame = EngineFrame(self)
         self.window_style = self.create_style()
 
@@ -114,7 +114,7 @@ class MainWindow(QMainWindow):
                 background-color: {self.storage.color_theme[3]};
             }}
             
-            #main-scroll, #moves-scroll-area {{
+            #main-scroll {{
                 background-color: {self.storage.color_theme[1]};
                 color: {self.storage.color_theme[3]};
                 border: none;            

@@ -1,10 +1,12 @@
+import csv
+import logging
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QListWidgetItem
 from PyQt5.QtCore import Qt
-import csv
 
 
 class SharedMemoryStorage:
     _instance = None
+    logger = None
     head_labels = []
     content_rows = []
     color_theme = []
@@ -22,6 +24,7 @@ class SharedMemoryStorage:
         return cls._instance
 
     def initialize(self):
+        self.create_logger()
         self.set_dark()
         self.create_head_labels()
         self.create_content_rows()
@@ -30,11 +33,21 @@ class SharedMemoryStorage:
         self.create_openings()
         self.create_endings()
 
+    def create_logger(self):
+        self.logger = logging.getLogger("InteractiveChessAssistant")
+        self.logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler("../log/InteractiveChessAssistant.log")
+        file_handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(asctime)s #### %(message)s")
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
+
     def create_head_labels(self):
         for i in range(102):
             self.head_labels.append(QLabel())
+            self.head_labels[i].setAlignment(Qt.AlignCenter)
             self.head_labels[i].setStyleSheet(f"background-color: {self.color_theme[3]};"
-                                              f"color: {self.color_theme[0]};"
+                                              f"color: {self.color_theme[1]};"
                                               f"font-size: 18px;")
 
     def create_content_rows(self):
@@ -45,11 +58,12 @@ class SharedMemoryStorage:
                                       f"border: none")
 
             score_layout = QHBoxLayout()
+            score_layout.setAlignment(Qt.AlignCenter)
             score_layout.addWidget(score_label)
 
             score_widget = QWidget()
             score_widget.setLayout(score_layout)
-            score_widget.setStyleSheet(f"background-color: {self.color_theme[0]};"
+            score_widget.setStyleSheet(f"background-color: {self.color_theme[1]};"
                                        f"font-size: 18px;"
                                        f"border-bottom: 1px solid {self.color_theme[3]};")
 
@@ -64,18 +78,21 @@ class SharedMemoryStorage:
                 image_label.setStyleSheet(f"border: none")
 
                 move_layout = QHBoxLayout()
+                move_layout.setContentsMargins(0, 0, 0, 0)
+                move_layout.setSpacing(10)
                 move_layout.addWidget(image_label)
                 move_layout.addWidget(move_label)
+                move_layout.setAlignment(Qt.AlignCenter)
 
                 move_widget = QWidget()
                 move_widget.setLayout(move_layout)
 
                 if j % 2 == 0:
-                    move_widget.setStyleSheet(f"background-color: {self.color_theme[1]};"
+                    move_widget.setStyleSheet(f"background-color: {self.color_theme[0]};"
                                               f"font-size: 18px;"
                                               f"border-bottom: 1px solid {self.color_theme[3]};")
                 else:
-                    move_widget.setStyleSheet(f"background-color: {self.color_theme[0]};"
+                    move_widget.setStyleSheet(f"background-color: {self.color_theme[1]};"
                                               f"font-size: 18px;"
                                               f"border-bottom: 1px solid {self.color_theme[3]};")
 
