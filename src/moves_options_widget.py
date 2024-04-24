@@ -12,6 +12,8 @@ class MovesOptionsList(QScrollArea):
         super().__init__(parent)
         self.storage = SharedMemoryStorage()
         self.engine = ChessEngine()
+        self.coil_width = 100
+        self.coil_height = 50
 
         self.pieces = {
             "b": QPixmap("../resources/pieces/b_bishop.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
@@ -27,9 +29,6 @@ class MovesOptionsList(QScrollArea):
             "Q": QPixmap("../resources/pieces/w_queen.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation),
             "R": QPixmap("../resources/pieces/w_rook.png").scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         }
-
-        self.coil_width = 100
-        self.coil_height = 50
 
         self.points_header = QLabel()
 
@@ -66,7 +65,7 @@ class MovesOptionsList(QScrollArea):
         self.content_area = QScrollArea()
         self.content_area.setFixedHeight(173)
         self.content_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.content_area.setObjectName("moves-scroll-area")
+        # self.content_area.setObjectName("moves-scroll-area")
         self.content_area.setWidget(self.content_widget)
 
         self.fill_layout = QVBoxLayout()
@@ -86,9 +85,9 @@ class MovesOptionsList(QScrollArea):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAlignment(Qt.AlignCenter)
         self.setWidget(self.moves_widget)
-        self.options_style = self.create_style()
-        self.setStyleSheet(self.options_style)
         self.setObjectName("main-scroll")
+
+
 
     def create_header(self, column_amount):
         self.hide_headers()
@@ -199,44 +198,7 @@ class MovesOptionsList(QScrollArea):
                 item_column.hide()
 
     def update_theme(self):
-        style = self.create_style()
-        self.setStyleSheet(style)
-        
-    def create_style(self):
-        return f"""
-            #main-scroll, #moves-scroll-area {{
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                border: none;            
-            }}
-            
-            #head-label {{
-                background-color: {self.storage.color_theme[3]};
-                color: {self.storage.color_theme[0]};
-                font-size: 18px;
-            }}
-            
-            #coli-label-one {{
-                background-color: {self.storage.color_theme[1]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border-bottom: 1px solid {self.storage.color_theme[3]};
-            }}
-            
-            #coli-label-two {{
-                background-color: {self.storage.color_theme[0]};
-                color: {self.storage.color_theme[3]};
-                font-size: 18px;
-                border-bottom: 1px solid {self.storage.color_theme[3]};
-            }}
-        
-            #no-border-label {{
-                color: {self.storage.color_theme[3]};
-                border: none
-            }}
-            
-            #loader {{
-                background-color: {self.storage.color_theme[1]};
-            }}
-        """
+        self.storage.update_options_list()
+        self.loader.update_style()
+
 

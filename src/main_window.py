@@ -114,6 +114,12 @@ class MainWindow(QMainWindow):
                 background-color: {self.storage.color_theme[3]};
             }}
             
+            #main-scroll, #moves-scroll-area {{
+                background-color: {self.storage.color_theme[1]};
+                color: {self.storage.color_theme[3]};
+                border: none;            
+            }}
+            
             QScrollBar:vertical, QScrollBar:horizontal {{
                 background-color: {self.storage.color_theme[1]};
                 color: {self.storage.color_theme[3]};

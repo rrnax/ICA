@@ -33,42 +33,52 @@ class SharedMemoryStorage:
     def create_head_labels(self):
         for i in range(102):
             self.head_labels.append(QLabel())
-            self.head_labels[i].setObjectName("head-label")
+            self.head_labels[i].setStyleSheet(f"background-color: {self.color_theme[3]};"
+                                              f"color: {self.color_theme[0]};"
+                                              f"font-size: 18px;")
 
     def create_content_rows(self):
-        coils_style1 = "coli-label-one"
-        coils_style2 = "coli-label-two"
-        nonlabel = "no-border-label"
-
         for i in range(12):
             row = []
-            score_widget = QWidget()
-            score_layout = QHBoxLayout()
             score_label = QLabel()
-            score_label.setObjectName(nonlabel)
+            score_label.setStyleSheet(f"color: {self.color_theme[3]};"
+                                      f"border: none")
+
+            score_layout = QHBoxLayout()
             score_layout.addWidget(score_label)
+
+            score_widget = QWidget()
             score_widget.setLayout(score_layout)
+            score_widget.setStyleSheet(f"background-color: {self.color_theme[0]};"
+                                       f"font-size: 18px;"
+                                       f"border-bottom: 1px solid {self.color_theme[3]};")
+
             row.append(score_widget)
-            score_widget.setObjectName(coils_style1)
 
             for j in range(102):
-
-                coils_style = None
-                if j % 2 == 0:
-                    coils_style = coils_style1
-                else:
-                    coils_style = coils_style2
-
-                move_widget = QWidget()
-                move_layout = QHBoxLayout()
                 move_label = QLabel()
-                move_label.setObjectName(nonlabel)
+                move_label.setStyleSheet(f"color: {self.color_theme[3]};"
+                                         f"border: none")
+
                 image_label = QLabel()
-                image_label.setObjectName(nonlabel)
+                image_label.setStyleSheet(f"border: none")
+
+                move_layout = QHBoxLayout()
                 move_layout.addWidget(image_label)
                 move_layout.addWidget(move_label)
+
+                move_widget = QWidget()
                 move_widget.setLayout(move_layout)
-                move_widget.setObjectName(coils_style)
+
+                if j % 2 == 0:
+                    move_widget.setStyleSheet(f"background-color: {self.color_theme[1]};"
+                                              f"font-size: 18px;"
+                                              f"border-bottom: 1px solid {self.color_theme[3]};")
+                else:
+                    move_widget.setStyleSheet(f"background-color: {self.color_theme[0]};"
+                                              f"font-size: 18px;"
+                                              f"border-bottom: 1px solid {self.color_theme[3]};")
+
                 row.append(move_widget)
             self.content_rows.append(row)
 
@@ -136,6 +146,31 @@ class SharedMemoryStorage:
     def set_light(self):
         self.color_theme = self.color_theme_light
 
+    def update_options_list(self):
+        for i in range(102):
+            self.head_labels[i].setStyleSheet(f"background-color: {self.color_theme[3]};"
+                                              f"color: {self.color_theme[0]};"
+                                              f"font-size: 18px;")
+
+        for row in self.content_rows:
+            row[0].layout().itemAt(0).widget().setStyleSheet(f"color: {self.color_theme[3]};"
+                                                             f"border: none")
+            row[0].setStyleSheet(f"background-color: {self.color_theme[0]};"
+                                 f"font-size: 18px;"
+                                 f"border-bottom: 1px solid {self.color_theme[3]};")
+
+            for i in range(1, 102):
+                row[i].layout().itemAt(1).widget().setStyleSheet(f"color: {self.color_theme[3]};"
+                                                                 f"border: none")
+                if i % 2 == 0:
+                    row[i].setStyleSheet(f"background-color: {self.color_theme[1]};"
+                                         f"font-size: 18px;"
+                                         f"border-bottom: 1px solid {self.color_theme[3]};")
+                else:
+                    row[i].setStyleSheet(f"background-color: {self.color_theme[0]};"
+                                         f"font-size: 18px;"
+                                         f"border-bottom: 1px solid {self.color_theme[3]};")
+
     def update_history_style(self):
         for index, item in enumerate(self.history_rows):
             item.layout().itemAt(0).widget().setStyleSheet(f"color:{self.color_theme[3]}; font-size: 18px;")
@@ -156,4 +191,3 @@ class SharedMemoryStorage:
             csv_reader = csv.reader(openings_file, delimiter=";")
             for row in csv_reader:
                 self.openings.append(row)
-
