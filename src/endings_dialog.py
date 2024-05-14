@@ -2,7 +2,8 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QListWidget
 from PyQt5.QtCore import Qt
 from sheard_memory import SharedMemoryStorage
-
+import io
+from message_dialog import MessageDialog
 
 class EndingDialog(QDialog):
     def __init__(self, parent=None):
@@ -30,6 +31,7 @@ class EndingDialog(QDialog):
 
     def assign_actions(self):
         self.close_btn.clicked.connect(self.close)
+        self.ending_list_widget.itemDoubleClicked.connect(self.chosed_item)
 
     def set_general_properties(self):
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -81,6 +83,19 @@ class EndingDialog(QDialog):
     def update_style(self):
         style = self.create_style()
         self.setStyleSheet(style)
+
+    def chosed_item(self):
+        actual_item = self.ending_list_widget.currentItem().text()
+        fen_str = self.storage.find_ending(actual_item)
+        if fen_str is not None:
+            self.close()
+            self.parent().close_menu()
+            self.parent().load_board("fen", fen_str)
+        else:
+            msg_label = QLabel("Błąd w końcówce!")
+            msg_label.setStyleSheet(f"color: {self.storage.color_theme[3]};")
+            error_msg = MessageDialog(content=msg_label)
+            error_msg.exec()
 
     def create_style(self):
         return f"""

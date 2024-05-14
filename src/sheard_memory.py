@@ -30,6 +30,7 @@ class SharedMemoryStorage:
         self.create_content_rows()
         self.create_history_rows()
         self.load_openings()
+        self.load_endings()
         self.create_openings()
         self.create_endings()
 
@@ -157,6 +158,11 @@ class SharedMemoryStorage:
             if item[0] == name:
                 return item[1]
 
+    def find_ending(self, name):
+        for item in self.endings:
+            if item[0] == name:
+                return item[1]
+
     def set_dark(self):
         self.color_theme = self.color_theme_dark
 
@@ -208,3 +214,11 @@ class SharedMemoryStorage:
             csv_reader = csv.reader(openings_file, delimiter=";")
             for row in csv_reader:
                 self.openings.append(row)
+
+    def load_endings(self):
+        endings_csv = "../resources/schemas/endings.csv"
+        with open(endings_csv, 'r', encoding="utf-8") as endings_file:
+            csv_reader = csv.reader(endings_file, delimiter=";")
+            for row in csv_reader:
+                self.endings.append(row)
+
